@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-  "bdd": "cucumber-js --require-module ts-node/register --require ./test/steps/**/*.ts ./test/features/**/*.feature",
+    "bdd": "cucumber-js --require-module ts-node/register --require ./test/steps/**/*.ts ./test/features/**/*.feature",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
@@ -14,7 +14,7 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "jest",
+    "test": "cucumber-js --require-module ts-node/register --require test/steps/**/*.ts --require test/support/**/*.ts test/features/**/*.feature",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",

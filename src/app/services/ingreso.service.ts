@@ -1,21 +1,20 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { Ingreso } from './ingreso';
-import { Enfermera } from '../enfermera/enfermera.entity';
-import { NivelEmergencia } from '../nivel-emergencia/nivelEmergencia.enum';
-import { Paciente } from '../paciente/paciente';
-import { EstadoIngreso } from '../estado-ingreso/estadoIngreso.enum';
-
-import * as pacienteRepository from '../paciente/repository/paciente.repository';
-import { PATIENT_REPOSITORY } from './patient.constant';
+import { Ingreso } from '../../models/ingreso/ingreso';
+import { Enfermera } from '../../models/enfermera/enfermera.entity';
+import { NivelEmergencia } from '../../models/nivel-emergencia/nivelEmergencia.enum';
+import { EstadoIngreso } from '../../models/estado-ingreso/estadoIngreso.enum';
+import * as pacienteRepository from '../../app/interfaces/patient.repository';
+import { PACIENTE_REPOSITORIO } from '../interfaces/patient.repository';
+import { ServicioIngreso } from '../interfaces/urgencia.service';
 
 
 @Injectable()
-export class IngresoService {
+export class IngresoServiceImpl implements ServicioIngreso {
   private readonly listaDeIngresos: Ingreso[] = [];
 
   constructor(
-    @Inject(PATIENT_REPOSITORY)
-    private readonly pacienteRepo: pacienteRepository.PatientRepository,
+    @Inject(PACIENTE_REPOSITORIO)
+    private readonly pacienteRepo: pacienteRepository.PacienteRepositorio,
   ) {}
 
   registrarIngreso(

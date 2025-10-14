@@ -13,7 +13,6 @@ export abstract class Frecuencia {
       throw new Error(`falta el campo '${this.nombre.toLowerCase()}'`);
     }
     if (valor <= 0) {
-      //para q tenga sentido con los escenarios
       throw new Error(`La ${this.nombre.toLowerCase()} debe ser positiva`);
     }
   }

@@ -56,7 +56,7 @@ export class Ingreso {
   }
 
 
-  public compararCon(otro: Ingreso): number { // el ingreso es experto en compararse x eso creo no va en el service
+  public compararCon(otro: Ingreso): number { 
     if (this.nivelEmergencia !== otro.nivelEmergencia) {
       return this.nivelEmergencia - otro.nivelEmergencia; 
     }
