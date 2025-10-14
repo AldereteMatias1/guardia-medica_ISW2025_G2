@@ -1,8 +1,7 @@
-// features/step_definitions/emergencias.steps.ts
+
 import { Before, Given, When, Then } from '@cucumber/cucumber';
 import assert from 'assert';
 
-// 🔧 AJUSTA ESTOS IMPORTS A TUS RUTAS REALES
 import { IngresoService } from '../../src/models/ingreso/ingreso.service';
 import { Ingreso } from '../../src/models/ingreso/ingreso';
 import { Paciente } from '../../src/models/paciente/paciente';

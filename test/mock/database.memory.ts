@@ -1,5 +1,5 @@
 import { PatientRepository } from "src/models/paciente/repository/paciente.repository";
-import { Paciente } from "src/models/paciente/paciente"; // usa el nombre correcto de tu clase
+import { Paciente } from "src/models/paciente/paciente"; 
 
 export class DataBaseInMemory implements PatientRepository {
   private patients: Paciente[] = [];
