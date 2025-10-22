@@ -1,8 +1,11 @@
+import { Domicilio } from "../domicilio/domicililio.entities";
+
 export class Paciente {
   private nombre: string;
   private apellido: string;
   private cuil: string;
   private obraSocial: string;
+  private domicilio?: Domicilio;
 
   public constructor(
     nombre: string,
@@ -19,4 +22,16 @@ export class Paciente {
   public get Cuil(): string {
     return this.cuil;
   }
+
+  public get Domicilio(): Domicilio | undefined {
+    return this.domicilio;
+  }
+
+  public get ObraSocial(): string {
+    return this.obraSocial;
+  }
+
+  public asignarDomicilio(domicilio: Domicilio): void {
+  this.domicilio = domicilio;
+}
 }

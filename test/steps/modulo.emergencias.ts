@@ -1,5 +1,5 @@
 
-import { Before, Given, When, Then } from '@cucumber/cucumber';
+import { Before, Given, When, Then, After } from '@cucumber/cucumber';
 import assert from 'assert';
 import { ServicioIngreso } from '../../src/app/interfaces/urgencia.service';
 import { Ingreso } from '../../src/models/ingreso/ingreso';
@@ -10,7 +10,7 @@ import { DataBaseInMemory } from '../../test/mock/database.memory';
 import { IngresoServiceImpl } from '../../src/app/services/ingreso.service';
 
 let enfermera: Enfermera;
-let service: ServicioIngreso;
+let service: ServicioIngreso ;
 let patientRepo: DataBaseInMemory;
 let msgLastError: string;
 let countAntesDeIntento = 0;
@@ -50,12 +50,6 @@ Before((scenario) => {
   msgLastError = '';
   countAntesDeIntento = 0;
   console.log(`SCENARIO: ${scenario.pickle.name}`);
-});
-
-
-Given('que la siguiente enfermera está registrada:', (dataTable) => {
-  const row = dataTable.hashes()[0];
-  enfermera = new Enfermera(row['Nombre'], row['Apellido']);
 });
 
 
@@ -136,4 +130,19 @@ Then('el sistema muestra un error indicando que la tension arterial debe ser pos
     msg.includes('positiv') || msg.includes('mayor') || msg.includes('válid') || msg.includes('valida'),
     `Se esperaba mensaje de TA positiva/valores > 0, pero fue: "${msgLastError}"`
   );
+});
+
+
+After(() => {
+  if (patientRepo) {
+    if (typeof patientRepo.clear === 'function') {
+      patientRepo.clear();
+    } 
+  }
+  enfermera = undefined as any;
+  service = undefined as any;
+  msgLastError = '';
+  countAntesDeIntento = 0;
+
+  console.log('After hook: Base de datos limpia y variables reiniciadas.');
 });
