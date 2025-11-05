@@ -1,3 +1,4 @@
+import { Afiliado } from "../afiliado/afiliado.entities";
 import { Domicilio } from "../domicilio/domicililio.entities";
 
 export class Paciente {
@@ -6,6 +7,7 @@ export class Paciente {
   private cuil: string;
   private obraSocial: string;
   private domicilio?: Domicilio;
+  private afiliado?: Afiliado;
 
   public constructor(
     nombre: string,
@@ -34,4 +36,7 @@ export class Paciente {
   public asignarDomicilio(domicilio: Domicilio): void {
   this.domicilio = domicilio;
 }
+  public afiliarObraSocial(): void{
+    this.afiliado = this.afiliado;
+  }
 }

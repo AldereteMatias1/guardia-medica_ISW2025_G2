@@ -12,5 +12,5 @@ Scenario: Registrar paciente de manera exitosa
     Given no hay ningún paciente registrado con el cuil "20-21383873-9"
     When se ingresan:
     | nombre | apellido | cuil | obra social | numero de afiliado | calle | numero | localidad |
-    | juan | perez | 20-21383873-9 | mora | 540 | san martin | 123 | San Miguel de Tucuman | 
+    | Juan | Perez | 20-12345678-9 | OSDE | 540 | san martin | 123 | San Miguel de Tucuman | 
     Then se muestra un mensaje indicando que el paciente se creo exitosamente
