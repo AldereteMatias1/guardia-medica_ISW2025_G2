@@ -23,7 +23,6 @@ Before((scenario) => {
  When('se ingresan:', function (dataTable) {
     const data = dataTable.hashes();
     const row = data[0];
-    
     const numeroAfiliado = Number(row["numero de afiliado"]);
     const domicilio = new Domicilio(row["calle"], row["localidad"], Number(row["numero"]));
     const p = new Paciente(row['nombre'], row['apellido'], row['cuil'], row['obra social']);

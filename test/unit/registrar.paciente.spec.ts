@@ -34,7 +34,7 @@ describe('Registrar paciente (unit)', () => {
     jest.clearAllMocks();
   });
 
-  it("Se registra el paciente exitosamente", () => {
+  it("Se registra el paciente exitosamente con obra social", () => {
         let paciente = new Paciente("Ivan", "Ochoa", "20-41383873-9", "Mora");
         let domicilio = new Domicilio("bolivia", "San Miguel de Tucuman", 450);
         let numeroAfiliado = 15820;
@@ -44,6 +44,18 @@ describe('Registrar paciente (unit)', () => {
         obraSocialRepoMock.afiliadoAlPaciente.mockReturnValue(true);
 
         const p = pacienteServicio.registrarPaciente(paciente, numeroAfiliado);
+
+        expect(p.Cuil).toEqual("20-41383873-9");
+
+  });
+
+  it("Se registra el paciente exitosamente sin obra social", () => {
+        let paciente = new Paciente("Ivan", "Ochoa", "20-41383873-9", "Mora");
+        let domicilio = new Domicilio("bolivia", "San Miguel de Tucuman", 450);
+    
+        paciente.asignarDomicilio(domicilio);
+
+        const p = pacienteServicio.registrarPaciente(paciente, 0);
 
         expect(p.Cuil).toEqual("20-41383873-9");
 

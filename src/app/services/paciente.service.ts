@@ -16,13 +16,13 @@ export class PacienteServicio implements IPacienteServicio {
 
     registrarPaciente(paciente: Paciente, numeroAfiliado: number): Paciente {
         
-        if(!this.obraSocialRepo.existePorNombre(paciente.ObraSocial) || !this.obraSocialRepo.afiliadoAlPaciente(paciente.Cuil, numeroAfiliado)){
-            throw new NotFoundException();
+        if(numeroAfiliado !== 0){
+            if(!this.obraSocialRepo.existePorNombre(paciente.ObraSocial) || !this.obraSocialRepo.afiliadoAlPaciente(paciente.Cuil, numeroAfiliado)){
+                throw new NotFoundException();
+            }
         }
-        
         this.pacientes.push(paciente);
         return paciente;
-
     }
 
 }
