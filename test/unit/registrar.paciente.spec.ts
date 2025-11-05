@@ -4,10 +4,12 @@ import { PacienteServicio } from "../../src/app/services/paciente.service";
 import { Paciente } from "../../src/models/paciente/paciente";
 import { Domicilio } from "../../src/models/domicilio/domicililio.entities";
 import { IObraSocial, REPOSITORIO_OBRA_SOCIAL } from "../../src/app/interfaces/obra.social.repository";
+import { PACIENTE_REPOSITORIO } from "../../src/app/interfaces/patient.repository";
+import { NotFoundException } from "@nestjs/common";
 
 
 describe('Registrar paciente (unit)', () => {
-    let moduleRef: TestingModule;
+  let moduleRef: TestingModule;
   let pacienteServicio: PacienteServicio;
 
   const obraSocialRepoMock: jest.Mocked<IObraSocial> = {
@@ -15,11 +17,18 @@ describe('Registrar paciente (unit)', () => {
     afiliadoAlPaciente: jest.fn(),
   };
 
+  const pacienteRepoMock = {
+    guardarPaciente: jest.fn(),
+    buscarPacientePorCuil: jest.fn(),
+    existePorCuil: jest.fn(),
+  };
+
   beforeAll(async () => {
     moduleRef = await Test.createTestingModule({
       providers: [
         { provide: SERVICIO_PACIENTE, useClass: PacienteServicio },
         { provide: REPOSITORIO_OBRA_SOCIAL, useValue: obraSocialRepoMock },
+        { provide: PACIENTE_REPOSITORIO, useValue: pacienteRepoMock }
       ],
     }).compile();
 
@@ -60,5 +69,22 @@ describe('Registrar paciente (unit)', () => {
         expect(p.Cuil).toEqual("20-41383873-9");
 
   });
+
+  it("No se registra el paciente con obra social inexistente", () => {
+        let paciente = new Paciente("Ivan", "Ochoa", "20-41383873-9", "Mora");
+        let domicilio = new Domicilio("bolivia", "San Miguel de Tucuman", 450);
+    
+        paciente.asignarDomicilio(domicilio);
+
+        obraSocialRepoMock.existePorNombre.mockReturnValue(false);
+        obraSocialRepoMock.afiliadoAlPaciente.mockReturnValue(false);
+
+        expect(() => {
+        pacienteServicio.registrarPaciente(paciente, 12345); 
+      }).toThrow(NotFoundException);
+
+  });
+
+  
 
 });

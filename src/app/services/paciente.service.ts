@@ -13,6 +13,7 @@ export class PacienteServicio implements IPacienteServicio {
     constructor(
         @Inject(REPOSITORIO_OBRA_SOCIAL)
         private readonly obraSocialRepo: ObraSocialRepositorio,
+        @Inject(patientRepository.PACIENTE_REPOSITORIO)
         private readonly patientRepo: patientRepository.PacienteRepositorio
       ) {}
 

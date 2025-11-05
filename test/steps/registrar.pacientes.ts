@@ -12,11 +12,14 @@ let patientRepo: DataBaseInMemory;
 let patientService: IPacienteServicio;
 let obraSocial: IObraSocial;
 let cuil: string;
+let lastError: unknown;
+
 Before((scenario) => {
   patientRepo = new DataBaseInMemory(); 
   obraSocial = new DataBaseObraSocialInMemory();
   patientService = new PacienteServicio(obraSocial, patientRepo);
   cuil = "";
+  lastError = undefined;
 });
 
  Given('no hay ningún paciente registrado con el cuil {string}', function (cuil: string) {
@@ -31,11 +34,20 @@ Before((scenario) => {
     const domicilio = new Domicilio(row["calle"], row["localidad"], Number(row["numero"]));
     const p = new Paciente(row['nombre'], row['apellido'], cuil, row['obra social']);
     p.asignarDomicilio(domicilio);
+    try {
     patientService.registrarPaciente(p, numeroAfiliado);
+  } catch (e) {
+    lastError = e; 
+  }
     });
 
 Then('se muestra un mensaje indicando que el paciente se creo exitosamente', function () {        
            const pacienteRegistrado = patientService.buscarPacientePorCuil(cuil);
            assert.ok(pacienteRegistrado);
            console.log('✓ Paciente registrado exitosamente');
+         });
+
+Then('se muestra un mensaje indicando que el paciente no se registro', function () {
+            const pacienteRegistrado = patientService.buscarPacientePorCuil(cuil);
+           assert.equal(pacienteRegistrado, null, "El paciente no debería haberse registrado");
          });

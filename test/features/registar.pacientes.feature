@@ -16,8 +16,15 @@ Scenario: Registrar paciente de manera exitosa con obra social existente
     Then se muestra un mensaje indicando que el paciente se creo exitosamente
 
 Scenario: Registrar paciente de manera exitosa sin obra social
-    Given no hay ningún paciente registrado con el cuil "20-21383873-9"
+    Given no hay ningún paciente registrado con el cuil "20-32145678-9"
     When se ingresan:
     | nombre | apellido | cuil | obra social | numero de afiliado | calle | numero | localidad |
     | Miguel | Perez | 20-32145678-9 |  |  | san martin | 123 | San Miguel de Tucuman | 
     Then se muestra un mensaje indicando que el paciente se creo exitosamente
+
+Scenario: Registrar paciente de manera fallida con obra social inexistente
+    Given no hay ningún paciente registrado con el cuil "20-32145111-9"
+    When se ingresan:
+    | nombre | apellido | cuil | obra social | numero de afiliado | calle | numero | localidad |
+    | Marcelo | Vargas | 20-32145111-9 | fictica | 123 | san martin | 123 | San Miguel de Tucuman | 
+    Then se muestra un mensaje indicando que el paciente no se registro
