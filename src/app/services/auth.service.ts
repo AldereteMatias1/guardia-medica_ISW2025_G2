@@ -1,23 +1,22 @@
 import { Inject, Injectable, UnauthorizedException, BadRequestException, InternalServerErrorException } from '@nestjs/common';
-import { Usuario } from 'src/models/usuario/usuario';
-import { LoginAuthDto } from './dto/login.dto';
-import type { UsuarioRepositorio } from '../../src/app/interfaces/usuarios.repository';
-import { USUARIO_REPOSITORIO } from '../../src/app/interfaces/usuarios.repository';
+import { LoginAuthDto } from '../../auth/dto/login.dto';
+import * as usuariosRepository from '../interfaces/usuario/usuarios.repository';
 import { JwtService } from '@nestjs/jwt';
-import { JwtPayload } from '../app/interfaces/jwt-payload';
+import { JwtPayload } from '../interfaces/auth/jwt-payload';
 import * as argon2 from 'argon2';
-import { comparePassword } from '../../src/auth/utils/hashing';
+import { comparePassword } from '../../auth/utils/hashing';
+import { CreateUserDto } from 'src/models/usuario/dto/create.user.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @Inject(USUARIO_REPOSITORIO)
-    private readonly userRepo: UsuarioRepositorio,
+    @Inject(usuariosRepository.USUARIO_REPOSITORIO)
+    private readonly userRepo: usuariosRepository.IUsuarioRepositorio,
 
     private readonly jwtService: JwtService,
   ) {}
 
-  async register(user: Usuario) {
+  async register(user: CreateUserDto) {
     try {
       const hashedPassword = await argon2.hash(user.password, {
         type: argon2.argon2id,
@@ -25,11 +24,12 @@ export class AuthService {
         timeCost: 3,
         parallelism: 1,
       });
+      if(user.password.length < 8) throw new BadRequestException("La contraseña no puede tener menos de 8 digitos")
       const newUser = { ...user, password: hashedPassword };
       this.userRepo.registrarUsuario(newUser);
       return { message: 'Usuario registrado exitosamente', newUser };
     } catch (err) {
-      throw new Error(err.message);
+      throw new BadRequestException(err.message);
     }
   }
 
@@ -74,7 +74,4 @@ export class AuthService {
     };
   }
 
-  async getAllUsers() {
-    return this.userRepo.obtenerTodos();
-  }
 }

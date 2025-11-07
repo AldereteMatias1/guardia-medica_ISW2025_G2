@@ -1,10 +1,10 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { SERVICIO_PACIENTE } from "../../src/app/interfaces/paciente.service";
+import { SERVICIO_PACIENTE } from "../../src/app/interfaces/paciente/paciente.service";
 import { PacienteServicio } from "../../src/app/services/paciente.service";
 import { Paciente } from "../../src/models/paciente/paciente";
 import { Domicilio } from "../../src/models/domicilio/domicililio.entities";
-import { REPOSITORIO_OBRA_SOCIAL } from "../../src/app/interfaces/obra.social.repository";
-import { PACIENTE_REPOSITORIO } from "../../src/app/interfaces/patient.repository";
+import { REPOSITORIO_OBRA_SOCIAL } from "../../src/app/interfaces/obraSocial/obra.social.repository";
+import { PACIENTE_REPOSITORIO } from "../../src/app/interfaces/paciente/patient.repository";
 import { ObraSocial } from "../../src/models/obra-social/obra-social.entity";
 import { Afiliado } from "../../src/models/afiliado/afiliado.entities";
 import { BadRequestException, NotFoundException } from "@nestjs/common";

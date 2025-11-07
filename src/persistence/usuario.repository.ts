@@ -1,8 +1,8 @@
-import { RolUsuario, Usuario } from 'src/models/usuario/usuario';
-import { UsuarioRepositorio } from 'src/app/interfaces/usuarios.repository';
+import { IUsuarioRepositorio } from "../../src/app/interfaces/usuario/usuarios.repository";
+import { Usuario } from "../../src/models/usuario/usuario";
 
-export class DatabaseUsersInMemory implements UsuarioRepositorio {
-  private users: Usuario[] = [];
+export class UsuarioRepositorio implements IUsuarioRepositorio {
+    private users: Usuario[] = [];
 
   registrarUsuario(user: Usuario): void {
     const exists = this.users.some((u) => u.email === user.email);
@@ -36,4 +36,5 @@ export class DatabaseUsersInMemory implements UsuarioRepositorio {
   clear(): void {
     this.users = [];
   }
+    
 }
