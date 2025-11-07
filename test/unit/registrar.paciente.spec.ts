@@ -8,7 +8,6 @@ import { PACIENTE_REPOSITORIO } from "../../src/app/interfaces/patient.repositor
 import { ObraSocial } from "../../src/models/obra-social/obra-social.entity";
 import { Afiliado } from "../../src/models/afiliado/afiliado.entities";
 import { BadRequestException, NotFoundException } from "@nestjs/common";
-import { Cuil } from "../../src/models/value-objects/cuil";
 
 
 describe('Registrar paciente (unit)', () => {
@@ -53,12 +52,11 @@ describe('Registrar paciente (unit)', () => {
       const numeroAfiliado = 15820;
       const obra = new ObraSocial("11111111-aaaa-bbbb-cccc-222222222222", "OSECAC");
       const afiliado = new Afiliado(1, numeroAfiliado, obra);
-      const cuil = new Cuil("20-41383873-9");
 
       const paciente = new Paciente(
         "Ivan",
         "Ochoa",
-        cuil,
+        "20-41383873-9",
         "ivan.ochoa@mail.com", 
         afiliado,
         domicilio
@@ -71,7 +69,7 @@ describe('Registrar paciente (unit)', () => {
       const p = pacienteServicio.registrarPaciente(paciente);
 
       // Assert
-      expect(p.getCuil().ValorFormateado).toBe("20-41383873-9");
+      expect(p.getCuil()).toBe("20-41383873-9");
       expect(pacienteServicio.buscarPacientePorCuil("20-41383873-9")).not.toBeNull();
 
       expect(obraSocialRepoMock.existePorNombre).toHaveBeenCalledTimes(1);
@@ -91,7 +89,7 @@ describe('Registrar paciente (unit)', () => {
     const paciente = new Paciente(
       "Ivan",
       "Ochoa",
-      new Cuil("20-41383873-9"),
+      "20-41383873-9",
       "ivan.ochoa@mail.com",
       afiliado,
       domicilio
@@ -114,7 +112,7 @@ describe('Registrar paciente (unit)', () => {
     const paciente = new Paciente(
       "Ivan",
       "Ochoa",
-      new Cuil("20-41383873-9"),
+      "20-41383873-9",
       "ivan.ochoa@mail.com",
       afiliado,
       domicilio
@@ -140,7 +138,7 @@ describe('Registrar paciente (unit)', () => {
     const paciente = new Paciente(
       "Ivan",
       "Ochoa",
-      new Cuil("20-41383873-9"),
+      "20-41383873-9",
       "ivan.ochoa@mail.com",
       afiliado,
       domicilio
@@ -148,52 +146,39 @@ describe('Registrar paciente (unit)', () => {
 
     const p = pacienteServicio.registrarPaciente(paciente);
 
-    expect(p.getCuil().ValorFormateado).toBe("20-41383873-9");
+    expect(p.getCuil()).toBe("20-41383873-9");
     expect(obraSocialRepoMock.existePorNombre).not.toHaveBeenCalled();
     expect(obraSocialRepoMock.afiliadoAlPaciente).not.toHaveBeenCalled();
   });
 
   it("Falla si viene obra social pero falta numeroAfiliado", () => {
-  const cuil = new Cuil("20-41383873-9");
   const domicilio = new Domicilio("Bolivia", "San Miguel de Tucuman", 450);
   const obra = new ObraSocial("11111111-aaaa-bbbb-cccc-222222222222", "OSECAC");
 
 
   const afiliadoIncompleto = new Afiliado(1, "" as any, obra);
-  const paciente = new Paciente("Ivan", "Ochoa", cuil, "ivan@mail.com", afiliadoIncompleto, domicilio);
+  const paciente = new Paciente("Ivan", "Ochoa", "20-41383873-9", "ivan@mail.com", afiliadoIncompleto, domicilio);
 
   expect(() => pacienteServicio.registrarPaciente(paciente))
     .toThrow(BadRequestException);
 });
 
-it("Falla si viene obra social pero falta el objeto ObraSocial", () => {
-  const cuil = new Cuil("20-41383873-9");
+it("Falla si viene obra social pero falta el objeto ObraSocial", () => {;
   const domicilio = new Domicilio("Bolivia", "San Miguel de Tucuman", 450);
 
   const afiliadoIncompleto = new Afiliado(1, 15820, undefined as any);
-  const paciente = new Paciente("Ivan", "Ochoa", cuil, "ivan@mail.com", afiliadoIncompleto, domicilio);
+  const paciente = new Paciente("Ivan", "Ochoa", "20-41383873-9", "ivan@mail.com", afiliadoIncompleto, domicilio);
 
   expect(() => pacienteServicio.registrarPaciente(paciente))
     .toThrow(BadRequestException);
 });
 
-it("Falla al registrar paciente con CUIL inválido", () => {
-  const domicilio = new Domicilio("Bolivia", "San Miguel de Tucuman", 450);
-  const obra = new ObraSocial("11111111-aaaa-bbbb-cccc-222222222222", "OSECAC");
-  const afiliado = new Afiliado(1, 15820, obra);
-
-  const cuilInvalido = "20-41383873-0"; 
-
-  expect(() => new Cuil(cuilInvalido)).toThrow(Error);
-  expect(() => new Cuil(cuilInvalido)).toThrow(/dígito verificador/i);
-});
 
 it("Falla si falta el nombre", () => {
-    const cuil = new Cuil("20-41383873-9");
     const domicilio = new Domicilio("Bolivia", "San Miguel de Tucuman", 450);
     const obra = new ObraSocial("11111111-aaaa-bbbb-cccc-222222222222", "OSECAC");
     const afiliado = new Afiliado(1, 150, obra);
-    const paciente = new Paciente("", "Ochoa", cuil, "ivan@mail.com", afiliado, domicilio);
+    const paciente = new Paciente("", "Ochoa", "20-41383873-9", "ivan@mail.com", afiliado, domicilio);
 
     expect(() => pacienteServicio.registrarPaciente(paciente))
       .toThrow(BadRequestException);
@@ -208,11 +193,10 @@ it("Falla si falta el nombre", () => {
   });
 
   it("Falla si falta el apellido", () => {
-    const cuil = new Cuil("20-41383873-9");
     const domicilio = new Domicilio("Bolivia", "San Miguel de Tucuman", 450);
     const obra = new ObraSocial("11111111-aaaa-bbbb-cccc-222222222222", "OSECAC");
     const afiliado = new Afiliado(1, 150, obra);
-    const paciente = new Paciente("Ivan", "", cuil, "ivan@mail.com", afiliado, domicilio);
+    const paciente = new Paciente("Ivan", "", "20-41383873-9", "ivan@mail.com", afiliado, domicilio);
 
     expect(() => pacienteServicio.registrarPaciente(paciente))
       .toThrow(BadRequestException);
@@ -227,11 +211,10 @@ it("Falla si falta el nombre", () => {
   });
 
   it("Falla si falta el domicilio", () => {
-    const cuil = new Cuil("20-41383873-9");
     const domicilio = undefined;
     const obra = new ObraSocial("11111111-aaaa-bbbb-cccc-222222222222", "OSECAC");
     const afiliado = new Afiliado(1, 150, obra);
-    const paciente = new Paciente("Ivan", "Ochoa", cuil, "ivan@mail.com", afiliado, domicilio);
+    const paciente = new Paciente("Ivan", "Ochoa","20-41383873-9", "ivan@mail.com", afiliado, domicilio);
 
     expect(() => pacienteServicio.registrarPaciente(paciente))
       .toThrow(BadRequestException);
@@ -247,11 +230,10 @@ it("Falla si falta el nombre", () => {
 
   it("Falla si falta el atributo calle de domicilio", () => {
   
-    const cuil = new Cuil("20-41383873-9");
     const domicilio = new Domicilio("", "San Miguel de Tucuman", 450);
     const obra = new ObraSocial("11111111-aaaa-bbbb-cccc-222222222222", "OSECAC");
     const afiliado = new Afiliado(1, 150, obra);
-    const paciente = new Paciente("Ivan", "Ochoa", cuil, "ivan@mail.com", afiliado, domicilio);
+    const paciente = new Paciente("Ivan", "Ochoa", "20-41383873-9", "ivan@mail.com", afiliado, domicilio);
 
     expect(() => pacienteServicio.registrarPaciente(paciente))
       .toThrow(BadRequestException);
@@ -266,12 +248,11 @@ it("Falla si falta el nombre", () => {
   });
 
   it("Falla si falta el atributo localidad de domicilio", () => {
-  
-    const cuil = new Cuil("20-41383873-9");
+
     const domicilio = new Domicilio("Bolivia", "", 450);
     const obra = new ObraSocial("11111111-aaaa-bbbb-cccc-222222222222", "OSECAC");
     const afiliado = new Afiliado(1, 150, obra);
-    const paciente = new Paciente("Ivan", "Ochoa", cuil, "ivan@mail.com", afiliado, domicilio);
+    const paciente = new Paciente("Ivan", "Ochoa", "20-41383873-9", "ivan@mail.com", afiliado, domicilio);
 
     expect(() => pacienteServicio.registrarPaciente(paciente))
       .toThrow(BadRequestException);
@@ -286,12 +267,11 @@ it("Falla si falta el nombre", () => {
   });
 
   it("Falla si falta el atributo numero de domicilio", () => {
-  
-    const cuil = new Cuil("20-41383873-9");
+
     const domicilio = new Domicilio("Bolivia", "San Miguel de Tucuman", undefined as any);
     const obra = new ObraSocial("11111111-aaaa-bbbb-cccc-222222222222", "OSECAC");
     const afiliado = new Afiliado(1, 150, obra);
-    const paciente = new Paciente("Ivan", "Ochoa", cuil, "ivan@mail.com", afiliado, domicilio);
+    const paciente = new Paciente("Ivan", "Ochoa", "20-41383873-9", "ivan@mail.com", afiliado, domicilio);
 
     expect(() => pacienteServicio.registrarPaciente(paciente))
       .toThrow(BadRequestException);
@@ -305,7 +285,60 @@ it("Falla si falta el nombre", () => {
     }
   });
 
- 
+ it("Falla si el CUIL no cumple el formato NN-NNNNNNNN-N", () => {
+    const domicilio = new Domicilio("Bolivia", "San Miguel de Tucuman", 450);
+    const obra = new ObraSocial("11111111-aaaa-bbbb-cccc-222222222222", "OSECAC");
+    const afiliado = new Afiliado(1, 15820, obra);
+
+    const paciente = new Paciente("Ivan", "Ochoa", "20413838739", "ivan@mail.com", afiliado, domicilio);
+
+    expect(() => pacienteServicio.registrarPaciente(paciente))
+      .toThrow(BadRequestException);
+
+    try {
+      pacienteServicio.registrarPaciente(paciente);
+    } catch (e) {
+      const msg = (e as BadRequestException).message.toLowerCase();
+      expect(msg).toContain("formato inválido");
+      expect(msg).toContain("nn-nnnnnnnn-n");
+    }
+  });
+
+  it("Falla si el CUIL tiene dígito verificador incorrecto", () => {
+    const domicilio = new Domicilio("Bolivia", "San Miguel de Tucuman", 450);
+    const obra = new ObraSocial("11111111-aaaa-bbbb-cccc-222222222222", "OSECAC");
+    const afiliado = new Afiliado(1, 15820, obra);
+
+    const cuilValido = "20-41383873-9"; 
+    const cuilInvalidoDV = "20-41383873-0"; 
+
+    const paciente = new Paciente("Ivan", "Ochoa", cuilInvalidoDV, "ivan@mail.com", afiliado, domicilio);
+
+    expect(() => pacienteServicio.registrarPaciente(paciente))
+      .toThrow(BadRequestException);
+
+    try {
+      pacienteServicio.registrarPaciente(paciente);
+    } catch (e) {
+      const msg = (e as BadRequestException).message.toLowerCase();
+      expect(msg).toContain("dígito verificador");
+      expect(msg).toContain("no coincide");
+    }
+  });
+
+  it("Pasa con CUIL válido (formato y checksum correctos)", () => {
+    const domicilio = new Domicilio("Bolivia", "San Miguel de Tucuman", 450);
+    const obra = new ObraSocial("11111111-aaaa-bbbb-cccc-222222222222", "OSECAC");
+    const afiliado = new Afiliado(1, 15820, obra);
+
+    const paciente = new Paciente("Ivan", "Ochoa", "20-41383873-9", "ivan@mail.com", afiliado, domicilio);
+
+    obraSocialRepoMock.existePorNombre.mockReturnValue(true);
+    obraSocialRepoMock.afiliadoAlPaciente.mockReturnValue(true);
+
+    const p = pacienteServicio.registrarPaciente(paciente);
+    expect(p.getCuil()).toBe("20-41383873-9");
+  });
 
 });
 

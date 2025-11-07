@@ -18,7 +18,7 @@ export class PacienteServicio implements IPacienteServicio {
       ) {}
 
         buscarPacientePorCuil(cuil: string): Paciente | null {
-            return this.pacientes.find(p => p.getCuil().ValorFormateado === cuil) ?? null;
+            return this.pacientes.find(p => p.getCuil() === cuil) ?? null;
         }
 
         registrarPaciente(paciente: Paciente): Paciente {
@@ -31,7 +31,7 @@ export class PacienteServicio implements IPacienteServicio {
 
             const existe = this.obraSocialRepo.existePorNombre(nombreObra);
             const vinculado = this.obraSocialRepo.afiliadoAlPaciente(
-            paciente.getCuil().ValorFormateado,
+            paciente.getCuil(),
             afiliado.getNumeroAfiliado()
             );
 
@@ -72,6 +72,40 @@ export class PacienteServicio implements IPacienteServicio {
             if (errores.length) {
             throw new BadRequestException(`Faltan datos mandatorios: ${errores.join(", ")}`);
             }
+
+            const cuil = paciente.getCuil();
+            if (!this.isCuilFormatoValido(cuil)) {
+            throw new BadRequestException(
+                "CUIL con formato inválido. Formato esperado: NN-NNNNNNNN-N (ej: 20-12345678-3)"
+            );
+            }
+            if (!this.isCuilChecksumValido(cuil)) {
+            throw new BadRequestException(
+                "CUIL inválido: el dígito verificador no coincide"
+            );
+            }
         }
+
+       
+        private isCuilFormatoValido(cuil: string): boolean {
+            return /^\d{2}-\d{8}-\d$/.test(cuil);
+        }
+
+        
+        private isCuilChecksumValido(cuil: string): boolean {
+            // Normalizamos a solo dígitos
+            const digits = cuil.replace(/\D/g, "");
+            if (digits.length !== 11) return false;
+
+            const nums = digits.split("").map(n => parseInt(n, 10));
+            const pesos = [5,4,3,2,7,6,5,4,3,2]; // se aplican a los primeros 10 dígitos
+            const suma = pesos.reduce((acc, p, i) => acc + p * nums[i], 0);
+            let dv = 11 - (suma % 11);
+            if (dv === 11) dv = 0;
+            else if (dv === 10) dv = 9;
+
+            return dv === nums[10];
+  
+    }
 
 }

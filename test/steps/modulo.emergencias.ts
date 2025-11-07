@@ -35,7 +35,8 @@ function parseTA(taStr: string | undefined) {
 function registrarPacientes(dataTable) {
   const data = dataTable.hashes();
   data.forEach((row) => {
-    const p = new Paciente(row['nombre'], row['apellido'], row['cuil'], row['obra social']);
+    const cuil = row['cuil'];
+    const p = new Paciente(row['nombre'], row['apellido'],cuil, row['obra social']);
     patientRepo.guardarPaciente(p);
   });
 }
