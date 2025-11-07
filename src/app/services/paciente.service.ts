@@ -18,7 +18,7 @@ export class PacienteServicio implements IPacienteServicio {
       ) {}
 
         buscarPacientePorCuil(cuil: string): Paciente | null {
-            return this.pacientes.find(p => p.getCuil() === cuil) ?? null;
+            return this.pacientes.find(p => p.getCuil().ValorFormateado === cuil) ?? null;
         }
 
         registrarPaciente(paciente: Paciente): Paciente {
@@ -29,7 +29,7 @@ export class PacienteServicio implements IPacienteServicio {
 
             const existe = this.obraSocialRepo.existePorNombre(nombreObra);
             const vinculado = this.obraSocialRepo.afiliadoAlPaciente(
-            paciente.getCuil(),
+            paciente.getCuil().ValorFormateado,
             afiliado.getNumeroAfiliado()
             );
 

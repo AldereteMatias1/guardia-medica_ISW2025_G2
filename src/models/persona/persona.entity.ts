@@ -1,11 +1,12 @@
+import { Cuil } from "../value-objects/cuil";
 
 export abstract class Persona {
-    private nombre: string;
-    private apellido: string;
-    private cuil: string;
-    private email?: string;
+    protected nombre: string;
+    protected apellido: string;
+    protected cuil: Cuil;
+    protected email?: string;
 
-    constructor(nombre: string, apellido: string, cuil: string, email?: string){
+    constructor(nombre: string, apellido: string, cuil: Cuil, email?: string){
         this.nombre = nombre;
         this.apellido = apellido;
         this.cuil = cuil;
@@ -20,7 +21,7 @@ export abstract class Persona {
         return this.apellido;
     }
 
-    getCuil(): string {
+    getCuil(): Cuil {
         return this.cuil;
     }
 

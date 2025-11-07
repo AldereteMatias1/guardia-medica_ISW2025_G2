@@ -8,6 +8,7 @@ import { PACIENTE_REPOSITORIO } from "../../src/app/interfaces/patient.repositor
 import { ObraSocial } from "../../src/models/obra-social/obra-social.entity";
 import { Afiliado } from "../../src/models/afiliado/afiliado.entities";
 import { NotFoundException } from "@nestjs/common";
+import { Cuil } from "../../src/models/value-objects/cuil";
 
 
 describe('Registrar paciente (unit)', () => {
@@ -52,11 +53,12 @@ describe('Registrar paciente (unit)', () => {
       const numeroAfiliado = 15820;
       const obra = new ObraSocial("11111111-aaaa-bbbb-cccc-222222222222", "OSECAC");
       const afiliado = new Afiliado(1, numeroAfiliado, obra);
+      const cuil = new Cuil("20-41383873-9");
 
       const paciente = new Paciente(
         "Ivan",
         "Ochoa",
-        "20-41383873-9",
+        cuil,
         "ivan.ochoa@mail.com", 
         afiliado,
         domicilio
@@ -69,7 +71,7 @@ describe('Registrar paciente (unit)', () => {
       const p = pacienteServicio.registrarPaciente(paciente);
 
       // Assert
-      expect(p.getCuil()).toBe("20-41383873-9");
+      expect(p.getCuil().ValorFormateado).toBe("20-41383873-9");
       expect(pacienteServicio.buscarPacientePorCuil("20-41383873-9")).not.toBeNull();
 
       expect(obraSocialRepoMock.existePorNombre).toHaveBeenCalledTimes(1);
@@ -86,11 +88,10 @@ describe('Registrar paciente (unit)', () => {
     const domicilio = new Domicilio("bolivia", "San Miguel de Tucuman", 450);
     const obra = new ObraSocial("11111111-aaaa-bbbb-cccc-222222222222", "OSECAC");
     const afiliado = new Afiliado(1, 15820, obra);
-
     const paciente = new Paciente(
       "Ivan",
       "Ochoa",
-      "20-41383873-9",
+      new Cuil("20-41383873-9"),
       "ivan.ochoa@mail.com",
       afiliado,
       domicilio
@@ -113,7 +114,7 @@ describe('Registrar paciente (unit)', () => {
     const paciente = new Paciente(
       "Ivan",
       "Ochoa",
-      "20-41383873-9",
+      new Cuil("20-41383873-9"),
       "ivan.ochoa@mail.com",
       afiliado,
       domicilio
@@ -139,7 +140,7 @@ describe('Registrar paciente (unit)', () => {
     const paciente = new Paciente(
       "Ivan",
       "Ochoa",
-      "20-41383873-9",
+      new Cuil("20-41383873-9"),
       "ivan.ochoa@mail.com",
       afiliado,
       domicilio
@@ -147,7 +148,7 @@ describe('Registrar paciente (unit)', () => {
 
     const p = pacienteServicio.registrarPaciente(paciente);
 
-    expect(p.getCuil()).toBe("20-41383873-9");
+    expect(p.getCuil().ValorFormateado).toBe("20-41383873-9");
     expect(obraSocialRepoMock.existePorNombre).not.toHaveBeenCalled();
     expect(obraSocialRepoMock.afiliadoAlPaciente).not.toHaveBeenCalled();
   });

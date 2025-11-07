@@ -1,6 +1,7 @@
 import { Afiliado } from "../afiliado/afiliado.entities";
 import { Domicilio } from "../domicilio/domicililio.entities";
 import { Persona } from "../persona/persona.entity";
+import { Cuil } from "../value-objects/cuil";
 
 export class Paciente extends Persona{
   
@@ -10,7 +11,7 @@ export class Paciente extends Persona{
   constructor(
     nombre: string,
     apellido: string,
-    cuil: string,
+    cuil: Cuil,
     obraSocial?: Afiliado,
     domicilio?: Domicilio
   );
@@ -18,7 +19,7 @@ export class Paciente extends Persona{
   constructor(
     nombre: string,
     apellido: string,
-    cuil: string,
+    cuil: Cuil,
     email: string,
     obraSocial?: Afiliado,
     domicilio?: Domicilio
@@ -27,7 +28,7 @@ export class Paciente extends Persona{
   constructor(
     nombre: string,
     apellido: string,
-    cuil: string,
+    cuil: Cuil,
     emailOrObraSocial?: string | Afiliado,
     obraSocialOrDomicilio?: Afiliado | Domicilio,
     domicilioOpt?: Domicilio
