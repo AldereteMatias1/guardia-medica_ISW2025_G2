@@ -1,12 +1,12 @@
 import { Inject, Injectable, UnauthorizedException, BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { Usuario } from 'src/models/usuario/usuario';
 import { LoginAuthDto } from './dto/login.dto';
-import type { UsuarioRepositorio } from 'src/app/interfaces/usuarios.repository';
-import { USUARIO_REPOSITORIO } from 'src/app/interfaces/usuarios.repository';
+import type { UsuarioRepositorio } from '../../src/app/interfaces/usuarios.repository';
+import { USUARIO_REPOSITORIO } from '../../src/app/interfaces/usuarios.repository';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from '../app/interfaces/jwt-payload';
 import * as argon2 from 'argon2';
-import { comparePassword } from 'src/app/utils/hashing';
+import { comparePassword } from '../../src/auth/utils/hashing';
 
 @Injectable()
 export class AuthService {
@@ -34,7 +34,7 @@ export class AuthService {
   }
 
   async login(credentials: LoginAuthDto) {
-    const { email, password, rol } = credentials;
+    const { email, password} = credentials;
 
     try {
       const user = this.userRepo.obtenerPorEmail(email);
@@ -46,10 +46,6 @@ export class AuthService {
       const isValid = await comparePassword(password, user.password);
       if (!isValid) {
         throw new UnauthorizedException('Usuario o contraseña inválidos');
-      }
-
-      if (user.rol !== rol) {
-        throw new BadRequestException('Usuario o contraseña inválidos');
       }
 
       const payload: JwtPayload = { email: user.email, rol: user.rol };

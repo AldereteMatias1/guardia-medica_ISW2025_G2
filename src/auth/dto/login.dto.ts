@@ -1,5 +1,5 @@
 import { IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator';
-import { RolUsuario } from 'src/models/usuario/usuario';
+
 
 
 export class LoginAuthDto {
@@ -12,8 +12,4 @@ export class LoginAuthDto {
   @IsString({ message: 'Password must be a string' })
   @IsNotEmpty({ message: 'Password is required' })
   password: string;
-
-  @IsNotEmpty({ message: 'Role is required' })
-  @IsEnum(RolUsuario, { message: 'Role must be either medico or enfermero' })
-  rol: RolUsuario;
 }
