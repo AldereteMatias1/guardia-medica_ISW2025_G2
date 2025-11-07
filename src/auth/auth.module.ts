@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from '../app/services/auth.service';
 import { USUARIO_REPOSITORIO } from 'src/app/interfaces/usuario/usuarios.repository';
-import { DatabaseUsersInMemory } from 'test/mock/database.memory.users';
 import { AuthController } from '../presentation/auth.controller';
 import JwtModuleConfig from 'src/config/jwt-config';
+import { UsuarioRepositorio } from 'src/persistence/usuario.repository';
 
 @Module({
   imports: [JwtModuleConfig()],
@@ -11,7 +11,7 @@ import JwtModuleConfig from 'src/config/jwt-config';
     AuthService,
     {
       provide: USUARIO_REPOSITORIO,
-      useClass: DatabaseUsersInMemory,
+      useClass: UsuarioRepositorio,
     },
   ],
   exports: [AuthService],
