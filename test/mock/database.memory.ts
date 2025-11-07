@@ -7,11 +7,11 @@ export class DataBaseInMemory implements  PacienteRepositorio {
   private patients: Paciente[] = [];
 
   buscarPacientePorCuil(cuil: string): Paciente | null {
-    return this.patients.find(p => p.Cuil === cuil) ?? null;
+    return this.patients.find(p => p.getCuil() === cuil) ?? null;
   }
 
   guardarPaciente(paciente: Paciente): void {
-    const index = this.patients.findIndex(p => p.Cuil === paciente.Cuil);
+    const index = this.patients.findIndex(p => p.getCuil() === paciente.getCuil());
     if (index !== -1) this.patients[index] = paciente;
     else this.patients.push(paciente);
   }
@@ -20,7 +20,7 @@ export class DataBaseInMemory implements  PacienteRepositorio {
   }
 
   borrarPorCuil(cuil: string): void {
-    const index = this.patients.findIndex(p => p.Cuil === cuil);
+    const index = this.patients.findIndex(p => p.getCuil() === cuil);
     if (index !== -1) this.patients.splice(index, 1);
   }
   clear(): void {
