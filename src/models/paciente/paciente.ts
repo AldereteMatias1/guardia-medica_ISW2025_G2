@@ -1,51 +1,54 @@
 import { Afiliado } from "../afiliado/afiliado.entities";
 import { Domicilio } from "../domicilio/domicililio.entities";
+import { Persona } from "../persona/persona.entity";
 
-export class Paciente {
-  private nombre: string;
-  private apellido: string;
-  private cuil: string;
-  private obraSocial: string;
-  private domicilio?: Domicilio;
-  private afiliado?: Afiliado;
+export class Paciente extends Persona{
+  
+  private obraSocial?: Afiliado;
+  private domicilio?: Domicilio; 
 
-  constructor(nombre: string, apellido: string, cuil: string, obraSocial: string);
   constructor(
     nombre: string,
     apellido: string,
     cuil: string,
-    obraSocial: string,
-    domicilio: Domicilio,
-    afiliado?: Afiliado
+    obraSocial?: Afiliado,
+    domicilio?: Domicilio
   );
 
   constructor(
     nombre: string,
     apellido: string,
     cuil: string,
-    obraSocial: string,
-    domicilio?: Domicilio,
-    afiliado?: Afiliado
+    email: string,
+    obraSocial?: Afiliado,
+    domicilio?: Domicilio
+  );
+
+  constructor(
+    nombre: string,
+    apellido: string,
+    cuil: string,
+    emailOrObraSocial?: string | Afiliado,
+    obraSocialOrDomicilio?: Afiliado | Domicilio,
+    domicilioOpt?: Domicilio
   ) {
-    this.nombre = nombre;
-    this.apellido = apellido;
-    this.cuil = cuil;
-    this.obraSocial = obraSocial;
-    if (domicilio) this.domicilio = domicilio;
-    if (afiliado) this.afiliado = afiliado;
+    if (typeof emailOrObraSocial === "string") {
+      super(nombre, apellido, cuil, emailOrObraSocial);
+      this.obraSocial = obraSocialOrDomicilio as Afiliado;
+      this.domicilio = domicilioOpt;
+    } else {
+      super(nombre, apellido, cuil, "");
+      this.obraSocial = emailOrObraSocial as Afiliado;
+      this.domicilio = obraSocialOrDomicilio as Domicilio;
+    }
   }
 
-
-  public get Cuil(): string {
-    return this.cuil;
-  }
-
-  public get Domicilio(): Domicilio | undefined {
+  public getDomicilio(): Domicilio | undefined {
     return this.domicilio;
   }
 
-  public get ObraSocial(): string {
+  public getObraSocial(): Afiliado | undefined {
     return this.obraSocial;
   }
-
+ 
 }

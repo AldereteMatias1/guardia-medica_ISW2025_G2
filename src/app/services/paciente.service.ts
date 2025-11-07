@@ -18,18 +18,27 @@ export class PacienteServicio implements IPacienteServicio {
       ) {}
 
         buscarPacientePorCuil(cuil: string): Paciente | null {
-            return this.pacientes.find(p => p.Cuil === cuil) ?? null;
+            return this.pacientes.find(p => p.getCuil() === cuil) ?? null;
         }
 
-        registrarPaciente(paciente: Paciente, numeroAfiliado: number): Paciente {
-            
-            if(numeroAfiliado !== 0){
-                if(!this.obraSocialRepo.existePorNombre(paciente.ObraSocial) || !this.obraSocialRepo.afiliadoAlPaciente(paciente.Cuil, numeroAfiliado)){
-                    throw new NotFoundException();
-                }
-            }
-            this.pacientes.push(paciente);
-            return paciente;
+        registrarPaciente(paciente: Paciente): Paciente {
+        const afiliado = paciente.getObraSocial();
+
+        if (afiliado !== undefined) {
+            const nombreObra = afiliado.getObraSocial().getNombre();
+
+            const existe = this.obraSocialRepo.existePorNombre(nombreObra);
+            const vinculado = this.obraSocialRepo.afiliadoAlPaciente(
+            paciente.getCuil(),
+            afiliado.getNumeroAfiliado()
+            );
+
+            if (!existe) throw new NotFoundException('Obra social inexistente');
+            if (!vinculado) throw new NotFoundException('Afiliacion no existente');
+        }
+
+        this.pacientes.push(paciente);
+        return paciente;
         }
 
 }

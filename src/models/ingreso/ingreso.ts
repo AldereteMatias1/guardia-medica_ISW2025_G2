@@ -68,7 +68,7 @@ export class Ingreso {
     return a.compararCon(b);
   }
 
-  get CuilPaciente(): string { return this.paciente.Cuil; }
+  get CuilPaciente(): string { return this.paciente.getCuil(); }
   get Nivel(): NivelEmergencia { return this.nivelEmergencia; }
   get Fecha(): Date { return this.fechaIngreso; }
   get Estado(): EstadoIngreso { return this.estadoIngreso; }

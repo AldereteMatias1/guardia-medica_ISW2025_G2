@@ -11,7 +11,15 @@ export class ObraSocial {
         this.nombre = nombre;
     }
 
+    public getNombre(): string {
+        return this.nombre;
+    }
+
     public agregarAfiliado(afiliado: Afiliado){
         this.afiliados.push(afiliado);
+    }
+
+    public getAfiliados(): readonly Afiliado[] {
+    return this.afiliados;
     }
 }

@@ -12,4 +12,16 @@ export class Domicilio {
         this.localidad = localidad;
         this.numero = numero;
     }
+
+    public getCalle(){
+        return this.calle;
+    }
+
+    public getNumero(){
+        return this.numero;
+    }
+
+    public getLocalidad(){
+        return this.localidad;
+    }
 }
