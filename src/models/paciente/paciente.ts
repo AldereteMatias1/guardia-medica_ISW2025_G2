@@ -9,17 +9,32 @@ export class Paciente {
   private domicilio?: Domicilio;
   private afiliado?: Afiliado;
 
-  public constructor(
+  constructor(nombre: string, apellido: string, cuil: string, obraSocial: string);
+  constructor(
     nombre: string,
     apellido: string,
     cuil: string,
     obraSocial: string,
-){
+    domicilio: Domicilio,
+    afiliado?: Afiliado
+  );
+
+  constructor(
+    nombre: string,
+    apellido: string,
+    cuil: string,
+    obraSocial: string,
+    domicilio?: Domicilio,
+    afiliado?: Afiliado
+  ) {
     this.nombre = nombre;
     this.apellido = apellido;
     this.cuil = cuil;
     this.obraSocial = obraSocial;
+    if (domicilio) this.domicilio = domicilio;
+    if (afiliado) this.afiliado = afiliado;
   }
+
 
   public get Cuil(): string {
     return this.cuil;
@@ -33,10 +48,4 @@ export class Paciente {
     return this.obraSocial;
   }
 
-  public asignarDomicilio(domicilio: Domicilio): void {
-  this.domicilio = domicilio;
-}
-  public afiliarObraSocial(): void{
-    this.afiliado = this.afiliado;
-  }
 }

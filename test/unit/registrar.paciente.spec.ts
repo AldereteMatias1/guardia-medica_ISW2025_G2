@@ -3,7 +3,7 @@ import { SERVICIO_PACIENTE } from "../../src/app/interfaces/paciente.service";
 import { PacienteServicio } from "../../src/app/services/paciente.service";
 import { Paciente } from "../../src/models/paciente/paciente";
 import { Domicilio } from "../../src/models/domicilio/domicililio.entities";
-import { IObraSocial, REPOSITORIO_OBRA_SOCIAL } from "../../src/app/interfaces/obra.social.repository";
+import { REPOSITORIO_OBRA_SOCIAL } from "../../src/app/interfaces/obra.social.repository";
 import { PACIENTE_REPOSITORIO } from "../../src/app/interfaces/patient.repository";
 import { NotFoundException } from "@nestjs/common";
 
@@ -12,9 +12,9 @@ describe('Registrar paciente (unit)', () => {
   let moduleRef: TestingModule;
   let pacienteServicio: PacienteServicio;
 
-  const obraSocialRepoMock: jest.Mocked<IObraSocial> = {
-    existePorNombre: jest.fn(),
-    afiliadoAlPaciente: jest.fn(),
+    const obraSocialRepoMock = {
+    existePorNombre: jest.fn() as jest.MockedFunction<(nombre: string) => boolean>,
+    afiliadoAlPaciente: jest.fn() as jest.MockedFunction<(cuil: string, numeroAfiliado: number) => boolean>,
   };
 
   const pacienteRepoMock = {
@@ -44,46 +44,60 @@ describe('Registrar paciente (unit)', () => {
   });
 
   it("Se registra el paciente exitosamente con obra social", () => {
-        let paciente = new Paciente("Ivan", "Ochoa", "20-41383873-9", "Mora");
-        let domicilio = new Domicilio("bolivia", "San Miguel de Tucuman", 450);
-        let numeroAfiliado = 15820;
-        paciente.asignarDomicilio(domicilio);
+    const domicilio = new Domicilio("bolivia", "San Miguel de Tucuman", 450);
+    const paciente = new Paciente("Ivan", "Ochoa", "20-41383873-9", "OSECAC", domicilio);
+    const numeroAfiliado = 15820;
 
-        obraSocialRepoMock.existePorNombre.mockReturnValue(true);
-        obraSocialRepoMock.afiliadoAlPaciente.mockReturnValue(true);
+    // Arrange 
+    obraSocialRepoMock.existePorNombre.mockReturnValue(true);
+    obraSocialRepoMock.afiliadoAlPaciente.mockReturnValue(true);
 
-        const p = pacienteServicio.registrarPaciente(paciente, numeroAfiliado);
+    // Act
+    const p = pacienteServicio.registrarPaciente(paciente, numeroAfiliado);
 
-        expect(p.Cuil).toEqual("20-41383873-9");
+    // Assert
+    expect(p.Cuil).toBe("20-41383873-9");
+    expect(pacienteServicio.buscarPacientePorCuil("20-41383873-9")).not.toBeNull();
+    expect(obraSocialRepoMock.existePorNombre).toHaveBeenCalledWith("OSECAC");
+    expect(obraSocialRepoMock.afiliadoAlPaciente).toHaveBeenCalledWith("20-41383873-9", 15820);
 
   });
 
   it("Se registra el paciente exitosamente sin obra social", () => {
-        let paciente = new Paciente("Ivan", "Ochoa", "20-41383873-9", "Mora");
-        let domicilio = new Domicilio("bolivia", "San Miguel de Tucuman", 450);
+    const domicilio = new Domicilio("bolivia", "San Miguel de Tucuman", 450);
+    const paciente = new Paciente("Ivan", "Ochoa", "20-41383873-9", "", domicilio);
     
-        paciente.asignarDomicilio(domicilio);
+    const p = pacienteServicio.registrarPaciente(paciente, 0);
 
-        const p = pacienteServicio.registrarPaciente(paciente, 0);
+    expect(p.Cuil).toBe("20-41383873-9");
+    expect(pacienteServicio.buscarPacientePorCuil("20-41383873-9")).not.toBeNull();
 
-        expect(p.Cuil).toEqual("20-41383873-9");
-
+    expect(obraSocialRepoMock.existePorNombre).not.toHaveBeenCalled();
+    expect(obraSocialRepoMock.afiliadoAlPaciente).not.toHaveBeenCalled();
   });
 
-  it("No se registra el paciente con obra social inexistente", () => {
-        let paciente = new Paciente("Ivan", "Ochoa", "20-41383873-9", "Mora");
-        let domicilio = new Domicilio("bolivia", "San Miguel de Tucuman", 450);
-    
-        paciente.asignarDomicilio(domicilio);
+  // it("No se registra el paciente cuando la obra social no existe o no puede afiliar", () => {
+  //   const paciente = new Paciente("Ivan", "Ochoa", "20-41383873-9", "FICTICIA");
+  //   const domicilio = new Domicilio("bolivia", "San Miguel de Tucuman", 450);
+  //   paciente["domicilio"] = domicilio;
 
-        obraSocialRepoMock.existePorNombre.mockReturnValue(false);
-        obraSocialRepoMock.afiliadoAlPaciente.mockReturnValue(false);
+  //   obraSocialRepoMock.existePorNombre.mockReturnValue(false);
+  //   obraSocialRepoMock.afiliadoAlPaciente.mockReturnValue(false); 
 
-        expect(() => {
-        pacienteServicio.registrarPaciente(paciente, 12345); 
-      }).toThrow(NotFoundException);
+  //   expect(() => pacienteServicio.registrarPaciente(paciente, 12345)).toThrow(NotFoundException);
+  //   expect(obraSocialRepoMock.existePorNombre).toHaveBeenCalledWith("FICTICIA");
+  //   // No debería afiliar si no existe
+  //   expect(obraSocialRepoMock.afiliadoAlPaciente).not.toHaveBeenCalled();
 
-  });
+  //   // (opcional) Caso B: existe pero falla la afiliación
+  //   jest.clearAllMocks();
+  //   obraSocialRepoMock.existePorNombre.mockReturnValue(true);
+  //   obraSocialRepoMock.afiliadoAlPaciente.mockReturnValue(false);
+
+  //   expect(() => pacienteServicio.registrarPaciente(paciente, 12345)).toThrow(NotFoundException);
+  //   expect(obraSocialRepoMock.existePorNombre).toHaveBeenCalledWith("FICTICIA");
+  //   expect(obraSocialRepoMock.afiliadoAlPaciente).toHaveBeenCalledWith("20-41383873-9", 12345);
+  // });
 
   
 

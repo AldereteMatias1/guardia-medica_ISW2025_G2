@@ -52,6 +52,11 @@ Before((scenario) => {
   console.log(`SCENARIO: ${scenario.pickle.name}`);
 });
 
+Given('que la siguiente enfermera está registrada:', (dataTable) => {
+  const row = dataTable.hashes()[0];
+  enfermera = new Enfermera(row['Nombre'], row['Apellido']);
+});
+
 
 Given('estan registrados los siguientes pacientes:', (dataTable) => {
   registrarPacientes(dataTable);
