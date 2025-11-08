@@ -2,13 +2,11 @@ export abstract class Persona {
     protected nombre: string;
     protected apellido: string;
     protected cuil: string;
-    protected email?: string;
 
-    constructor(nombre: string, apellido: string, cuil: string, email?: string){
+    constructor(nombre: string, apellido: string, cuil: string){
         this.nombre = nombre;
         this.apellido = apellido;
         this.cuil = cuil;
-        this.email = email;
     }
 
     getNombre(): string {
@@ -21,9 +19,5 @@ export abstract class Persona {
 
     getCuil(): string {
         return this.cuil;
-    }
-
-    getEmail(): string | undefined{
-        return this.email;
     }
 }

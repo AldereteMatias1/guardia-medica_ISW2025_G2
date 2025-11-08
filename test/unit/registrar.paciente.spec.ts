@@ -57,7 +57,6 @@ describe('Registrar paciente (unit)', () => {
         "Ivan",
         "Ochoa",
         "20-41383873-9",
-        "ivan.ochoa@mail.com", 
         afiliado,
         domicilio
       );
@@ -90,7 +89,6 @@ describe('Registrar paciente (unit)', () => {
       "Ivan",
       "Ochoa",
       "20-41383873-9",
-      "ivan.ochoa@mail.com",
       afiliado,
       domicilio
     );
@@ -113,7 +111,6 @@ describe('Registrar paciente (unit)', () => {
       "Ivan",
       "Ochoa",
       "20-41383873-9",
-      "ivan.ochoa@mail.com",
       afiliado,
       domicilio
     );
@@ -139,7 +136,6 @@ describe('Registrar paciente (unit)', () => {
       "Ivan",
       "Ochoa",
       "20-41383873-9",
-      "ivan.ochoa@mail.com",
       afiliado,
       domicilio
     );
@@ -157,7 +153,7 @@ describe('Registrar paciente (unit)', () => {
 
 
   const afiliadoIncompleto = new Afiliado(1, "" as any, obra);
-  const paciente = new Paciente("Ivan", "Ochoa", "20-41383873-9", "ivan@mail.com", afiliadoIncompleto, domicilio);
+  const paciente = new Paciente("Ivan", "Ochoa", "20-41383873-9", afiliadoIncompleto, domicilio);
 
   expect(() => pacienteServicio.registrarPaciente(paciente))
     .toThrow(BadRequestException);
@@ -167,7 +163,7 @@ it("Falla si viene obra social pero falta el objeto ObraSocial", () => {;
   const domicilio = new Domicilio("Bolivia", "San Miguel de Tucuman", 450);
 
   const afiliadoIncompleto = new Afiliado(1, 15820, undefined as any);
-  const paciente = new Paciente("Ivan", "Ochoa", "20-41383873-9", "ivan@mail.com", afiliadoIncompleto, domicilio);
+  const paciente = new Paciente("Ivan", "Ochoa", "20-41383873-9",  afiliadoIncompleto, domicilio);
 
   expect(() => pacienteServicio.registrarPaciente(paciente))
     .toThrow(BadRequestException);
@@ -178,7 +174,7 @@ it("Falla si falta el nombre", () => {
     const domicilio = new Domicilio("Bolivia", "San Miguel de Tucuman", 450);
     const obra = new ObraSocial("11111111-aaaa-bbbb-cccc-222222222222", "OSECAC");
     const afiliado = new Afiliado(1, 150, obra);
-    const paciente = new Paciente("", "Ochoa", "20-41383873-9", "ivan@mail.com", afiliado, domicilio);
+    const paciente = new Paciente("", "Ochoa", "20-41383873-9",  afiliado, domicilio);
 
     expect(() => pacienteServicio.registrarPaciente(paciente))
       .toThrow(BadRequestException);
@@ -196,7 +192,7 @@ it("Falla si falta el nombre", () => {
     const domicilio = new Domicilio("Bolivia", "San Miguel de Tucuman", 450);
     const obra = new ObraSocial("11111111-aaaa-bbbb-cccc-222222222222", "OSECAC");
     const afiliado = new Afiliado(1, 150, obra);
-    const paciente = new Paciente("Ivan", "", "20-41383873-9", "ivan@mail.com", afiliado, domicilio);
+    const paciente = new Paciente("Ivan", "", "20-41383873-9",  afiliado, domicilio);
 
     expect(() => pacienteServicio.registrarPaciente(paciente))
       .toThrow(BadRequestException);
@@ -214,7 +210,7 @@ it("Falla si falta el nombre", () => {
     const domicilio = undefined;
     const obra = new ObraSocial("11111111-aaaa-bbbb-cccc-222222222222", "OSECAC");
     const afiliado = new Afiliado(1, 150, obra);
-    const paciente = new Paciente("Ivan", "Ochoa","20-41383873-9", "ivan@mail.com", afiliado, domicilio);
+    const paciente = new Paciente("Ivan", "Ochoa","20-41383873-9",  afiliado, domicilio);
 
     expect(() => pacienteServicio.registrarPaciente(paciente))
       .toThrow(BadRequestException);
@@ -233,7 +229,7 @@ it("Falla si falta el nombre", () => {
     const domicilio = new Domicilio("", "San Miguel de Tucuman", 450);
     const obra = new ObraSocial("11111111-aaaa-bbbb-cccc-222222222222", "OSECAC");
     const afiliado = new Afiliado(1, 150, obra);
-    const paciente = new Paciente("Ivan", "Ochoa", "20-41383873-9", "ivan@mail.com", afiliado, domicilio);
+    const paciente = new Paciente("Ivan", "Ochoa", "20-41383873-9",  afiliado, domicilio);
 
     expect(() => pacienteServicio.registrarPaciente(paciente))
       .toThrow(BadRequestException);
@@ -252,7 +248,7 @@ it("Falla si falta el nombre", () => {
     const domicilio = new Domicilio("Bolivia", "", 450);
     const obra = new ObraSocial("11111111-aaaa-bbbb-cccc-222222222222", "OSECAC");
     const afiliado = new Afiliado(1, 150, obra);
-    const paciente = new Paciente("Ivan", "Ochoa", "20-41383873-9", "ivan@mail.com", afiliado, domicilio);
+    const paciente = new Paciente("Ivan", "Ochoa", "20-41383873-9",  afiliado, domicilio);
 
     expect(() => pacienteServicio.registrarPaciente(paciente))
       .toThrow(BadRequestException);
@@ -271,7 +267,7 @@ it("Falla si falta el nombre", () => {
     const domicilio = new Domicilio("Bolivia", "San Miguel de Tucuman", undefined as any);
     const obra = new ObraSocial("11111111-aaaa-bbbb-cccc-222222222222", "OSECAC");
     const afiliado = new Afiliado(1, 150, obra);
-    const paciente = new Paciente("Ivan", "Ochoa", "20-41383873-9", "ivan@mail.com", afiliado, domicilio);
+    const paciente = new Paciente("Ivan", "Ochoa", "20-41383873-9",  afiliado, domicilio);
 
     expect(() => pacienteServicio.registrarPaciente(paciente))
       .toThrow(BadRequestException);
@@ -290,7 +286,7 @@ it("Falla si falta el nombre", () => {
     const obra = new ObraSocial("11111111-aaaa-bbbb-cccc-222222222222", "OSECAC");
     const afiliado = new Afiliado(1, 15820, obra);
 
-    const paciente = new Paciente("Ivan", "Ochoa", "20413838739", "ivan@mail.com", afiliado, domicilio);
+    const paciente = new Paciente("Ivan", "Ochoa", "20413838739",  afiliado, domicilio);
 
     expect(() => pacienteServicio.registrarPaciente(paciente))
       .toThrow(BadRequestException);
@@ -312,7 +308,7 @@ it("Falla si falta el nombre", () => {
     const cuilValido = "20-41383873-9"; 
     const cuilInvalidoDV = "20-41383873-0"; 
 
-    const paciente = new Paciente("Ivan", "Ochoa", cuilInvalidoDV, "ivan@mail.com", afiliado, domicilio);
+    const paciente = new Paciente("Ivan", "Ochoa", cuilInvalidoDV,  afiliado, domicilio);
 
     expect(() => pacienteServicio.registrarPaciente(paciente))
       .toThrow(BadRequestException);
@@ -331,7 +327,7 @@ it("Falla si falta el nombre", () => {
     const obra = new ObraSocial("11111111-aaaa-bbbb-cccc-222222222222", "OSECAC");
     const afiliado = new Afiliado(1, 15820, obra);
 
-    const paciente = new Paciente("Ivan", "Ochoa", "20-41383873-9", "ivan@mail.com", afiliado, domicilio);
+    const paciente = new Paciente("Ivan", "Ochoa", "20-41383873-9",  afiliado, domicilio);
 
     obraSocialRepoMock.existePorNombre.mockReturnValue(true);
     obraSocialRepoMock.afiliadoAlPaciente.mockReturnValue(true);
