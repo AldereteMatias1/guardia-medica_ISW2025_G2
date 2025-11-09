@@ -63,7 +63,6 @@ describe('login', () => {
 
       expect(res).toEqual({
         message: 'Inicio de sesión exitoso',
-        user: stored,
         token: { accessToken: 'ACCESS_TOKEN_123' },
       });
     });
