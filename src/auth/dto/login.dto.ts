@@ -12,4 +12,9 @@ export class LoginAuthDto {
   @IsString({ message: 'Password must be a string' })
   @IsNotEmpty({ message: 'Password is required' })
   password: string;
+
+  @IsNotEmpty({ message: 'Role is required' })
+  @IsString({ message: 'Role must be a string' })
+  @IsEnum(['medico', 'enfermero'], { message: 'Role must be either medico or enfermero' })
+  rol: string;
 }

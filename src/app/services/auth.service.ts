@@ -53,8 +53,7 @@ export class AuthService {
 
       return {
         message: 'Inicio de sesión exitoso',
-        user,
-        token,
+        token
       };
 
     } catch (error) {
