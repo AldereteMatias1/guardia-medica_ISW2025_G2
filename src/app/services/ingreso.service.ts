@@ -3,8 +3,8 @@ import { Ingreso } from '../../models/ingreso/ingreso';
 import { Enfermera } from '../../models/enfermera/enfermera.entity';
 import { NivelEmergencia } from '../../models/nivel-emergencia/nivelEmergencia.enum';
 import { EstadoIngreso } from '../../models/estado-ingreso/estadoIngreso.enum';
-import * as pacienteRepository from '../../app/interfaces/patient.repository';
-import { PACIENTE_REPOSITORIO } from '../interfaces/patient.repository';
+import * as pacienteRepository from '../interfaces/paciente/patient.repository';
+import { PACIENTE_REPOSITORIO } from '../interfaces/paciente/patient.repository';
 import { ServicioIngreso } from '../interfaces/urgencia.service';
 
 

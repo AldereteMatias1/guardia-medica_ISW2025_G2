@@ -19,28 +19,12 @@ export class Paciente extends Persona{
     nombre: string,
     apellido: string,
     cuil: string,
-    email: string,
     obraSocial?: Afiliado,
-    domicilio?: Domicilio
-  );
-
-  constructor(
-    nombre: string,
-    apellido: string,
-    cuil: string,
-    emailOrObraSocial?: string | Afiliado,
-    obraSocialOrDomicilio?: Afiliado | Domicilio,
-    domicilioOpt?: Domicilio
+    domicilio?:  Domicilio
   ) {
-    if (typeof emailOrObraSocial === "string") {
-      super(nombre, apellido, cuil, emailOrObraSocial);
-      this.obraSocial = obraSocialOrDomicilio as Afiliado;
-      this.domicilio = domicilioOpt;
-    } else {
-      super(nombre, apellido, cuil, "");
-      this.obraSocial = emailOrObraSocial as Afiliado;
-      this.domicilio = obraSocialOrDomicilio as Domicilio;
-    }
+      super(nombre, apellido, cuil);
+      this.obraSocial = obraSocial;
+      this.domicilio = domicilio;
   }
 
   public getDomicilio(): Domicilio | undefined {

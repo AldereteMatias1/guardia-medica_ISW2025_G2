@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { PacienteRepositorio } from "src/app/interfaces/patient.repository";
+import { PacienteRepositorio } from "src/app/interfaces/paciente/patient.repository";
 import { Paciente } from "src/models/paciente/paciente";
 
 @Injectable()

@@ -1,9 +1,9 @@
 import { Paciente } from "src/models/paciente/paciente";
-import { IPacienteServicio } from "../interfaces/paciente.service";
+import { IPacienteServicio } from "../interfaces/paciente/paciente.service";
 import { BadRequestException, Inject, Injectable, NotFoundException } from "@nestjs/common";
-import { REPOSITORIO_OBRA_SOCIAL } from "../interfaces/obra.social.repository";
+import { REPOSITORIO_OBRA_SOCIAL } from "../interfaces/obraSocial/obra.social.repository";
 import { ObraSocialRepositorio } from "../../persistence/obra.social.repository";
-import * as patientRepository from "../interfaces/patient.repository";
+import * as patientRepository from "../interfaces/paciente/patient.repository";
 
 
 @Injectable()
