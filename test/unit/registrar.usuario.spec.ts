@@ -25,57 +25,74 @@ import { BadRequestException } from '@nestjs/common';
     signAsync: jest.fn(),
   } as any;
 
+  const enfermeroRepoMock = {
+  obtenerPorEmail: jest.fn(),
+  actualizarEnfermera: jest.fn(),
+};
+
+const medicoRepoMock = {
+  obtenerPorEmail: jest.fn(),
+  actualizarMedico: jest.fn(),
+};
+
   beforeEach(() => {
     jest.clearAllMocks();
-    service = new AuthService(userRepoMock, jwtServiceMock);
+    service = new AuthService(userRepoMock, enfermeroRepoMock, medicoRepoMock, jwtServiceMock);
   });
 
 
-  describe('register', () => {
-    it('Registrar usuario exitosamente', async () => {
-      // arrange
-      const dto = { email: 'nuevo@correo.com', password: 'Secreta123', rol: RolUsuario.ENFERMERO };
-      (argon2.hash as jest.Mock).mockResolvedValue('HASHED_ARGON2');
-      userRepoMock.registrarUsuario.mockImplementation((u) => u); 
+  describe('AuthService - register', () => {
 
-      // act
-      const res = await service.register(dto as any);
+  it('Registrar usuario ENFERMERO exitosamente y asociarlo a la enfermera', async () => {
+    const dto = { email: 'nuevo@correo.com', password: 'Secreta123', rol: RolUsuario.ENFERMERO };
 
-      // assert
-      expect(argon2.hash).toHaveBeenCalledWith(dto.password, expect.any(Object));
-      expect(userRepoMock.registrarUsuario).toHaveBeenCalledWith({
-        ...dto,
-        password: 'HASHED_ARGON2',
-      });
-      expect(res).toEqual({
-        message: 'Usuario registrado exitosamente',
-        newUser: { ...dto, password: 'HASHED_ARGON2' },
-      });
-    });
-
-    it('debe lanzar error si el email ya está registrado', async () => {
-    // arrange
-    const dto = { email: 'duplicado@correo.com', password: 'Secreta123', rol: RolUsuario.MEDICO };
     (argon2.hash as jest.Mock).mockResolvedValue('HASHED_ARGON2');
+    userRepoMock.obtenerPorEmail.mockReturnValue(undefined);
 
-    userRepoMock.registrarUsuario.mockImplementation(() => {
-      throw new BadRequestException('El email ya está registrado');
+    const enfermeraFake = {
+      asociarUsuario: jest.fn(),
+    };
+    enfermeroRepoMock.obtenerPorEmail.mockReturnValue(enfermeraFake);
+
+    userRepoMock.registrarUsuario.mockImplementation((u) => u);
+
+    const res = await service.register(dto as any);
+
+    expect(userRepoMock.obtenerPorEmail).toHaveBeenCalledWith(dto.email);
+    expect(argon2.hash).toHaveBeenCalledWith(dto.password, expect.any(Object));
+    expect(userRepoMock.registrarUsuario).toHaveBeenCalledWith({
+      ...dto,
+      password: 'HASHED_ARGON2',
     });
 
-    // act + assert
-    await expect(service.register(dto as any)).rejects.toThrow(BadRequestException);
-    await expect(service.register(dto as any)).rejects.toThrow('El email ya está registrado');
+    expect(enfermeroRepoMock.obtenerPorEmail).toHaveBeenCalledWith(dto.email);
+    expect(enfermeraFake.asociarUsuario).toHaveBeenCalledWith({
+      ...dto,
+      password: 'HASHED_ARGON2',
     });
+    expect(enfermeroRepoMock.actualizarEnfermera).toHaveBeenCalledWith(enfermeraFake);
+
+    expect(res).toEqual({
+      message: 'Usuario registrado exitosamente',
+      newUser: { ...dto, password: 'HASHED_ARGON2' },
+    });
+  });
 
   it('debe lanzar error si la contraseña tiene menos de 8 caracteres', async () => {
     // arrange
     const dto = { email: 'shortpass@correo.com', password: '12345', rol: RolUsuario.MEDICO };
-    (argon2.hash as jest.Mock).mockResolvedValue('HASHED_ARGON2'); 
 
-    // act + assert
-    await expect(service.register(dto as any)).rejects.toBeInstanceOf(BadRequestException);
-    await expect(service.register(dto as any)).rejects.toThrow('La contraseña no puede tener menos de 8 digitos');
+    // act
+    const promise = service.register(dto as any);
+
+    // assert
+    await expect(promise).rejects.toBeInstanceOf(BadRequestException);
+    await expect(promise).rejects.toThrow('La contraseña no puede tener menos de 8 digitos');
+
+    expect(argon2.hash).not.toHaveBeenCalled();
+    expect(userRepoMock.obtenerPorEmail).not.toHaveBeenCalled();
+    expect(userRepoMock.registrarUsuario).not.toHaveBeenCalled();
   });
-      
-  });
+
+});
 
