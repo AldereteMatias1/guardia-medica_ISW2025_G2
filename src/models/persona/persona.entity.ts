@@ -12,11 +12,9 @@ export abstract class Persona {
   getNombre(): string {
     return this.nombre;
   }
-
   getApellido(): string {
     return this.apellido;
   }
-
   getCuil(): string {
     return this.cuil;
   }

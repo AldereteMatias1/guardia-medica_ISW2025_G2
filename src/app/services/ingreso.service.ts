@@ -7,7 +7,6 @@ import * as pacienteRepository from '../interfaces/paciente/patient.repository';
 import { PACIENTE_REPOSITORIO } from '../interfaces/paciente/patient.repository';
 import { ServicioIngreso } from '../interfaces/urgencia.service';
 
-
 @Injectable()
 export class IngresoServiceImpl implements ServicioIngreso {
   private readonly listaDeIngresos: Ingreso[] = [];
@@ -42,7 +41,6 @@ export class IngresoServiceImpl implements ServicioIngreso {
       presionDiastolica,
     });
 
-
     this.listaDeIngresos.push(ingreso);
 
     this.ordenarPorPrioridad();
@@ -59,5 +57,4 @@ export class IngresoServiceImpl implements ServicioIngreso {
   private ordenarPorPrioridad(): void {
     this.listaDeIngresos.sort(Ingreso.comparator);
   }
-
 }

@@ -5,21 +5,14 @@ import { SERVICIO_PACIENTE } from 'src/app/interfaces/paciente/paciente.service'
 import { PacienteServicio } from 'src/app/services/paciente.service';
 import { REPOSITORIO_OBRA_SOCIAL } from 'src/app/interfaces/obraSocial/obra.social.repository';
 import { ObraSocialRepositorio } from 'src/persistence/obra.social.repository';
+import { PacienteController } from '../../app/controllers/patient.controller';
 
 @Module({
+  controllers: [PacienteController],
   providers: [
-    {
-      provide: PACIENTE_REPOSITORIO,
-      useClass: PatientRepositoryImpl,
-    },
-    {
-      provide: SERVICIO_PACIENTE,
-      useClass: PacienteServicio,
-    },
-    {
-      provide: REPOSITORIO_OBRA_SOCIAL,
-      useClass: ObraSocialRepositorio,
-    },
+    { provide: PACIENTE_REPOSITORIO, useClass: PatientRepositoryImpl },
+    { provide: SERVICIO_PACIENTE, useClass: PacienteServicio },
+    { provide: REPOSITORIO_OBRA_SOCIAL, useClass: ObraSocialRepositorio },
   ],
   exports: [PACIENTE_REPOSITORIO, SERVICIO_PACIENTE],
 })
