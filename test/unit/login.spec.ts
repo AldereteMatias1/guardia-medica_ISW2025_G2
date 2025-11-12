@@ -39,11 +39,13 @@ const makeUser = (overrides: Partial<{ email: string; password: string; rol: Rol
 
   const enfermeroRepoMock = {
   obtenerPorEmail: jest.fn(),
+  obtenerPorId: jest.fn(),
   actualizarEnfermera: jest.fn(),
 };
 
   const medicoRepoMock = {
     obtenerPorEmail: jest.fn(),
+    obtenerPorId: jest.fn(),
     actualizarMedico: jest.fn(),
   };
 
