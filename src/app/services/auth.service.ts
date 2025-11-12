@@ -26,7 +26,7 @@ export class AuthService {
   ) {}
 
   async register(user: CreateUserDto) {
-  const { email, password, rol } = user;
+  const { email, password, rol, medicoId, enfermeraId } = user;
 
   if (!password || password.length < 8) {
     throw new BadRequestException('La contraseña no puede tener menos de 8 digitos');
@@ -50,20 +50,30 @@ export class AuthService {
     this.userRepo.registrarUsuario(newUser);
 
     if (rol === RolUsuario.ENFERMERO) {
-      const enfermera = this.enfermeroRepo.obtenerPorEmail(email);
-      if (!enfermera) {
-        throw new BadRequestException('No existe una enfermera con ese email');
+      if (enfermeraId == null) {
+        throw new BadRequestException('Debe indicar el id de la enfermera a asociar');
       }
-      enfermera.asociarUsuario(newUser);
+
+      const enfermera = this.enfermeroRepo.obtenerPorId(enfermeraId);
+      if (!enfermera) {
+        throw new BadRequestException('No existe una enfermera con ese id');
+      }
+
+      enfermera.asociarUsuario(newUser);          
       this.enfermeroRepo.actualizarEnfermera(enfermera);
     }
 
     if (rol === RolUsuario.MEDICO) {
-      const medico = this.medicoRepo.obtenerPorEmail(email);
-      if (!medico) {
-        throw new BadRequestException('No existe un médico con ese email');
+      if (medicoId == null) {
+        throw new BadRequestException('Debe indicar el id del médico a asociar');
       }
-      medico.asociarUsuario(newUser);
+
+      const medico = this.medicoRepo.obtenerPorId(medicoId);
+      if (!medico) {
+        throw new BadRequestException('No existe un médico con ese id');
+      }
+
+      medico.asociarUsuario(newUser);             
       this.medicoRepo.actualizarMedico(medico);
     }
 
