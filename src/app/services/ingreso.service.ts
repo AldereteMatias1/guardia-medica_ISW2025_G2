@@ -6,6 +6,8 @@ import { EstadoIngreso } from '../../models/estado-ingreso/estadoIngreso.enum';
 import * as pacienteRepository from '../interfaces/paciente/patient.repository';
 import { PACIENTE_REPOSITORIO } from '../interfaces/paciente/patient.repository';
 import { ServicioIngreso } from '../interfaces/urgencia.service';
+import { ENFERMERA_REPOSITORIO } from '../interfaces/enfermera.repository';
+import { EnfermeraRepositoryImpl } from 'src/persistence/enfermera.repository';
 
 @Injectable()
 export class IngresoServiceImpl implements ServicioIngreso {
@@ -14,11 +16,13 @@ export class IngresoServiceImpl implements ServicioIngreso {
   constructor(
     @Inject(PACIENTE_REPOSITORIO)
     private readonly pacienteRepo: pacienteRepository.PacienteRepositorio,
+    @Inject(ENFERMERA_REPOSITORIO)
+    private readonly enfermeraRepo:EnfermeraRepositoryImpl
   ) {}
 
   registrarIngreso(
     cuilPaciente: string,
-    enfermera: Enfermera,
+    idEnfermera: number,
     informe: string,
     nivelEmergencia: NivelEmergencia,
     temperatura: number,
@@ -29,6 +33,8 @@ export class IngresoServiceImpl implements ServicioIngreso {
   ): Ingreso {
     const paciente = this.pacienteRepo.buscarPacientePorCuil(cuilPaciente);
     if (!paciente) throw new NotFoundException('Paciente no encontrado');
+    const enfermera = this.enfermeraRepo.buscarPorId(idEnfermera);
+    if(!enfermera) throw new NotFoundException('Enfermera no encontrada. Debe registrarse previamente')
     const ingreso = new Ingreso({
       paciente,
       enfermera,

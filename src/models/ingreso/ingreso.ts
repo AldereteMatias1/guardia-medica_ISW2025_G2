@@ -5,7 +5,6 @@ import { Paciente } from '../paciente/paciente';
 import { FrecuenciaCardiaca } from '../value-objects/frecuenciaCardiaca';
 import { FrecuenciaRespiratoria } from '../value-objects/frecuenciaRespiratoria';
 import { TensionArterial } from '../value-objects/tensionArterial';
-import { randomUUID } from 'crypto';
 
 interface IngresoArgs {
   paciente: Paciente;

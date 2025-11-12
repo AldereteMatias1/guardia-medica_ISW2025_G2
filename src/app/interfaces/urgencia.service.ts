@@ -7,7 +7,7 @@ export const INGRESO_SERVICIO = Symbol('INGRESO_SERVICIO');
 export interface ServicioIngreso {
   registrarIngreso(
     cuilPaciente: string,
-    enfermera: Enfermera,
+    idEnfermera: number,
     informe: string,
     nivelEmergencia: NivelEmergencia,
     temperatura: number,
