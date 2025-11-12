@@ -6,6 +6,9 @@ import { JwtPayload } from '../interfaces/auth/jwt-payload';
 import * as argon2 from 'argon2';
 import { comparePassword } from '../../auth/utils/hashing';
 import { CreateUserDto } from 'src/models/usuario/dto/create.user.dto';
+import { RolUsuario } from '../../models/usuario/usuario';
+import * as enfermeraRepository from '../interfaces/enfemera/enfermera.repository';
+import * as medicoRepository from '../interfaces/medico/medico.repository';
 
 @Injectable()
 export class AuthService {
@@ -13,25 +16,77 @@ export class AuthService {
     @Inject(usuariosRepository.USUARIO_REPOSITORIO)
     private readonly userRepo: usuariosRepository.IUsuarioRepositorio,
 
+    @Inject(enfermeraRepository.ENFERMERO_REPOSITORIO)
+    private readonly enfermeroRepo: enfermeraRepository.IEnfermeroRepositorio,
+
+    @Inject(medicoRepository.MEDICO_REPOSITORIO)
+    private readonly medicoRepo: medicoRepository.IMedicoRepositorio,
+
     private readonly jwtService: JwtService,
   ) {}
 
   async register(user: CreateUserDto) {
-    try {
-      const hashedPassword = await argon2.hash(user.password, {
-        type: argon2.argon2id,
-        memoryCost: 2 ** 16,
-        timeCost: 3,
-        parallelism: 1,
-      });
-      if(user.password.length < 8) throw new BadRequestException("La contraseña no puede tener menos de 8 digitos")
-      const newUser = { ...user, password: hashedPassword };
-      this.userRepo.registrarUsuario(newUser);
-      return { message: 'Usuario registrado exitosamente', newUser };
-    } catch (err) {
-      throw new BadRequestException(err.message);
-    }
+  const { email, password, rol, medicoId, enfermeraId } = user;
+
+  if (!password || password.length < 8) {
+    throw new BadRequestException('La contraseña no puede tener menos de 8 digitos');
   }
+
+  const usuarioExistente = this.userRepo.obtenerPorEmail(email);
+  if (usuarioExistente) {
+    throw new BadRequestException('El email ya está registrado');
+  }
+
+  try {
+    const hashedPassword = await argon2.hash(password, {
+      type: argon2.argon2id,
+      memoryCost: 2 ** 16,
+      timeCost: 3,
+      parallelism: 1,
+    });
+
+    const newUser = { ...user, password: hashedPassword };
+
+    this.userRepo.registrarUsuario(newUser);
+
+    if (rol === RolUsuario.ENFERMERO) {
+      if (enfermeraId == null) {
+        throw new BadRequestException('Debe indicar el id de la enfermera a asociar');
+      }
+
+      const enfermera = this.enfermeroRepo.obtenerPorId(enfermeraId);
+      if (!enfermera) {
+        throw new BadRequestException('No existe una enfermera con ese id');
+      }
+
+      enfermera.asociarUsuario(newUser);          
+      this.enfermeroRepo.actualizarEnfermera(enfermera);
+    }
+
+    if (rol === RolUsuario.MEDICO) {
+      if (medicoId == null) {
+        throw new BadRequestException('Debe indicar el id del médico a asociar');
+      }
+
+      const medico = this.medicoRepo.obtenerPorId(medicoId);
+      if (!medico) {
+        throw new BadRequestException('No existe un médico con ese id');
+      }
+
+      medico.asociarUsuario(newUser);             
+      this.medicoRepo.actualizarMedico(medico);
+    }
+
+    return {
+      message: 'Usuario registrado exitosamente',
+      newUser,
+    };
+
+  } catch (err) {
+    if (err instanceof BadRequestException) throw err;
+    throw new BadRequestException('Ocurrió un error al registrar el usuario');
+  }
+}
 
   async login(credentials: LoginAuthDto) {
     const { email, password} = credentials;

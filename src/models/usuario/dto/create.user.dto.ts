@@ -20,4 +20,7 @@ export class CreateUserDto {
     email: string;
     @IsEnum(RolUsuario, { message: 'Role must be either medico or enfermero' })
     rol: RolUsuario;
+
+    medicoId?: number;
+    enfermeraId?: number;
 }

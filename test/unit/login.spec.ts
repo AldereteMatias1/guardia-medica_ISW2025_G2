@@ -37,13 +37,25 @@ const makeUser = (overrides: Partial<{ email: string; password: string; rol: Rol
     obtenerPorEmail: jest.fn(),
   } as any;
 
+  const enfermeroRepoMock = {
+  obtenerPorEmail: jest.fn(),
+  obtenerPorId: jest.fn(),
+  actualizarEnfermera: jest.fn(),
+};
+
+  const medicoRepoMock = {
+    obtenerPorEmail: jest.fn(),
+    obtenerPorId: jest.fn(),
+    actualizarMedico: jest.fn(),
+  };
+
   const jwtServiceMock: jest.Mocked<JwtService> = {
     signAsync: jest.fn(),
   } as any;
 
   beforeEach(() => {
     jest.clearAllMocks();
-    service = new AuthService(userRepoMock, jwtServiceMock);
+    service = new AuthService(userRepoMock, enfermeroRepoMock , medicoRepoMock, jwtServiceMock);
   });
 
 

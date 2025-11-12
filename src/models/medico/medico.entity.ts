@@ -1,6 +1,6 @@
 import { Usuario } from "../usuario/usuario";
 
-export class Enfermera {
+export class Medico {
     private nombre:string;
     private apellido:string;
     private usuario: Usuario | undefined;
