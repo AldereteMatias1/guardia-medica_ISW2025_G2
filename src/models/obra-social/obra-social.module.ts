@@ -3,12 +3,12 @@ import { REPOSITORIO_OBRA_SOCIAL } from 'src/app/interfaces/obraSocial/obra.soci
 import { ObraSocialRepositorio } from 'src/persistence/obra.social.repository';
 
 @Module({
-    providers: [
-        {
-          provide: REPOSITORIO_OBRA_SOCIAL, 
-          useClass: ObraSocialRepositorio,
-        }
-      ],
-      exports: [REPOSITORIO_OBRA_SOCIAL],
+  providers: [
+    {
+      provide: REPOSITORIO_OBRA_SOCIAL,
+      useClass: ObraSocialRepositorio,
+    },
+  ],
+  exports: [REPOSITORIO_OBRA_SOCIAL],
 })
 export class ObraSocialModule {}

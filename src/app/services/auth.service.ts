@@ -1,4 +1,10 @@
-import { Inject, Injectable, UnauthorizedException, BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  UnauthorizedException,
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { LoginAuthDto } from '../../auth/dto/login.dto';
 import * as usuariosRepository from '../interfaces/usuario/usuarios.repository';
 import { JwtService } from '@nestjs/jwt';
@@ -24,7 +30,10 @@ export class AuthService {
         timeCost: 3,
         parallelism: 1,
       });
-      if(user.password.length < 8) throw new BadRequestException("La contraseña no puede tener menos de 8 digitos")
+      if (user.password.length < 8)
+        throw new BadRequestException(
+          'La contraseña no puede tener menos de 8 digitos',
+        );
       const newUser = { ...user, password: hashedPassword };
       this.userRepo.registrarUsuario(newUser);
       return { message: 'Usuario registrado exitosamente', newUser };
@@ -34,7 +43,7 @@ export class AuthService {
   }
 
   async login(credentials: LoginAuthDto) {
-    const { email, password} = credentials;
+    const { email, password } = credentials;
 
     try {
       const user = this.userRepo.obtenerPorEmail(email);
@@ -53,12 +62,13 @@ export class AuthService {
 
       return {
         message: 'Inicio de sesión exitoso',
-        token
+        token,
       };
-
     } catch (error) {
-
-      if (error instanceof UnauthorizedException || error instanceof BadRequestException) {
+      if (
+        error instanceof UnauthorizedException ||
+        error instanceof BadRequestException
+      ) {
         throw error;
       }
 
@@ -72,5 +82,4 @@ export class AuthService {
       accessToken: await this.jwtService.signAsync(payload),
     };
   }
-
 }

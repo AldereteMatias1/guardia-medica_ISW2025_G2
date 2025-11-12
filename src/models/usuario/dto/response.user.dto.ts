@@ -1,4 +1,4 @@
 export class ResponseUserDto {
-    email: string;
-    rol: string;
+  email: string;
+  rol: string;
 }

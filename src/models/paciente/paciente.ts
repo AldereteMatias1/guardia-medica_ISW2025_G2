@@ -1,18 +1,17 @@
-import { Afiliado } from "../afiliado/afiliado.entities";
-import { Domicilio } from "../domicilio/domicililio.entities";
-import { Persona } from "../persona/persona.entity";
+import { Afiliado } from '../afiliado/afiliado.entities';
+import { Domicilio } from '../domicilio/domicililio.entities';
+import { Persona } from '../persona/persona.entity';
 
-export class Paciente extends Persona{
-  
+export class Paciente extends Persona {
   private obraSocial?: Afiliado;
-  private domicilio?: Domicilio; 
+  private domicilio?: Domicilio;
 
   constructor(
     nombre: string,
     apellido: string,
     cuil: string,
     obraSocial?: Afiliado,
-    domicilio?: Domicilio
+    domicilio?: Domicilio,
   );
 
   constructor(
@@ -20,11 +19,11 @@ export class Paciente extends Persona{
     apellido: string,
     cuil: string,
     obraSocial?: Afiliado,
-    domicilio?:  Domicilio
+    domicilio?: Domicilio,
   ) {
-      super(nombre, apellido, cuil);
-      this.obraSocial = obraSocial;
-      this.domicilio = domicilio;
+    super(nombre, apellido, cuil);
+    this.obraSocial = obraSocial;
+    this.domicilio = domicilio;
   }
 
   public getDomicilio(): Domicilio | undefined {
@@ -34,5 +33,4 @@ export class Paciente extends Persona{
   public getObraSocial(): Afiliado | undefined {
     return this.obraSocial;
   }
- 
 }

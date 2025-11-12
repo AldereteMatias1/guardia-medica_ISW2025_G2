@@ -21,4 +21,3 @@ export const comparePassword = async (
     throw error;
   }
 };
-

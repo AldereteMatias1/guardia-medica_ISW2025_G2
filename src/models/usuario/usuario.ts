@@ -8,4 +8,3 @@ export class Usuario {
   password: string;
   rol: RolUsuario;
 }
-

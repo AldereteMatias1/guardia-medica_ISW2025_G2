@@ -18,7 +18,6 @@ interface IngresoArgs {
   /** presión arterial */
   presionSistolica: number;
   presionDiastolica: number;
-
 }
 
 export class Ingreso {
@@ -34,7 +33,6 @@ export class Ingreso {
   private estadoIngreso: EstadoIngreso;
 
   public constructor(args: IngresoArgs) {
-
     if (!args.informe || !args.informe.trim()) {
       throw new Error("falta el campo 'informe'");
     }
@@ -43,35 +41,44 @@ export class Ingreso {
     }
     this.paciente = args.paciente;
     this.enfermera = args.enfermera;
-    this.fechaIngreso =  new Date();
+    this.fechaIngreso = new Date();
     this.informe = args.informe.trim();
     this.nivelEmergencia = args.nivelEmergencia;
     this.temperatura = args.temperatura;
 
     this.frecuenciaCardiaca = new FrecuenciaCardiaca(args.frecuenciaCardiaca);
-    this.frecuenciaRespiratoria = new FrecuenciaRespiratoria(args.frecuenciaRespiratoria);
-    this.tensionArterial = new TensionArterial(args.presionSistolica, args.presionDiastolica);
+    this.frecuenciaRespiratoria = new FrecuenciaRespiratoria(
+      args.frecuenciaRespiratoria,
+    );
+    this.tensionArterial = new TensionArterial(
+      args.presionSistolica,
+      args.presionDiastolica,
+    );
 
-    this.estadoIngreso =EstadoIngreso.PENDIENTE;
+    this.estadoIngreso = EstadoIngreso.PENDIENTE;
   }
 
-
-  public compararCon(otro: Ingreso): number { 
+  public compararCon(otro: Ingreso): number {
     if (this.nivelEmergencia !== otro.nivelEmergencia) {
-      return this.nivelEmergencia - otro.nivelEmergencia; 
+      return this.nivelEmergencia - otro.nivelEmergencia;
     }
     return this.fechaIngreso.getTime() - otro.fechaIngreso.getTime();
   }
-
 
   public static comparator(a: Ingreso, b: Ingreso): number {
     return a.compararCon(b);
   }
 
-  get CuilPaciente(): string { return this.paciente.getCuil(); }
-  get Nivel(): NivelEmergencia { return this.nivelEmergencia; }
-  get Fecha(): Date { return this.fechaIngreso; }
-  get Estado(): EstadoIngreso { return this.estadoIngreso; }
-
-
+  get CuilPaciente(): string {
+    return this.paciente.getCuil();
+  }
+  get Nivel(): NivelEmergencia {
+    return this.nivelEmergencia;
+  }
+  get Fecha(): Date {
+    return this.fechaIngreso;
+  }
+  get Estado(): EstadoIngreso {
+    return this.estadoIngreso;
+  }
 }
