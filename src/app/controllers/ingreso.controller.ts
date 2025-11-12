@@ -15,7 +15,6 @@ import {
 } from '@nestjs/swagger';
 import { CreateIngresoDto } from 'src/models/ingreso/create-ingreso.dto';
 import { IngresoServiceImpl } from 'src/app/services/ingreso.service';
-import { Enfermera } from 'src/models/enfermera/enfermera.entity';
 import { EstadoIngreso } from 'src/models/estado-ingreso/estadoIngreso.enum';
 import { NivelEmergencia } from 'src/models/nivel-emergencia/nivelEmergencia.enum';
 
@@ -32,11 +31,10 @@ export class IngresoController {
   @ApiCreatedResponse({ description: 'Ingreso registrado correctamente' })
   @ApiBadRequestResponse({ description: 'Datos inválidos o faltantes' })
   @ApiNotFoundResponse({ description: 'Paciente no encontrado' })
-  create(@Body() dto: CreateIngresoDto) {
-    const enfermera = new Enfermera(dto.enfermera.nombre,dto.enfermera.apellido); // TODO: Debe haber un repo para los enfermeros
+  create(@Body() dto: CreateIngresoDto) { 
     return this.ingresoService.registrarIngreso(
       dto.cuilPaciente,
-      enfermera,
+      dto.idEnfermera,
       dto.informe,
       dto.nivelEmergencia,
       dto.temperatura,

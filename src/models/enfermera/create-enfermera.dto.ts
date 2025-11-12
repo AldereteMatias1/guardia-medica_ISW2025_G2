@@ -10,3 +10,4 @@ export class CreateEnfermeraDto {
   @IsString()
   apellido!: string;
 }
+//posiblemente no lo usemos- no es parte del dominio del problema

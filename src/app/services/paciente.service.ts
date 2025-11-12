@@ -1,3 +1,4 @@
+import { PacienteRepositorio } from 'src/app/interfaces/paciente/patient.repository';
 import { Paciente } from 'src/models/paciente/paciente';
 import { IPacienteServicio } from '../interfaces/paciente/paciente.service';
 import {
@@ -43,7 +44,7 @@ export class PacienteServicio implements IPacienteServicio {
       if (!vinculado) throw new NotFoundException('Afiliacion no existente');
     }
 
-    this.pacientes.push(paciente);
+    this.patientRepo.guardarPaciente(paciente);
     return paciente;
   }
 

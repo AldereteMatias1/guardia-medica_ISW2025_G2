@@ -18,6 +18,8 @@ import { Domicilio } from 'src/models/domicilio/domicililio.entities';
 import { ObraSocial } from 'src/models/obra-social/obra-social.entity';
 import { Afiliado } from 'src/models/afiliado/afiliado.entities';
 import { randomUUID } from 'crypto';
+import { PACIENTE_REPOSITORIO } from '../interfaces/paciente/patient.repository';
+import { PatientRepositoryImpl } from 'src/persistence/patient.repository';
 
 @ApiTags('pacientes')
 @Controller('pacientes')
@@ -25,6 +27,8 @@ export class PacienteController {
   constructor(
     @Inject(SERVICIO_PACIENTE)
     private readonly pacientes: IPacienteServicio,
+    @Inject(PACIENTE_REPOSITORIO)
+    private readonly pacientesRepo : PatientRepositoryImpl
   ) {}
 
   @Post()

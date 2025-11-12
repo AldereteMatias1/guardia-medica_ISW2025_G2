@@ -1,13 +1,20 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { Ingreso } from '../../models/ingreso/ingreso';
-import { Enfermera } from '../../models/enfermera/enfermera.entity';
-import { NivelEmergencia } from '../../models/nivel-emergencia/nivelEmergencia.enum';
-import { EstadoIngreso } from '../../models/estado-ingreso/estadoIngreso.enum';
-import * as pacienteRepository from '../interfaces/paciente/patient.repository';
-import { PACIENTE_REPOSITORIO } from '../interfaces/paciente/patient.repository';
-import { ServicioIngreso } from '../interfaces/urgencia.service';
-import { ENFERMERA_REPOSITORIO } from '../interfaces/enfermera.repository';
+// src/app/services/ingreso.service.ts
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { Ingreso } from 'src/models/ingreso/ingreso';
+import { NivelEmergencia } from 'src/models/nivel-emergencia/nivelEmergencia.enum';
+import { EstadoIngreso } from 'src/models/estado-ingreso/estadoIngreso.enum';
+import { ServicioIngreso } from 'src/app/interfaces/urgencia.service';
+
+import { PatientRepositoryImpl } from 'src/persistence/patient.repository';
 import { EnfermeraRepositoryImpl } from 'src/persistence/enfermera.repository';
+
+import { PACIENTE_REPOSITORIO } from 'src/app/interfaces/paciente/patient.repository';
+import { ENFERMERA_REPOSITORIO } from 'src/app/interfaces/enfermera.repository';
 
 @Injectable()
 export class IngresoServiceImpl implements ServicioIngreso {
@@ -15,9 +22,9 @@ export class IngresoServiceImpl implements ServicioIngreso {
 
   constructor(
     @Inject(PACIENTE_REPOSITORIO)
-    private readonly pacienteRepo: pacienteRepository.PacienteRepositorio,
+    private readonly pacienteRepo: PatientRepositoryImpl,
     @Inject(ENFERMERA_REPOSITORIO)
-    private readonly enfermeraRepo:EnfermeraRepositoryImpl
+    private readonly enfermeraRepo: EnfermeraRepositoryImpl,
   ) {}
 
   registrarIngreso(
@@ -31,36 +38,39 @@ export class IngresoServiceImpl implements ServicioIngreso {
     presionSistolica: number,
     presionDiastolica: number,
   ): Ingreso {
-    const paciente = this.pacienteRepo.buscarPacientePorCuil(cuilPaciente);
-    if (!paciente) throw new NotFoundException('Paciente no encontrado');
-    const enfermera = this.enfermeraRepo.buscarPorId(idEnfermera);
-    if(!enfermera) throw new NotFoundException('Enfermera no encontrada. Debe registrarse previamente')
-    const ingreso = new Ingreso({
-      paciente,
-      enfermera,
-      informe,
-      nivelEmergencia,
-      temperatura,
-      frecuenciaCardiaca,
-      frecuenciaRespiratoria,
-      presionSistolica,
-      presionDiastolica,
-    });
+    try {
+      const paciente = this.pacienteRepo.buscarPacientePorCuil(cuilPaciente);
+      if (!paciente) throw new NotFoundException('Paciente no encontrado');
+      const enfermera = this.enfermeraRepo.buscarPorId(idEnfermera);
+      if (!enfermera)
+        throw new NotFoundException(
+          'Enfermera no encontrada. Debe registrarse previamente',
+        );
 
-    this.listaDeIngresos.push(ingreso);
+      const ingreso = new Ingreso({
+        paciente,
+        enfermera,
+        informe,
+        nivelEmergencia,
+        temperatura,
+        frecuenciaCardiaca,
+        frecuenciaRespiratoria,
+        presionSistolica,
+        presionDiastolica,
+      });
+      console.log(ingreso);
 
-    this.ordenarPorPrioridad();
-
-    return ingreso;
+      this.listaDeIngresos.push(ingreso);
+      this.listaDeIngresos.sort(Ingreso.comparator);
+      return ingreso;
+    } catch (e: any) {
+      throw new BadRequestException(e?.message ?? 'Datos de ingreso inválidos');
+    }
   }
 
   obtenerPendientes(): Ingreso[] {
     return this.listaDeIngresos.filter(
       (ing) => ing['estadoIngreso'] === EstadoIngreso.PENDIENTE,
     );
-  }
-
-  private ordenarPorPrioridad(): void {
-    this.listaDeIngresos.sort(Ingreso.comparator);
   }
 }

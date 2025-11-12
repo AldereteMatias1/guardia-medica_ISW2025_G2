@@ -1,16 +1,21 @@
+// src/app/ingreso/ingreso.module.ts
 import { Module } from '@nestjs/common';
-import { INGRESO_SERVICIO } from '../../app/interfaces/urgencia.service';
+import { IngresoController } from 'src/app/controllers/ingreso.controller';
 import { IngresoServiceImpl } from 'src/app/services/ingreso.service';
-import { PacienteModule } from '../paciente/paciente.module';
+
+import { PACIENTE_REPOSITORIO } from 'src/app/interfaces/paciente/patient.repository';
+import { PatientRepositoryImpl } from 'src/persistence/patient.repository';
+
+import { ENFERMERA_REPOSITORIO } from 'src/app/interfaces/enfermera.repository';
+import { EnfermeraRepositoryImpl } from 'src/persistence/enfermera.repository';
 
 @Module({
-  imports: [PacienteModule],
+  controllers: [IngresoController],
   providers: [
-    {
-      provide: INGRESO_SERVICIO,
-      useClass: IngresoServiceImpl,
-    },
+    IngresoServiceImpl,
+    { provide: PACIENTE_REPOSITORIO, useClass: PatientRepositoryImpl },
+    { provide: ENFERMERA_REPOSITORIO, useClass: EnfermeraRepositoryImpl },
   ],
-  exports: [INGRESO_SERVICIO],
+  exports: [IngresoServiceImpl],
 })
 export class IngresoModule {}
