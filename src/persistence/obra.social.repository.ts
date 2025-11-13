@@ -3,10 +3,10 @@ import { IObraSocial } from "src/app/interfaces/obraSocial/obra.social.repositor
 export class ObraSocialRepositorio implements IObraSocial {
     
     existePorNombre(nombre: string): Boolean {
-        throw new Error("Method not implemented.");
+        return true;
     }
     afiliadoAlPaciente(cuil: string, numeroAfiliado: number): Boolean {
-        throw new Error("Method not implemented.");
+        return true;
     }
     
 }

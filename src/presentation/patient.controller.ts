@@ -13,11 +13,6 @@ import { CreatePacienteDto } from '../models/paciente/dto/create.patient.dto';
 
 import { SERVICIO_PACIENTE } from 'src/app/interfaces/paciente/paciente.service';
 import type { IPacienteServicio } from 'src/app/interfaces/paciente/paciente.service';
-import { Paciente } from 'src/models/paciente/paciente';
-import { Domicilio } from 'src/models/domicilio/domicililio.entities';
-import { ObraSocial } from 'src/models/obra-social/obra-social.entity';
-import { Afiliado } from 'src/models/afiliado/afiliado.entities';
-import { randomUUID } from 'crypto';
 import { PACIENTE_REPOSITORIO } from '../app/interfaces/paciente/patient.repository';
 import { PatientRepositoryImpl } from 'src/persistence/patient.repository';
 
@@ -26,9 +21,7 @@ import { PatientRepositoryImpl } from 'src/persistence/patient.repository';
 export class PacienteController {
   constructor(
     @Inject(SERVICIO_PACIENTE)
-    private readonly pacientes: IPacienteServicio,
-    @Inject(PACIENTE_REPOSITORIO)
-    private readonly pacientesRepo : PatientRepositoryImpl
+    private readonly pacientesService: IPacienteServicio,
   ) {}
 
   @Post()
@@ -43,7 +36,7 @@ export class PacienteController {
           apellido: 'Gimenez',
           cuil: '20-12345678-6',
           domicilio: { calle: 'Av. Siempre Viva', localidad: 'San Miguel de Tucumán', numero: 742 },
-          obraSocial: { nombre: 'PAMI', numeroAfiliado: "123456789" },
+          obraSocial: { nombre: 'PAMI', numeroAfiliado: 123456789 },
         },
       },
       sinObraSocial: {
@@ -66,8 +59,7 @@ export class PacienteController {
     description: 'Obra social inexistente o afiliación no existente',
   })
   create(@Body() createPacienteDto: CreatePacienteDto) {
-    
-    return this.pacientes.registrarPaciente(createPacienteDto);
+    return this.pacientesService.registrarPaciente(createPacienteDto);
   }
 
   @Get(':cuil')
@@ -80,7 +72,7 @@ export class PacienteController {
   @ApiOkResponse({ description: 'Paciente encontrado' })
   @ApiNotFoundResponse({ description: 'Paciente no registrado' })
   findByCuil(@Param('cuil') cuil: string) {
-    const p = this.pacientes.buscarPacientePorCuil(cuil);
+    const p = this.pacientesService.buscarPacientePorCuil(cuil);
     if (!p) throw new NotFoundException('Paciente no registrado');
     return p;
   }

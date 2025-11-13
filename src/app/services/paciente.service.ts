@@ -12,9 +12,7 @@ import { ObraSocial } from "../../models/obra-social/obra-social.entity";
 
 @Injectable()
 export class PacienteServicio implements IPacienteServicio {
-
-  private readonly pacientes: Paciente[] = [];
-
+  
   constructor(
     @Inject(REPOSITORIO_OBRA_SOCIAL)
     private readonly obraSocialRepo: ObraSocialRepositorio,
@@ -22,7 +20,7 @@ export class PacienteServicio implements IPacienteServicio {
     private readonly patientRepo: patientRepository.PacienteRepositorio
   ) { }
   buscarPacientePorCuil(cuil: string): Paciente | null {
-    return this.pacientes.find(p => p.getCuil() === cuil) ?? null;
+    return this.patientRepo.buscarPacientePorCuil(cuil);
   }
 
   registrarPaciente(paciente: CreatePacienteDto ): Paciente {
@@ -44,7 +42,7 @@ export class PacienteServicio implements IPacienteServicio {
     }
 
     const nuevoPaciente = this.construirPaciente(paciente);
-    this.pacientes.push(nuevoPaciente);
+    this.patientRepo.guardarPaciente(nuevoPaciente);
     return nuevoPaciente;
   }
 

@@ -4,7 +4,7 @@ import { Paciente } from "src/models/paciente/paciente";
 
 @Injectable()
 export class PatientRepositoryImpl implements PacienteRepositorio {
-  pacientes : Paciente[];
+  pacientes : Paciente[] = [];
   obtenerTodos(): Paciente[] {
     return [...this.pacientes]; //copia
   }
@@ -19,6 +19,6 @@ export class PatientRepositoryImpl implements PacienteRepositorio {
     return paciente ?? null;
   }
   guardarPaciente(patient: Paciente): void {
-    this.pacientes.push();
+    this.pacientes.push(patient);
   }
 }
