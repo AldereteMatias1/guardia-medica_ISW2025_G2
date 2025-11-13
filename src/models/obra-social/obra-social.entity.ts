@@ -6,9 +6,17 @@ export class ObraSocial {
     nombre: string;
     afiliados: Afiliado[] = [];;
 
-    constructor(id: UUID, nombre: string){
-        this.id = id;
-        this.nombre = nombre;
+    constructor(nombre: string);
+    constructor(id: UUID, nombre: string);
+
+    
+    constructor(idOrNombre: UUID | string, nombreMaybe?: string) {
+        if (nombreMaybe !== undefined) {
+            this.id = idOrNombre as UUID;
+            this.nombre = nombreMaybe;
+        } else {
+            this.nombre = idOrNombre as string;
+        }
     }
 
     public getNombre(): string {
