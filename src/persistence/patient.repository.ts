@@ -4,19 +4,21 @@ import { Paciente } from "src/models/paciente/paciente";
 
 @Injectable()
 export class PatientRepositoryImpl implements PacienteRepositorio {
+  pacientes : Paciente[] = [];
   obtenerTodos(): Paciente[] {
-    throw new Error("Method not implemented.");
+    return [...this.pacientes]; //copia
   }
   borrarPorCuil(cuil: string): void {
-    throw new Error("Method not implemented.");
+    this.pacientes = this.pacientes.filter(p => p.getCuil() !== cuil);
   }
   clear(): void {
-    throw new Error("Method not implemented.");
+    this.pacientes = [];
   }
   buscarPacientePorCuil(cuil: string): Paciente| null {
-    throw new Error('Method not implemented.');
+    const paciente = this.pacientes.find(p=>p.getCuil() === cuil)
+    return paciente ?? null;
   }
   guardarPaciente(patient: Paciente): void {
-    throw new Error('Method not implemented.');
+    this.pacientes.push(patient);
   }
 }
