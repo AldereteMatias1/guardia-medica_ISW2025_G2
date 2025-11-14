@@ -51,7 +51,6 @@ export class EnfermeroRepositorio implements IEnfermeroRepositorio {
       cuil: string;
       matricula: string;
       email: string;
-      password: string;
       rol_nombre: string;
     }>(
       `SELECT e.id              AS id_enfermero,
@@ -60,7 +59,6 @@ export class EnfermeroRepositorio implements IEnfermeroRepositorio {
               p.cuil            AS cuil,
               e.matricula       AS matricula,
               u.email           AS email,
-              u.password        AS password,
               r.nombre          AS rol_nombre
        FROM usuario u
        JOIN rol r          ON r.id = u.id_rol
@@ -82,7 +80,6 @@ export class EnfermeroRepositorio implements IEnfermeroRepositorio {
 
     const usuario: Usuario = {
       email: row.email,
-      password: row.password,
       rol: row.rol_nombre as RolUsuario,
     };
 
