@@ -1,5 +1,5 @@
 import { JwtService } from "@nestjs/jwt";
-import { IUsuarioRepositorio } from "../../src/app/interfaces/usuario/usuarios.repository";
+import { IUsuarioRepositorio } from "../../src/app/interfaces/usuario/usuarios.repository.interface";
 import { AuthService } from "../../src/app/services/auth.service";
 import { comparePassword } from "../../src/auth/utils/hashing";
 import { RolUsuario } from "../../src/models/usuario/usuario";

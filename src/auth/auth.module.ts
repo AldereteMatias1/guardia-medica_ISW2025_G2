@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from '../app/services/auth.service';
-import { USUARIO_REPOSITORIO } from 'src/app/interfaces/usuario/usuarios.repository';
+import { USUARIO_REPOSITORIO } from 'src/app/interfaces/usuario/usuarios.repository.interface';
 import { AuthController } from '../presentation/auth.controller';
 import JwtModuleConfig from 'src/config/jwt-config';
 import { UsuarioRepositorio } from 'src/persistence/usuario.repository';

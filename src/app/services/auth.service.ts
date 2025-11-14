@@ -1,6 +1,6 @@
 import { Inject, Injectable, UnauthorizedException, BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { LoginAuthDto } from '../../auth/dto/login.dto';
-import * as usuariosRepository from '../interfaces/usuario/usuarios.repository';
+import * as usuariosRepository from '../interfaces/usuario/usuarios.repository.interface';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from '../interfaces/auth/jwt-payload';
 import * as argon2 from 'argon2';

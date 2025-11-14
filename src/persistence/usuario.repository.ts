@@ -1,5 +1,5 @@
 import { DatabaseService } from "../../src/config/database/database.service";
-import { IUsuarioRepositorio } from "../../src/app/interfaces/usuario/usuarios.repository";
+import { IUsuarioRepositorio } from "../app/interfaces/usuario/usuarios.repository.interface";
 import { RolUsuario, Usuario } from "../../src/models/usuario/usuario";
 import { BadRequestException, InternalServerErrorException } from "@nestjs/common";
 
