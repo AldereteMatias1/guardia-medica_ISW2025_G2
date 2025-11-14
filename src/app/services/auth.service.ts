@@ -5,8 +5,8 @@ import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from '../interfaces/auth/jwt-payload';
 import * as argon2 from 'argon2';
 import { comparePassword } from '../../auth/utils/hashing';
-import { CreateUserDto } from 'src/models/usuario/dto/create.user.dto';
-import { RolUsuario } from '../../models/usuario/usuario';
+import { CreateUserDto } from '../../../src/models/usuario/dto/create.user.dto';
+import { RolUsuario, Usuario } from '../../models/usuario/usuario';
 import * as enfermeraRepository from '../interfaces/enfemera/enfermera.repository';
 import * as medicoRepository from '../interfaces/medico/medico.repository';
 
@@ -32,7 +32,7 @@ export class AuthService {
     throw new BadRequestException('La contraseña no puede tener menos de 8 digitos');
   }
 
-  const usuarioExistente = this.userRepo.obtenerPorEmail(email);
+  const usuarioExistente = await this.userRepo.obtenerPorEmail(email);
   if (usuarioExistente) {
     throw new BadRequestException('El email ya está registrado');
   }
@@ -45,22 +45,26 @@ export class AuthService {
       parallelism: 1,
     });
 
-    const newUser = { ...user, password: hashedPassword };
+    const usuarioParaGuardar: Usuario = {
+        email,
+        password: hashedPassword,
+        rol,
+      };
 
-    this.userRepo.registrarUsuario(newUser);
+    await this.userRepo.registrarUsuario(usuarioParaGuardar);
 
     if (rol === RolUsuario.ENFERMERO) {
       if (enfermeraId == null) {
         throw new BadRequestException('Debe indicar el id de la enfermera a asociar');
       }
 
-      const enfermera = this.enfermeroRepo.obtenerPorId(enfermeraId);
+      const enfermera = await this.enfermeroRepo.obtenerPorId(enfermeraId);
       if (!enfermera) {
         throw new BadRequestException('No existe una enfermera con ese id');
       }
 
-      enfermera.asociarUsuario(newUser);          
-      this.enfermeroRepo.actualizarEnfermera(enfermera);
+      enfermera.asociarUsuario(usuarioParaGuardar);          
+      await this.enfermeroRepo.actualizarEnfermera(enfermera);
     }
 
     if (rol === RolUsuario.MEDICO) {
@@ -68,18 +72,18 @@ export class AuthService {
         throw new BadRequestException('Debe indicar el id del médico a asociar');
       }
 
-      const medico = this.medicoRepo.obtenerPorId(medicoId);
+      const medico = await this.medicoRepo.obtenerPorId(medicoId);
       if (!medico) {
         throw new BadRequestException('No existe un médico con ese id');
       }
 
-      medico.asociarUsuario(newUser);             
-      this.medicoRepo.actualizarMedico(medico);
+      medico.asociarUsuario(usuarioParaGuardar);             
+      await this.medicoRepo.actualizarMedico(medico);
     }
 
     return {
       message: 'Usuario registrado exitosamente',
-      newUser,
+      newUser: usuarioParaGuardar,
     };
 
   } catch (err) {
@@ -92,13 +96,12 @@ export class AuthService {
     const { email, password} = credentials;
 
     try {
-      const user = this.userRepo.obtenerPorEmail(email);
+      const user = await this.userRepo.obtenerPorEmail(email);
 
       if (!user) {
         throw new UnauthorizedException('Usuario o contraseña inválidos');
       }
-
-      const isValid = await comparePassword(password, user.password);
+      const isValid = await comparePassword(password, user.password !== undefined ? user.password: "");
       if (!isValid) {
         throw new UnauthorizedException('Usuario o contraseña inválidos');
       }

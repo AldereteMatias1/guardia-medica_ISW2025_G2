@@ -1,8 +1,8 @@
 import { InternalServerErrorException } from "@nestjs/common";
-import { IMedicoRepositorio } from "src/app/interfaces/medico/medico.repository";
-import { DatabaseService } from "src/config/database/database.service";
-import { Medico } from "src/models/medico/medico.entity";
-import { RolUsuario, Usuario } from "src/models/usuario/usuario";
+import { IMedicoRepositorio } from "../../src/app/interfaces/medico/medico.repository";
+import { DatabaseService } from "../../src/config/database/database.service";
+import { Medico } from "../../src/models/medico/medico.entity";
+import { RolUsuario, Usuario } from "../../src/models/usuario/usuario";
 
 export class MedicoRepositorio implements IMedicoRepositorio {
 

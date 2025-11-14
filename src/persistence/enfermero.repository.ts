@@ -1,7 +1,7 @@
-import { IEnfermeroRepositorio } from "src/app/interfaces/enfemera/enfermera.repository";
-import { DatabaseService } from "src/config/database/database.service";
-import { Enfermera } from "src/models/enfermera/enfermera.entity";
-import { RolUsuario, Usuario } from "src/models/usuario/usuario";
+import { IEnfermeroRepositorio } from "../../src/app/interfaces/enfemera/enfermera.repository";
+import { DatabaseService } from "../../src/config/database/database.service";
+import { Enfermera } from "../../src/models/enfermera/enfermera.entity";
+import { RolUsuario, Usuario } from "../../src/models/usuario/usuario";
 
 export class EnfermeroRepositorio implements IEnfermeroRepositorio {
 
