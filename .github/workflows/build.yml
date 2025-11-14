@@ -1,7 +1,7 @@
-name: Cucumber Tests
+name: Cucumber & Unit Tests
 
 on:
-  workflow_dispatch:  # Manual trigger only
+  workflow_dispatch:  
 
 jobs:
   test:
@@ -19,6 +19,9 @@ jobs:
         
     - name: Install dependencies
       run: npm ci
-      
+
+    - name: Run Unit Tests
+      run: npm run test:unit
+
     - name: Run Cucumber tests
       run: npm run test
