@@ -1,40 +1,75 @@
+import { DatabaseService } from "../../src/config/database/database.service";
 import { IUsuarioRepositorio } from "../../src/app/interfaces/usuario/usuarios.repository";
-import { Usuario } from "../../src/models/usuario/usuario";
+import { RolUsuario, Usuario } from "../../src/models/usuario/usuario";
+import { BadRequestException, InternalServerErrorException } from "@nestjs/common";
 
 export class UsuarioRepositorio implements IUsuarioRepositorio {
-    private users: Usuario[] = [];
 
-  registrarUsuario(user: Usuario): void {
-    const exists = this.users.some((u) => u.email === user.email);
-    if (exists) throw new Error('User already exists');
-    this.users.push(user);
-  }
+  constructor(
+    private readonly db: DatabaseService,
+  ) {}
 
-   login(user: Usuario): Usuario {
-    console.log('Attempting login for user:', user);
-    const foundUser = this.users.find(
-      u => u.email === user.email && u.password === user.password,
+  async registrarUsuario(user: Usuario): Promise<Usuario> {
+    const rolId = await this.getRolId(user.rol);
+
+    const existing = await this.obtenerPorEmail(user.email);
+    if (existing) {
+      throw new BadRequestException("El email ya está registrado");
+    }
+
+    await this.db.execute(
+      `INSERT INTO usuario (email, password, id_rol)
+       VALUES (?, ?, ?)`,
+      [user.email, user.password, rolId]
     );
-    if (!foundUser) throw new Error('Invalid credentials');
-    return foundUser;
+
+    return user; 
   }
 
-  obtenerPorEmail(email: string): Usuario | undefined {
-    const user = this.users.find(u => u.email === email);
-    console.log('obtenerPorEmail:', email, 'found:', user);
-    return user;
+  async obtenerPorEmail(email: string): Promise<Usuario | null> {
+    const rows = await this.db.query<{
+      email: string;
+      password: string;
+      rol_nombre: string;
+    }>(
+      `SELECT u.email, u.password, r.nombre AS rol_nombre
+       FROM usuario u
+       JOIN rol r ON r.id = u.id_rol
+       WHERE u.email = ?`,
+       [email]
+    );
+
+    if (!rows.length) return null;
+
+    return {
+      email: rows[0].email,
+      password: rows[0].password,
+      rol: rows[0].rol_nombre as RolUsuario,
+    };
   }
 
-  obtenerTodos(): Usuario[] {
-    return [...this.users]; 
+  async login(user: Usuario): Promise<Usuario> {
+    const found = await this.obtenerPorEmail(user.email);
+    if (!found) throw new BadRequestException("Usuario o contraseña inválidos");
+
+    if (found.password !== user.password) {
+      throw new BadRequestException("Usuario o contraseña inválidos");
+    }
+
+    return found;
   }
 
-  borrarPorEmail(email: string): void {
-    this.users = this.users.filter(u => u.email !== email);
+  private async getRolId(rol: RolUsuario): Promise<number> {
+    const rows = await this.db.query<{ id: number }>(
+      "SELECT id FROM rol WHERE nombre = ?",
+      [rol]
+    );
+
+    if (!rows.length) {
+      throw new InternalServerErrorException(`El rol ${rol} no existe en la base de datos`);
+    }
+
+    return rows[0].id;
   }
 
-  clear(): void {
-    this.users = [];
-  }
-    
 }
