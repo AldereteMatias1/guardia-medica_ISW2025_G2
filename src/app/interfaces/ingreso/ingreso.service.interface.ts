@@ -3,9 +3,9 @@ import { Ingreso } from "src/models/ingreso/ingreso";
 import { NivelEmergencia } from "src/models/nivel-emergencia/nivelEmergencia.enum";
 
 
-export const INGRESO_SERVICIO = Symbol('INGRESO_SERVICIO');
+export const SERVICIO_INGRESO = Symbol('SERVICIO_INGRESO');
 
-export interface ServicioIngreso {
+export interface IIngresoServicio {
    registrarIngreso(
        cuilPaciente: string,
        enfermera: Enfermera,
@@ -16,7 +16,7 @@ export interface ServicioIngreso {
        frecuenciaRespiratoria: number,
        presionSistolica: number,
        presionDiastolica: number,
-     ): Promise<Ingreso>
+     ): Promise<Ingreso>;
 
-     obtenerPendientes(): Ingreso[];
+     obtenerPendientes(): Promise<Ingreso[]>;
 };

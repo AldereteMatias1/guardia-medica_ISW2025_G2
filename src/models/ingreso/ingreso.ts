@@ -17,13 +17,13 @@ interface IngresoArgs {
   frecuenciaRespiratoria: number;
   presionSistolica: number;
   presionDiastolica: number;
-
+  fechaIngreso: Date;
 }
 
 export class Ingreso {
   private readonly paciente: Paciente;
   private readonly enfermera: Enfermera;
-  private readonly fechaIngreso: Date;
+  private fechaIngreso: Date;
   private readonly informe: string;
   private readonly nivelEmergencia: NivelEmergencia;
   private readonly temperatura: number;
@@ -72,5 +72,39 @@ export class Ingreso {
   get Fecha(): Date { return this.fechaIngreso; }
   get Estado(): EstadoIngreso { return this.estadoIngreso; }
 
+  public getEnfermera() {
+    return this.enfermera;
+  }
 
+  public getPaciente(){
+    return this.paciente;
+  }
+
+  public getEstadoIngreso(){
+    return this.estadoIngreso;
+  }
+
+  public getNivelEmergencia(){
+    return this.nivelEmergencia;
+  }
+
+  public getInforme(){
+    return this.informe;
+  }
+
+  public getTemperatura(){
+        return this.temperatura;
+  }
+
+  public getFrecuenciaRespiratoria(){
+    return this.frecuenciaRespiratoria.Valor;
+  }
+
+  public getFrecuenciaCardiaca(){
+    return this.frecuenciaCardiaca.Valor;
+  }
+
+  public getTensionArterialComoString(){
+    return this.tensionArterial.diastolica.Valor + '/' + this.tensionArterial.sistolica.Valor
+  }
 }

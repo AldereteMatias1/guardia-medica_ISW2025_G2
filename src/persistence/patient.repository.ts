@@ -12,16 +12,6 @@ export class PatientRepositoryImpl implements IPacienteRepositorio {
 
   constructor(private readonly db: DatabaseService) {}
 
-  obtenerTodos(): Paciente[] {
-    return []; //copia
-  }
-  borrarPorCuil(cuil: string): void {
-    //this.pacientes = this.pacientes.filter(p => p.getCuil() !== cuil);
-  }
-  clear(): void {
-    //this.pacientes = [];
-  }
-
   async buscarPacientePorCuil(cuil: string): Promise<Paciente | null> {
     type Row = {
       persona_id: number;

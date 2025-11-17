@@ -20,4 +20,12 @@ export class Enfermera {
     asociarUsuario(usuario: Usuario) {
         this.usuario = usuario;
     }
+
+    public getNombre(){
+        return this.nombre;
+    }
+
+    public getApellido(){
+        return this.apellido;
+    }
 }

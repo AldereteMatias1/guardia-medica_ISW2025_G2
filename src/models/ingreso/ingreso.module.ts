@@ -1,17 +1,18 @@
 import { Module } from '@nestjs/common';
-import {INGRESO_SERVICIO} from '../../app/interfaces/urgencia.service'
+import { SERVICIO_INGRESO } from '../../app/interfaces/ingreso/ingreso.service.interface'
 import { IngresoServiceImpl } from 'src/app/services/ingreso.service';
 import { PacienteModule } from '../paciente/paciente.module';
+import { DatabaseModule } from '../../../src/config/database/database.module';
 
 @Module({
-    imports: [PacienteModule],
+    imports: [PacienteModule, DatabaseModule],
      providers: [
         {
-          provide: INGRESO_SERVICIO, 
+          provide: SERVICIO_INGRESO, 
           useClass: IngresoServiceImpl,
         },
       ],
-      exports: [INGRESO_SERVICIO],
+      exports: [SERVICIO_INGRESO],
 })
 export class IngresoModule {
 }
