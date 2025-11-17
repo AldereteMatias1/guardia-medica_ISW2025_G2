@@ -66,11 +66,11 @@ Given('esta registrado el siguiente paciente:', (dataTable) => {
   registrarPacientes(dataTable);
 });
 
-When('ingresa a urgencias el siguiente paciente:', (dataTable) => {
+When('ingresa a urgencias el siguiente paciente:', async (dataTable) => {
   const data = dataTable.hashes();
   countAntesDeIntento = listaOrdenadaActual().length;
 
-  data.forEach((row) => {
+  for (const row of data) {
     try {
       const cuil = row['cuil'];
       const informe = (row['informe'] ?? '').trim();
@@ -83,8 +83,8 @@ When('ingresa a urgencias el siguiente paciente:', (dataTable) => {
       const fr = Number(row['frecuencia respiratoria'] ?? row['fr']);
       const taStr = row['tension arterial'] ?? row['tensión arterial'] ?? row['ta'];
       const { s: presionSistolica, d: presionDiastolica } = parseTA(taStr);
-
-      service.registrarIngreso(
+      
+      await service.registrarIngreso(
         cuil,
         enfermera,
         informe,
@@ -98,7 +98,7 @@ When('ingresa a urgencias el siguiente paciente:', (dataTable) => {
     } catch (err: any) {
       msgLastError = err.message;
     }
-  });
+  }
 });
 
 Then('La lista de espera esta ordenada por cuil de la siguiente manera:', (dataTable) => {
