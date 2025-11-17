@@ -16,7 +16,7 @@ export interface ServicioIngreso {
        frecuenciaRespiratoria: number,
        presionSistolica: number,
        presionDiastolica: number,
-     ): Ingreso
+     ): Promise<Ingreso>
 
      obtenerPendientes(): Ingreso[];
 };

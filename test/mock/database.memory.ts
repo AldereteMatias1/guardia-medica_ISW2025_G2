@@ -1,6 +1,7 @@
 
-import { PacienteRepositorio } from "../../src/app/interfaces/paciente/patient.repository";
+
 import { Paciente } from "src/models/paciente/paciente"; 
+import { PacienteRepositorio } from "./paciente.repository.interface.mock";
 
 export class DataBaseInMemory implements  PacienteRepositorio {
 

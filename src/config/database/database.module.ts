@@ -1,9 +1,9 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { createPool, Pool } from 'mysql2/promise';
 import { DatabaseService } from '../database/database.service';
+import { DB_POOL } from './database.constants';
 
-export const DB_POOL = 'DB_POOL';
-
+@Global()
 @Module({
   providers: [
     {

@@ -3,7 +3,7 @@ import { IPacienteServicio } from "../interfaces/paciente/paciente.service";
 import { BadRequestException, Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { REPOSITORIO_OBRA_SOCIAL } from "../interfaces/obraSocial/obra.social.repository";
 import { ObraSocialRepositorio } from "../../persistence/obra.social.repository";
-import * as patientRepository from "../interfaces/paciente/patient.repository";
+import * as patientRepository from "../interfaces/paciente/patient.repository.interface";
 import { CreatePacienteDto } from "../../models/paciente/dto/create.patient.dto";
 import { Afiliado } from "../../models/afiliado/afiliado.entities";
 import { Domicilio } from "../../models/domicilio/domicililio.entities";
@@ -17,13 +17,14 @@ export class PacienteServicio implements IPacienteServicio {
     @Inject(REPOSITORIO_OBRA_SOCIAL)
     private readonly obraSocialRepo: ObraSocialRepositorio,
     @Inject(patientRepository.PACIENTE_REPOSITORIO)
-    private readonly patientRepo: patientRepository.PacienteRepositorio
+    private readonly patientRepo: patientRepository.IPacienteRepositorio
   ) { }
-  buscarPacientePorCuil(cuil: string): Paciente | null {
-    return this.patientRepo.buscarPacientePorCuil(cuil);
-  }
+  
+    async buscarPacientePorCuil(cuil: string): Promise<Paciente | null> {
+      return this.patientRepo.buscarPacientePorCuil(cuil);
+    }
 
-  registrarPaciente(paciente: CreatePacienteDto ): Paciente {
+  async registrarPaciente(paciente: CreatePacienteDto ): Promise<Paciente> {
     this.assertCamposMandatorios(paciente);
 
     const afiliado = paciente.getObraSocial();
@@ -31,10 +32,11 @@ export class PacienteServicio implements IPacienteServicio {
     if (afiliado !== undefined) {
       const nombreObra = afiliado.getObraSocial();
 
-      const existe = this.obraSocialRepo.existePorNombre(nombreObra);
-      const vinculado = this.obraSocialRepo.afiliadoAlPaciente(
+      const existe = await this.obraSocialRepo.existePorNombre(nombreObra);
+      const vinculado = await this.obraSocialRepo.afiliadoAlPaciente(
         paciente.getCuil(),
-        afiliado.getNumeroAfiliado()
+        afiliado.getNumeroAfiliado(),
+        nombreObra
       );
 
       if (!existe) throw new NotFoundException('Obra social inexistente');
@@ -42,7 +44,7 @@ export class PacienteServicio implements IPacienteServicio {
     }
 
     const nuevoPaciente = this.construirPaciente(paciente);
-    this.patientRepo.guardarPaciente(nuevoPaciente);
+    await this.patientRepo.guardarPaciente(nuevoPaciente);
     return nuevoPaciente;
   }
 

@@ -1,21 +1,20 @@
 import { EstadoIngreso } from './../estado-ingreso/estadoIngreso.enum';
 import { Enfermera } from '../enfermera/enfermera.entity';
 import { NivelEmergencia } from '../nivel-emergencia/nivelEmergencia.enum';
-import { Paciente } from '../paciente/paciente';
 import { FrecuenciaCardiaca } from '../value-objects/frecuenciaCardiaca';
 import { FrecuenciaRespiratoria } from '../value-objects/frecuenciaRespiratoria';
 import { TensionArterial } from '../value-objects/tensionArterial';
 import { randomUUID } from 'crypto';
+import { Paciente } from '../paciente/paciente';
 
 interface IngresoArgs {
   paciente: Paciente;
   enfermera: Enfermera;
   informe: string;
-  nivelEmergencia: NivelEmergencia; // enum numérico: 1..5
+  nivelEmergencia: NivelEmergencia; 
   temperatura: number;
   frecuenciaCardiaca: number;
   frecuenciaRespiratoria: number;
-  /** presión arterial */
   presionSistolica: number;
   presionDiastolica: number;
 
