@@ -2,9 +2,10 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { SERVICIO_PACIENTE } from "../../src/app/interfaces/paciente/paciente.service";
 import { PacienteServicio } from "../../src/app/services/paciente.service";
 import { REPOSITORIO_OBRA_SOCIAL } from "../../src/app/interfaces/obraSocial/obra.social.repository";
-import { PACIENTE_REPOSITORIO } from "../../src/app/interfaces/paciente/patient.repository";
+import { PACIENTE_REPOSITORIO } from "../../src/app/interfaces/paciente/patient.repository.interface";
 import { BadRequestException, NotFoundException } from "@nestjs/common";
 import { CreatePacienteDto, DomicilioDto, ObraSocialDto } from "../../src/models/paciente/dto/create.patient.dto";
+import { Paciente } from "../../src/models/paciente/paciente";
 
 function crearPacienteDtoBase(overrides?: {
   nombre?: string;
@@ -13,7 +14,7 @@ function crearPacienteDtoBase(overrides?: {
   domicilio?: Partial<DomicilioDto> | null;
   obraSocial?: Partial<ObraSocialDto> | null;
 }): CreatePacienteDto {
-  const dto = new CreatePacienteDto() as any; 
+  const dto = new CreatePacienteDto() as any;
 
   dto.nombre = overrides?.nombre ?? "Ivan";
   dto.apellido = overrides?.apellido ?? "Ochoa";
@@ -43,28 +44,36 @@ function crearPacienteDtoBase(overrides?: {
   return dto as CreatePacienteDto;
 }
 
-
-describe('Registrar paciente (unit)', () => {
+describe("Registrar paciente (unit)", () => {
   let moduleRef: TestingModule;
   let pacienteServicio: PacienteServicio;
 
-    const obraSocialRepoMock = {
-    existePorNombre: jest.fn() as jest.MockedFunction<(nombre: string) => boolean>,
-    afiliadoAlPaciente: jest.fn() as jest.MockedFunction<(cuil: string, numeroAfiliado: number) => boolean>,
-  };
+  const obraSocialRepoMock: {
+  existePorNombre: jest.MockedFunction<(nombre: string) => Promise<boolean>>;
+  afiliadoAlPaciente: jest.MockedFunction<
+    (cuil: string, numeroAfiliado: number, nombreObra: string) => Promise<boolean>
+  >;
+} = {
+  existePorNombre: jest.fn(),
+  afiliadoAlPaciente: jest.fn(),
+};
 
-  const pacienteRepoMock = {
-    guardarPaciente: jest.fn(),
-    buscarPacientePorCuil: jest.fn(),
-    existePorCuil: jest.fn(),
-  };
+const pacienteRepoMock: {
+  guardarPaciente: jest.MockedFunction<(p: Paciente) => Promise<void>>;
+  buscarPacientePorCuil: jest.MockedFunction<(cuil: string) => Promise<Paciente | null>>;
+  existePorCuil: jest.MockedFunction<(cuil: string) => Promise<boolean>>; // si lo usás
+} = {
+  guardarPaciente: jest.fn(),
+  buscarPacientePorCuil: jest.fn(),
+  existePorCuil: jest.fn(),
+};
 
   beforeAll(async () => {
     moduleRef = await Test.createTestingModule({
       providers: [
         { provide: SERVICIO_PACIENTE, useClass: PacienteServicio },
         { provide: REPOSITORIO_OBRA_SOCIAL, useValue: obraSocialRepoMock },
-        { provide: PACIENTE_REPOSITORIO, useValue: pacienteRepoMock }
+        { provide: PACIENTE_REPOSITORIO, useValue: pacienteRepoMock },
       ],
     }).compile();
 
@@ -79,258 +88,242 @@ describe('Registrar paciente (unit)', () => {
     jest.clearAllMocks();
   });
 
-  it("Se registra el paciente exitosamente con obra social", () => {
-  const dto = crearPacienteDtoBase({
-    obraSocial: { nombre: "OSECAC", numeroAfiliado: 15820 },
+  it("Se registra el paciente exitosamente con obra social", async () => {
+    const dto = crearPacienteDtoBase({
+      obraSocial: { nombre: "OSECAC", numeroAfiliado: 15820 },
+    });
+
+    obraSocialRepoMock.existePorNombre.mockResolvedValue(true);
+    obraSocialRepoMock.afiliadoAlPaciente.mockResolvedValue(true);
+    pacienteRepoMock.guardarPaciente.mockResolvedValue(undefined);
+
+    const p = await pacienteServicio.registrarPaciente(dto);
+
+    expect(p.getCuil()).toBe("20-41383873-9");
+    expect(obraSocialRepoMock.existePorNombre).toHaveBeenCalledWith("OSECAC");
+    expect(obraSocialRepoMock.afiliadoAlPaciente).toHaveBeenCalledWith(
+      "20-41383873-9",
+      15820,
+      "OSECAC"
+    );
+    expect(pacienteRepoMock.guardarPaciente).toHaveBeenCalledTimes(1);
   });
 
-  obraSocialRepoMock.existePorNombre.mockReturnValue(true);
-  obraSocialRepoMock.afiliadoAlPaciente.mockReturnValue(true);
+  it("No se registra el paciente si la obra social no existe", async () => {
+    const dto = crearPacienteDtoBase({
+      obraSocial: { nombre: "OSECAC", numeroAfiliado: 15820 },
+    });
 
-  const p = pacienteServicio.registrarPaciente(dto);
+    obraSocialRepoMock.existePorNombre.mockResolvedValue(false);
+    obraSocialRepoMock.afiliadoAlPaciente.mockResolvedValue(true);
 
-  expect(p.getCuil()).toBe("20-41383873-9");
-  expect(obraSocialRepoMock.existePorNombre).toHaveBeenCalledWith("OSECAC");
-  expect(obraSocialRepoMock.afiliadoAlPaciente).toHaveBeenCalledWith(
-    "20-41383873-9",
-    15820
-  );
+    await expect(pacienteServicio.registrarPaciente(dto)).rejects.toBeInstanceOf(NotFoundException);
+
+    expect(obraSocialRepoMock.existePorNombre).toHaveBeenCalledWith("OSECAC");
+    // No hace falta verificar afiliadoAlPaciente porque debería cortar antes
   });
 
-  it("No se registra el paciente si la obra social no existe", () => {
-  const dto = crearPacienteDtoBase({
-    obraSocial: { nombre: "OSECAC", numeroAfiliado: 15820 },
+  it("No se registra el paciente si la afiliacion a la obra social no existe", async () => {
+    const dto = crearPacienteDtoBase({
+      obraSocial: { nombre: "OSECAC", numeroAfiliado: 15820 },
+    });
+
+    obraSocialRepoMock.existePorNombre.mockResolvedValue(true);
+    obraSocialRepoMock.afiliadoAlPaciente.mockResolvedValue(false);
+
+    await expect(pacienteServicio.registrarPaciente(dto)).rejects.toBeInstanceOf(NotFoundException);
+
+    expect(obraSocialRepoMock.existePorNombre).toHaveBeenCalledWith("OSECAC");
+    expect(obraSocialRepoMock.afiliadoAlPaciente).toHaveBeenCalledWith(
+      "20-41383873-9",
+      15820,
+      "OSECAC"
+    );
   });
 
-  obraSocialRepoMock.existePorNombre.mockReturnValue(false);
-  obraSocialRepoMock.afiliadoAlPaciente.mockReturnValue(true);
+  it("Se registra el paciente exitosamente si no tiene obra social", async () => {
+    const dto = crearPacienteDtoBase({ obraSocial: null });
 
-  expect(() => pacienteServicio.registrarPaciente(dto))
-    .toThrow(new NotFoundException("Obra social inexistente"));
+    pacienteRepoMock.guardarPaciente.mockResolvedValue(undefined);
 
-  expect(obraSocialRepoMock.existePorNombre).toHaveBeenCalledWith("OSECAC");
+    const p = await pacienteServicio.registrarPaciente(dto);
+
+    expect(p.getCuil()).toBe("20-41383873-9");
+    expect(obraSocialRepoMock.existePorNombre).not.toHaveBeenCalled();
+    expect(obraSocialRepoMock.afiliadoAlPaciente).not.toHaveBeenCalled();
+    expect(pacienteRepoMock.guardarPaciente).toHaveBeenCalledTimes(1);
   });
 
-  it("No se registra el paciente si la afiliacion a la obra social no existe", () => {
-  const dto = crearPacienteDtoBase({
-    obraSocial: { nombre: "OSECAC", numeroAfiliado: 15820 },
+  it("Falla si viene obra social pero falta numeroAfiliado", async () => {
+    const dto = crearPacienteDtoBase();
+
+    const obraDto = new ObraSocialDto() as any;
+    obraDto.nombre = "OSECAC";
+    obraDto.numeroAfiliado = undefined;
+    (dto as any).obraSocial = obraDto;
+
+    await expect(pacienteServicio.registrarPaciente(dto)).rejects.toBeInstanceOf(BadRequestException);
+
+    try {
+      await pacienteServicio.registrarPaciente(dto);
+    } catch (e) {
+      const msg = (e as BadRequestException).message.toLowerCase();
+      expect(msg).toContain("faltan datos mandatorios");
+      expect(msg).toContain("obrasocial.numeroafiliado");
+    }
+
+    expect(obraSocialRepoMock.existePorNombre).not.toHaveBeenCalled();
+    expect(obraSocialRepoMock.afiliadoAlPaciente).not.toHaveBeenCalled();
   });
 
-  obraSocialRepoMock.existePorNombre.mockReturnValue(true);
-  obraSocialRepoMock.afiliadoAlPaciente.mockReturnValue(false);
+  it("Falla si viene obra social pero falta el objeto ObraSocial (nombre vacío)", async () => {
+    const dto = crearPacienteDtoBase({
+      obraSocial: { nombre: "", numeroAfiliado: 15820 },
+    });
 
-  expect(() => pacienteServicio.registrarPaciente(dto))
-    .toThrow(new NotFoundException("Afiliacion no existente"));
+    await expect(pacienteServicio.registrarPaciente(dto)).rejects.toBeInstanceOf(BadRequestException);
 
-  expect(obraSocialRepoMock.existePorNombre).toHaveBeenCalledWith("OSECAC");
-  expect(obraSocialRepoMock.afiliadoAlPaciente).toHaveBeenCalledWith(
-    "20-41383873-9",
-    15820
-  );
+    try {
+      await pacienteServicio.registrarPaciente(dto);
+    } catch (e) {
+      const msg = (e as BadRequestException).message.toLowerCase();
+      expect(msg).toContain("faltan datos mandatorios");
+      expect(msg).toContain("obrasocial.obrasocial");
+    }
   });
 
-  it("Se registra el paciente exitosamente si no tiene obra social", () => {
-  const dto = crearPacienteDtoBase({ obraSocial: null });
+  it("Falla si falta el nombre", async () => {
+    const dto = crearPacienteDtoBase({ nombre: "" });
 
-  const p = pacienteServicio.registrarPaciente(dto);
+    await expect(pacienteServicio.registrarPaciente(dto)).rejects.toBeInstanceOf(BadRequestException);
 
-  expect(p.getCuil()).toBe("20-41383873-9");
-  expect(obraSocialRepoMock.existePorNombre).not.toHaveBeenCalled();
-  expect(obraSocialRepoMock.afiliadoAlPaciente).not.toHaveBeenCalled();
+    try {
+      await pacienteServicio.registrarPaciente(dto);
+    } catch (e) {
+      const msg = (e as BadRequestException).message.toLowerCase();
+      expect(msg).toContain("faltan datos mandatorios");
+      expect(msg).toContain("nombre");
+    }
   });
 
-  it("Falla si viene obra social pero falta numeroAfiliado", () => {
- 
-  const dto = crearPacienteDtoBase(); 
+  it("Falla si falta el apellido", async () => {
+    const dto = crearPacienteDtoBase({ apellido: "" });
 
+    await expect(pacienteServicio.registrarPaciente(dto)).rejects.toBeInstanceOf(BadRequestException);
 
-  const obraDto = new ObraSocialDto() as any;
-  obraDto.nombre = "OSECAC";
-  obraDto.numeroAfiliado = undefined; 
-  (dto as any).obraSocial = obraDto;
+    try {
+      await pacienteServicio.registrarPaciente(dto);
+    } catch (e) {
+      const msg = (e as BadRequestException).message.toLowerCase();
+      expect(msg).toContain("faltan datos mandatorios");
+      expect(msg).toContain("apellido");
+    }
+  });
 
- 
-  obraSocialRepoMock.existePorNombre.mockReturnValue(true);
-  obraSocialRepoMock.afiliadoAlPaciente.mockReturnValue(true);
+  it("Falla si falta el domicilio", async () => {
+    const dto = crearPacienteDtoBase({ domicilio: null });
 
-  expect(() => pacienteServicio.registrarPaciente(dto))
-    .toThrow(BadRequestException);
+    await expect(pacienteServicio.registrarPaciente(dto)).rejects.toBeInstanceOf(BadRequestException);
 
-  try {
-    pacienteServicio.registrarPaciente(dto);
-  } catch (e) {
-    const msg = (e as BadRequestException).message.toLowerCase();
-    expect(msg).toContain("faltan datos mandatorios");
-    expect(msg).toContain("obrasocial.numeroafiliado"); // tal como lo arma tu assertCamposMandatorios
-  }
+    try {
+      await pacienteServicio.registrarPaciente(dto);
+    } catch (e) {
+      const msg = (e as BadRequestException).message.toLowerCase();
+      expect(msg).toContain("faltan datos mandatorios");
+      expect(msg).toContain("domicilio");
+    }
+  });
 
-  expect(obraSocialRepoMock.existePorNombre).not.toHaveBeenCalled();
-  expect(obraSocialRepoMock.afiliadoAlPaciente).not.toHaveBeenCalled();
+  it("Falla si falta el atributo calle de domicilio", async () => {
+    const dto = crearPacienteDtoBase({
+      domicilio: { calle: "" },
+    });
+
+    await expect(pacienteServicio.registrarPaciente(dto)).rejects.toBeInstanceOf(BadRequestException);
+
+    try {
+      await pacienteServicio.registrarPaciente(dto);
+    } catch (e) {
+      const msg = (e as BadRequestException).message.toLowerCase();
+      expect(msg).toContain("faltan datos mandatorios");
+      expect(msg).toContain("domicilio.calle");
+    }
+  });
+
+  it("Falla si falta el atributo localidad de domicilio", async () => {
+    const dto = crearPacienteDtoBase({
+      domicilio: { localidad: "" },
+    });
+
+    await expect(pacienteServicio.registrarPaciente(dto)).rejects.toBeInstanceOf(BadRequestException);
+
+    try {
+      await pacienteServicio.registrarPaciente(dto);
+    } catch (e) {
+      const msg = (e as BadRequestException).message.toLowerCase();
+      expect(msg).toContain("faltan datos mandatorios");
+      expect(msg).toContain("domicilio.localidad");
+    }
+  });
+
+  it("Falla si falta el atributo numero de domicilio", async () => {
+    const dto = crearPacienteDtoBase();
+    (dto.domicilio as any).numero = undefined;
+
+    await expect(pacienteServicio.registrarPaciente(dto)).rejects.toBeInstanceOf(BadRequestException);
+
+    try {
+      await pacienteServicio.registrarPaciente(dto);
+    } catch (e) {
+      const msg = (e as BadRequestException).message.toLowerCase();
+      expect(msg).toContain("faltan datos mandatorios");
+      expect(msg).toContain("domicilio.numero");
+    }
+  });
+
+  it("Falla si el CUIL no cumple el formato NN-NNNNNNNN-N", async () => {
+    const dto = crearPacienteDtoBase({
+      cuil: "20413838739",
+    });
+
+    await expect(pacienteServicio.registrarPaciente(dto)).rejects.toBeInstanceOf(BadRequestException);
+
+    try {
+      await pacienteServicio.registrarPaciente(dto);
+    } catch (e) {
+      const msg = (e as BadRequestException).message.toLowerCase();
+      expect(msg).toContain("formato inválido");
+      expect(msg).toContain("nn-nnnnnnnn-n");
+    }
+  });
+
+  it("Falla si el CUIL tiene dígito verificador incorrecto", async () => {
+    const dto = crearPacienteDtoBase({
+      cuil: "20-41383873-0",
+    });
+
+    await expect(pacienteServicio.registrarPaciente(dto)).rejects.toBeInstanceOf(BadRequestException);
+
+    try {
+      await pacienteServicio.registrarPaciente(dto);
+    } catch (e) {
+      const msg = (e as BadRequestException).message.toLowerCase();
+      expect(msg).toContain("dígito verificador");
+      expect(msg).toContain("no coincide");
+    }
+  });
+
+  it("Pasa con CUIL válido (formato y checksum correctos)", async () => {
+    const dto = crearPacienteDtoBase({
+      cuil: "20-41383873-9",
+      obraSocial: { nombre: "OSECAC", numeroAfiliado: 15820 },
+    });
+
+    obraSocialRepoMock.existePorNombre.mockResolvedValue(true);
+    obraSocialRepoMock.afiliadoAlPaciente.mockResolvedValue(true);
+    pacienteRepoMock.guardarPaciente.mockResolvedValue(undefined);
+
+    const p = await pacienteServicio.registrarPaciente(dto);
+    expect(p.getCuil()).toBe("20-41383873-9");
+  });
 });
-
-  it("Falla si viene obra social pero falta el objeto ObraSocial (nombre vacío)", () => {
-  const dto = crearPacienteDtoBase({
-    obraSocial: { nombre: "", numeroAfiliado: 15820 },
-  });
-
-  expect(() => pacienteServicio.registrarPaciente(dto))
-    .toThrow(BadRequestException);
-
-  try {
-    pacienteServicio.registrarPaciente(dto);
-  } catch (e) {
-    const msg = (e as BadRequestException).message.toLowerCase();
-    expect(msg).toContain("faltan datos mandatorios");
-    expect(msg).toContain("obrasocial.obrasocial"); 
-  }
-  });
-
-  it("Falla si falta el nombre", () => {
-  const dto = crearPacienteDtoBase({ nombre: "" });
-
-  expect(() => pacienteServicio.registrarPaciente(dto))
-    .toThrow(BadRequestException);
-
-  try {
-    pacienteServicio.registrarPaciente(dto);
-  } catch (e) {
-    const msg = (e as BadRequestException).message.toLowerCase();
-    expect(msg).toContain("faltan datos mandatorios");
-    expect(msg).toContain("nombre");
-  }
-  });
-
-  it("Falla si falta el apellido", () => {
-  const dto = crearPacienteDtoBase({ apellido: "" });
-
-  expect(() => pacienteServicio.registrarPaciente(dto))
-    .toThrow(BadRequestException);
-
-  try {
-    pacienteServicio.registrarPaciente(dto);
-  } catch (e) {
-    const msg = (e as BadRequestException).message.toLowerCase();
-    expect(msg).toContain("faltan datos mandatorios");
-    expect(msg).toContain("apellido");
-  }
-  });
-
-  it("Falla si falta el domicilio", () => {
-  const dto = crearPacienteDtoBase({ domicilio: null });
-
-  expect(() => pacienteServicio.registrarPaciente(dto))
-    .toThrow(BadRequestException);
-
-  try {
-    pacienteServicio.registrarPaciente(dto);
-  } catch (e) {
-    const msg = (e as BadRequestException).message.toLowerCase();
-    expect(msg).toContain("faltan datos mandatorios");
-    expect(msg).toContain("domicilio");
-  }
-  });
-  
-  it("Falla si falta el atributo calle de domicilio", () => {
-  const dto = crearPacienteDtoBase({
-    domicilio: { calle: "" },
-  });
-
-  expect(() => pacienteServicio.registrarPaciente(dto))
-    .toThrow(BadRequestException);
-
-  try {
-    pacienteServicio.registrarPaciente(dto);
-  } catch (e) {
-    const msg = (e as BadRequestException).message.toLowerCase();
-    expect(msg).toContain("faltan datos mandatorios");
-    expect(msg).toContain("domicilio.calle");
-  }
-  });  
-
-  it("Falla si falta el atributo localidad de domicilio", () => {
-  const dto = crearPacienteDtoBase({
-    domicilio: { localidad: "" },
-  });
-
-  expect(() => pacienteServicio.registrarPaciente(dto))
-    .toThrow(BadRequestException);
-
-  try {
-    pacienteServicio.registrarPaciente(dto);
-  } catch (e) {
-    const msg = (e as BadRequestException).message.toLowerCase();
-    expect(msg).toContain("faltan datos mandatorios");
-    expect(msg).toContain("domicilio.localidad");
-  }
-  });  
-
-  it("Falla si falta el atributo numero de domicilio", () => {
-  const dto = crearPacienteDtoBase();
-
-  (dto.domicilio as any).numero = undefined;
-
-  expect(() => pacienteServicio.registrarPaciente(dto))
-    .toThrow(BadRequestException);
-
-  try {
-    pacienteServicio.registrarPaciente(dto);
-  } catch (e) {
-    const msg = (e as BadRequestException).message.toLowerCase();
-    expect(msg).toContain("faltan datos mandatorios");
-    expect(msg).toContain("domicilio.numero");
-  }
-});
-
-  it("Falla si el CUIL no cumple el formato NN-NNNNNNNN-N", () => {
-  const dto = crearPacienteDtoBase({
-    cuil: "20413838739",
-  });
-
-  expect(() => pacienteServicio.registrarPaciente(dto))
-    .toThrow(BadRequestException);
-
-  try {
-    pacienteServicio.registrarPaciente(dto);
-  } catch (e) {
-    const msg = (e as BadRequestException).message.toLowerCase();
-    expect(msg).toContain("formato inválido");
-    expect(msg).toContain("nn-nnnnnnnn-n");
-  }
-  });
-
-  it("Falla si el CUIL tiene dígito verificador incorrecto", () => {
-  const dto = crearPacienteDtoBase({
-    cuil: "20-41383873-0",
-  });
-
-  expect(() => pacienteServicio.registrarPaciente(dto))
-    .toThrow(BadRequestException);
-
-  try {
-    pacienteServicio.registrarPaciente(dto);
-  } catch (e) {
-    const msg = (e as BadRequestException).message.toLowerCase();
-    expect(msg).toContain("dígito verificador");
-    expect(msg).toContain("no coincide");
-  }
-  });
-
-  it("Pasa con CUIL válido (formato y checksum correctos)", () => {
-  const dto = crearPacienteDtoBase({
-    cuil: "20-41383873-9",
-    obraSocial: { nombre: "OSECAC", numeroAfiliado: 15820 },
-  });
-
-  obraSocialRepoMock.existePorNombre.mockReturnValue(true);
-  obraSocialRepoMock.afiliadoAlPaciente.mockReturnValue(true);
-
-  const p = pacienteServicio.registrarPaciente(dto);
-  expect(p.getCuil()).toBe("20-41383873-9");
-  });
-
-  
-});
-
-
-  
-

@@ -1,30 +1,29 @@
 import { EstadoIngreso } from './../estado-ingreso/estadoIngreso.enum';
 import { Enfermera } from '../enfermera/enfermera.entity';
 import { NivelEmergencia } from '../nivel-emergencia/nivelEmergencia.enum';
-import { Paciente } from '../paciente/paciente';
 import { FrecuenciaCardiaca } from '../value-objects/frecuenciaCardiaca';
 import { FrecuenciaRespiratoria } from '../value-objects/frecuenciaRespiratoria';
 import { TensionArterial } from '../value-objects/tensionArterial';
 import { randomUUID } from 'crypto';
+import { Paciente } from '../paciente/paciente';
 
 interface IngresoArgs {
   paciente: Paciente;
   enfermera: Enfermera;
   informe: string;
-  nivelEmergencia: NivelEmergencia; // enum numérico: 1..5
+  nivelEmergencia: NivelEmergencia; 
   temperatura: number;
   frecuenciaCardiaca: number;
   frecuenciaRespiratoria: number;
-  /** presión arterial */
   presionSistolica: number;
   presionDiastolica: number;
-
+  fechaIngreso: Date;
 }
 
 export class Ingreso {
   private readonly paciente: Paciente;
   private readonly enfermera: Enfermera;
-  private readonly fechaIngreso: Date;
+  private fechaIngreso: Date;
   private readonly informe: string;
   private readonly nivelEmergencia: NivelEmergencia;
   private readonly temperatura: number;
@@ -73,5 +72,39 @@ export class Ingreso {
   get Fecha(): Date { return this.fechaIngreso; }
   get Estado(): EstadoIngreso { return this.estadoIngreso; }
 
+  public getEnfermera() {
+    return this.enfermera;
+  }
 
+  public getPaciente(){
+    return this.paciente;
+  }
+
+  public getEstadoIngreso(){
+    return this.estadoIngreso;
+  }
+
+  public getNivelEmergencia(){
+    return this.nivelEmergencia;
+  }
+
+  public getInforme(){
+    return this.informe;
+  }
+
+  public getTemperatura(){
+        return this.temperatura;
+  }
+
+  public getFrecuenciaRespiratoria(){
+    return this.frecuenciaRespiratoria.Valor;
+  }
+
+  public getFrecuenciaCardiaca(){
+    return this.frecuenciaCardiaca.Valor;
+  }
+
+  public getTensionArterialComoString(){
+    return this.tensionArterial.diastolica.Valor + '/' + this.tensionArterial.sistolica.Valor
+  }
 }

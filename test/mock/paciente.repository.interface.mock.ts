@@ -1,11 +1,9 @@
-import { Paciente } from "src/models/paciente/paciente";
-
-export const PACIENTE_REPOSITORIO = Symbol('PACIENTE_REPOSITORIO');
+import { Paciente } from "../../src/models/paciente/paciente";
 
 export interface PacienteRepositorio {
-    guardarPaciente(patient: Paciente): void;
     buscarPacientePorCuil(cuil: string): Paciente | null;
+    guardarPaciente(paciente: Paciente): void;
     obtenerTodos(): Paciente[];
     borrarPorCuil(cuil: string): void;
     clear(): void;
-};
+}

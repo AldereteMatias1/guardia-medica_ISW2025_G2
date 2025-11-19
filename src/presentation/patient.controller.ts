@@ -13,7 +13,7 @@ import { CreatePacienteDto } from '../models/paciente/dto/create.patient.dto';
 
 import { SERVICIO_PACIENTE } from 'src/app/interfaces/paciente/paciente.service';
 import type { IPacienteServicio } from 'src/app/interfaces/paciente/paciente.service';
-import { PACIENTE_REPOSITORIO } from '../app/interfaces/paciente/patient.repository';
+import { PACIENTE_REPOSITORIO } from '../app/interfaces/paciente/patient.repository.interface';
 import { PatientRepositoryImpl } from 'src/persistence/patient.repository';
 
 @ApiTags('pacientes')

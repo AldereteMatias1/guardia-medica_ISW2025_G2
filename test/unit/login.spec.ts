@@ -1,5 +1,5 @@
 import { JwtService } from "@nestjs/jwt";
-import { IUsuarioRepositorio } from "../../src/app/interfaces/usuario/usuarios.repository";
+import { IUsuarioRepositorio } from "../../src/app/interfaces/usuario/usuarios.repository.interface";
 import { AuthService } from "../../src/app/services/auth.service";
 import { comparePassword } from "../../src/auth/utils/hashing";
 import { RolUsuario } from "../../src/models/usuario/usuario";
@@ -62,49 +62,59 @@ const makeUser = (overrides: Partial<{ email: string; password: string; rol: Rol
 
 describe('login', () => {
     it('Loguearse exitosamente en el sistema', async () => {
-      const stored = makeUser({ email: 'test@correo.com', password: 'HASHED' });
-      userRepoMock.obtenerPorEmail.mockReturnValue(stored); // síncrono, como en tu servicio
-      (comparePassword as jest.Mock).mockResolvedValue(true);
-      jwtServiceMock.signAsync.mockResolvedValue('ACCESS_TOKEN_123');
+    const stored = makeUser({ email: 'test@correo.com', password: 'HASHED' });
 
-      const res = await service.login({ email: stored.email, password: 'Plano123' } as any);
+    // 🔹 ahora repo es async
+    userRepoMock.obtenerPorEmail.mockResolvedValue(stored as any);
+    (comparePassword as jest.Mock).mockResolvedValue(true);
+    jwtServiceMock.signAsync.mockResolvedValue('ACCESS_TOKEN_123');
 
-      expect(userRepoMock.obtenerPorEmail).toHaveBeenCalledWith(stored.email);
-      expect(comparePassword).toHaveBeenCalledWith('Plano123', 'HASHED');
-      expect(jwtServiceMock.signAsync).toHaveBeenCalledWith({ email: stored.email, rol: stored.rol });
+    const res = await service.login({ email: stored.email, password: 'Plano123' } as any);
 
-      expect(res).toEqual({
-        message: 'Inicio de sesión exitoso',
-        token: { accessToken: 'ACCESS_TOKEN_123' },
-      });
+    expect(userRepoMock.obtenerPorEmail).toHaveBeenCalledWith(stored.email);
+    expect(comparePassword).toHaveBeenCalledWith('Plano123', 'HASHED');
+    expect(jwtServiceMock.signAsync).toHaveBeenCalledWith({
+      email: stored.email,
+      rol: stored.rol,
     });
 
-    it('debe lanzar Unauthorized si el usuario no existe', async () => {
-      userRepoMock.obtenerPorEmail.mockReturnValue(undefined);
-
-      await expect(
-        service.login({ email: 'noexiste@correo.com', password: 'x' } as any),
-      ).rejects.toBeInstanceOf(UnauthorizedException);
+    expect(res).toEqual({
+      message: 'Inicio de sesión exitoso',
+      token: { accessToken: 'ACCESS_TOKEN_123' },
     });
+  });
 
-    it('debe lanzar Unauthorized si la contraseña no coincide', async () => {
-      const stored = makeUser({ email: 'test@correo.com', password: 'HASHED' });
-      userRepoMock.obtenerPorEmail.mockReturnValue(stored);
-      (comparePassword as jest.Mock).mockResolvedValue(false);
+  it('debe lanzar Unauthorized si el usuario no existe', async () => {
+    userRepoMock.obtenerPorEmail.mockResolvedValue(null); // 👈 ahora null en Promise
 
-      await expect(
-        service.login({ email: stored.email, password: 'malapass' } as any),
-      ).rejects.toBeInstanceOf(UnauthorizedException);
-    });
+    await expect(
+      service.login({ email: 'noexiste@correo.com', password: 'x' } as any),
+    ).rejects.toBeInstanceOf(UnauthorizedException);
 
-    it('debe lanzar InternalServerError si ocurre un error inesperado', async () => {
-      
-      userRepoMock.obtenerPorEmail.mockImplementation(() => {
-        throw new Error('Fallo inesperado');
-      });
+    expect(userRepoMock.obtenerPorEmail).toHaveBeenCalledWith('noexiste@correo.com');
+  });
 
-      await expect(
-        service.login({ email: 'test@correo.com', password: 'x' } as any),
-      ).rejects.toBeInstanceOf(InternalServerErrorException);
-    });
+  it('debe lanzar Unauthorized si la contraseña no coincide', async () => {
+    const stored = makeUser({ email: 'test@correo.com', password: 'HASHED' });
+    userRepoMock.obtenerPorEmail.mockResolvedValue(stored as any);
+    (comparePassword as jest.Mock).mockResolvedValue(false);
+
+    await expect(
+      service.login({ email: stored.email, password: 'malapass' } as any),
+    ).rejects.toBeInstanceOf(UnauthorizedException);
+
+    expect(userRepoMock.obtenerPorEmail).toHaveBeenCalledWith(stored.email);
+    expect(comparePassword).toHaveBeenCalledWith('malapass', 'HASHED');
+  });
+
+  it('debe lanzar InternalServerError si ocurre un error inesperado', async () => {
+    userRepoMock.obtenerPorEmail.mockRejectedValue(new Error('Fallo inesperado'));
+
+    await expect(
+      service.login({ email: 'test@correo.com', password: 'x' } as any),
+    ).rejects.toBeInstanceOf(InternalServerErrorException);
+
+    expect(userRepoMock.obtenerPorEmail).toHaveBeenCalledWith('test@correo.com');
+    expect(errorSpy).toHaveBeenCalled(); // opcional si querés validar el console.error
+  });
   });

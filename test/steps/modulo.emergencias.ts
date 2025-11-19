@@ -1,16 +1,19 @@
 
 import { Before, Given, When, Then, After } from '@cucumber/cucumber';
 import assert from 'assert';
-import { ServicioIngreso } from '../../src/app/interfaces/urgencia.service';
+import { IIngresoServicio } from '../../src/app/interfaces/ingreso/ingreso.service.interface';
 import { Ingreso } from '../../src/models/ingreso/ingreso';
 import { Paciente } from '../../src/models/paciente/paciente';
 import { NivelEmergencia } from '../../src/models/nivel-emergencia/nivelEmergencia.enum';
 import { Enfermera } from '../../src/models/enfermera/enfermera.entity';
 import { DataBaseInMemory } from '../../test/mock/database.memory';
 import { IngresoServiceImpl } from '../../src/app/services/ingreso.service';
+import { IIngresoRepositorio } from '../../src/app/interfaces/ingreso/ingreso.repository.interface';
+import { IngresoRepoInMemory } from '../../test/mock/ingreso.repository.mock';
 
 let enfermera: Enfermera;
-let service: ServicioIngreso ;
+let service: IIngresoServicio ;
+let ingresoRepo: IIngresoRepositorio;
 let patientRepo: DataBaseInMemory;
 let msgLastError: string;
 let countAntesDeIntento = 0;
@@ -41,13 +44,14 @@ function registrarPacientes(dataTable) {
   });
 }
 
-function listaOrdenadaActual(): Ingreso[] {
-  return service.obtenerPendientes();
+async function listaOrdenadaActual(): Promise<Ingreso[]> {
+  return await service.obtenerPendientes();
 }
 
 Before((scenario) => {
   patientRepo = new DataBaseInMemory(); 
-  service = new IngresoServiceImpl(patientRepo as any);
+  ingresoRepo = new IngresoRepoInMemory();
+  service = new IngresoServiceImpl(patientRepo as any, ingresoRepo as any);
   msgLastError = '';
   countAntesDeIntento = 0;
   console.log(`SCENARIO: ${scenario.pickle.name}`);
@@ -66,11 +70,11 @@ Given('esta registrado el siguiente paciente:', (dataTable) => {
   registrarPacientes(dataTable);
 });
 
-When('ingresa a urgencias el siguiente paciente:', (dataTable) => {
+When('ingresa a urgencias el siguiente paciente:', async (dataTable) => {
   const data = dataTable.hashes();
-  countAntesDeIntento = listaOrdenadaActual().length;
+  countAntesDeIntento = (await listaOrdenadaActual()).length;
 
-  data.forEach((row) => {
+  for (const row of data) {
     try {
       const cuil = row['cuil'];
       const informe = (row['informe'] ?? '').trim();
@@ -83,8 +87,8 @@ When('ingresa a urgencias el siguiente paciente:', (dataTable) => {
       const fr = Number(row['frecuencia respiratoria'] ?? row['fr']);
       const taStr = row['tension arterial'] ?? row['tensión arterial'] ?? row['ta'];
       const { s: presionSistolica, d: presionDiastolica } = parseTA(taStr);
-
-      service.registrarIngreso(
+      
+      await service.registrarIngreso(
         cuil,
         enfermera,
         informe,
@@ -98,12 +102,14 @@ When('ingresa a urgencias el siguiente paciente:', (dataTable) => {
     } catch (err: any) {
       msgLastError = err.message;
     }
-  });
+  }
 });
 
-Then('La lista de espera esta ordenada por cuil de la siguiente manera:', (dataTable) => {
+Then('La lista de espera esta ordenada por cuil de la siguiente manera:', async (dataTable) => {
   const esperados = dataTable.rows().map((r) => r[0]);
-  const actuales = listaOrdenadaActual().map((i: any) => i.CuilPaciente ?? i['CuilPaciente']);
+  const ingresos = await listaOrdenadaActual();
+  const actuales = ingresos.map((i: any) => i.CuilPaciente ?? i['CuilPaciente']);
+
   assert.deepStrictEqual(
     actuales,
     esperados,
@@ -123,8 +129,8 @@ Then('el sistema muestra un error indicando que falta el campo {string}', (campo
 });
 
 
-Then('el ingreso no se registra', () => {
-  const countDespues = listaOrdenadaActual().length;
+Then('el ingreso no se registra', async () => {
+  const countDespues = (await listaOrdenadaActual()).length;
   assert.strictEqual(countDespues, countAntesDeIntento);
 });
 
