@@ -2,7 +2,6 @@
 import { Injectable } from '@nestjs/common';
 import { IIngresoRepositorio } from '../../src/app/interfaces/ingreso/ingreso.repository.interface';
 import { Ingreso } from '../../src/models/ingreso/ingreso';
-import { EstadoIngreso } from '../../src/models/estado-ingreso/estadoIngreso.enum';
 import { NivelEmergencia } from '../../src/models/nivel-emergencia/nivelEmergencia.enum';
 import { Paciente } from '../../src/models/paciente/paciente';
 import { Enfermera } from '../../src/models/enfermera/enfermera.entity';
@@ -102,6 +101,7 @@ export class IngresoRepositorio implements IIngresoRepositorio {
         paciente.getCuil(),
         estado, 
         ingreso.getInforme(),
+        ingreso.getFechaIngreso(),
         ingreso.getTemperatura(),
         ingreso.getFrecuenciaRespiratoria(),
         ingreso.getFrecuenciaCardiaca(),
