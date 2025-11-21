@@ -1,15 +1,16 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Ingreso } from '../../models/ingreso/ingreso';
-import { Enfermera } from '../../models/enfermera/enfermera.entity';
+import { Enfermera } from '../../../src/models/enfermera/enfermera.entity';
 import { NivelEmergencia } from '../../models/nivel-emergencia/nivelEmergencia.enum';
 import * as pacienteRepository from '../interfaces/paciente/patient.repository.interface';
 import { PACIENTE_REPOSITORIO } from '../interfaces/paciente/patient.repository.interface';
 import { IIngresoServicio } from '../interfaces/ingreso/ingreso.service.interface';
 import * as ingresoRepositoryInterface from '../interfaces/ingreso/ingreso.repository.interface';
+import * as enfermeraServiceInterface from '../interfaces/enfemera/enfermera.service.interface';
 
 
 @Injectable()
-export class IngresoServiceImpl implements IIngresoServicio {
+export class IngresoService implements IIngresoServicio {
   
   constructor(
     @Inject(PACIENTE_REPOSITORIO)
@@ -18,11 +19,14 @@ export class IngresoServiceImpl implements IIngresoServicio {
     @Inject(ingresoRepositoryInterface.INGRESO_REPOSITORIO)
     private readonly ingresoRepo: ingresoRepositoryInterface.IIngresoRepositorio,
 
+    @Inject(enfermeraServiceInterface.SERVICIO_ENFERMERO)
+    private readonly enfermeroServicio: enfermeraServiceInterface.IEnfermeroServicio
+
   ) {}
 
   async registrarIngreso(
     cuilPaciente: string,
-    enfermera: Enfermera,
+    idEnfermera: number,
     informe: string,
     nivelEmergencia: NivelEmergencia,
     temperatura: number,
@@ -33,6 +37,8 @@ export class IngresoServiceImpl implements IIngresoServicio {
   ): Promise<Ingreso> {
     const paciente = await this.pacienteRepo.buscarPacientePorCuil(cuilPaciente);
     if (!paciente) throw new NotFoundException('Paciente no encontrado');
+    const enfermera = await this.enfermeroServicio.obtenerPorId(idEnfermera);
+    if(!enfermera) throw new NotFoundException('Enfermera no encontrada');
     const ingreso = new Ingreso({
       paciente,
       enfermera,

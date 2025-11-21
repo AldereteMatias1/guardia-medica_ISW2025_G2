@@ -5,8 +5,8 @@ Feature: Modulo de emergencias
 
 Background:
   Given que la siguiente enfermera está registrada:
-    | Nombre | Apellido |
-    | susana | gimenez  |
+    | Nombre | Apellido | id |
+    | susana | gimenez  |  1 |
 @ingresoPrimerPaciente
 Scenario: Registrar ingreso exitoso del primer paciente
   Given estan registrados los siguientes pacientes:

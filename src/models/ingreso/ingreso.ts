@@ -107,4 +107,8 @@ export class Ingreso {
   public getTensionArterialComoString(){
     return this.tensionArterial.diastolica.Valor + '/' + this.tensionArterial.sistolica.Valor
   }
+
+  public getFechaIngreso(){
+    return this.fechaIngreso;
+  }
 }

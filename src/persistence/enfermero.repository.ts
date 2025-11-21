@@ -1,17 +1,18 @@
+import { Injectable } from "@nestjs/common";
 import { IEnfermeroRepositorio } from "../../src/app/interfaces/enfemera/enfermera.repository";
 import { DatabaseService } from "../../src/config/database/database.service";
 import { Enfermera } from "../../src/models/enfermera/enfermera.entity";
 import { RolUsuario, Usuario } from "../../src/models/usuario/usuario";
 
+@Injectable()
 export class EnfermeroRepositorio implements IEnfermeroRepositorio {
-
+  
     constructor(
         private readonly db: DatabaseService,
     ) {}
 
     async obtenerPorId(id: number): Promise<Enfermera | null> {
         const rows = await this.db.query<{
-        id: number;
         nombre: string;
         apellido: string;
         cuil: string;
@@ -34,7 +35,7 @@ export class EnfermeroRepositorio implements IEnfermeroRepositorio {
 
         const row = rows[0];
 
-        const enfermera = new (require("src/models/enfermera/enfermera").Enfermera)(
+        const enfermera = new (require("../models/enfermera/enfermera.entity").Enfermera)(
         row.nombre,
         row.apellido,
         row.matricula
@@ -72,7 +73,7 @@ export class EnfermeroRepositorio implements IEnfermeroRepositorio {
 
     const row = rows[0];
 
-    const enfermera = new (require("src/models/enfermera/enfermera").Enfermera)(
+    const enfermera = new (require("../models/enfermera/enfermera.entity").Enfermera)(
       row.nombre,
       row.apellido,
       row.matricula

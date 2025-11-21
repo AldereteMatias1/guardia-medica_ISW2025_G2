@@ -1,6 +1,5 @@
-import { Enfermera } from "src/models/enfermera/enfermera.entity";
-import { Ingreso } from "src/models/ingreso/ingreso";
-import { NivelEmergencia } from "src/models/nivel-emergencia/nivelEmergencia.enum";
+import { Ingreso } from "../../../../src/models/ingreso/ingreso";
+import { NivelEmergencia } from "../../../../src/models/nivel-emergencia/nivelEmergencia.enum";
 
 
 export const SERVICIO_INGRESO = Symbol('SERVICIO_INGRESO');
@@ -8,7 +7,7 @@ export const SERVICIO_INGRESO = Symbol('SERVICIO_INGRESO');
 export interface IIngresoServicio {
    registrarIngreso(
        cuilPaciente: string,
-       enfermera: Enfermera,
+       idEnfermera: number,
        informe: string,
        nivelEmergencia: NivelEmergencia,
        temperatura: number,

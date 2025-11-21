@@ -7,16 +7,23 @@ import { Paciente } from '../../src/models/paciente/paciente';
 import { NivelEmergencia } from '../../src/models/nivel-emergencia/nivelEmergencia.enum';
 import { Enfermera } from '../../src/models/enfermera/enfermera.entity';
 import { DataBaseInMemory } from '../../test/mock/database.memory';
-import { IngresoServiceImpl } from '../../src/app/services/ingreso.service';
+import { IngresoService } from '../../src/app/services/ingreso.service';
 import { IIngresoRepositorio } from '../../src/app/interfaces/ingreso/ingreso.repository.interface';
 import { IngresoRepoInMemory } from '../../test/mock/ingreso.repository.mock';
+import { IEnfermeroServicio } from '../../src/app/interfaces/enfemera/enfermera.service.interface';
+import { ServicioEnfermero } from '../../src/app/services/enfermero.service';
+import { IEnfermeroRepositorio } from '../../src/app/interfaces/enfemera/enfermera.repository';
+import { EnfermeroDatabaseInMemory } from '../../test/mock/enfermero.repository.mock';
 
 let enfermera: Enfermera;
 let service: IIngresoServicio ;
 let ingresoRepo: IIngresoRepositorio;
+let enfermeroService: IEnfermeroServicio;
+let enfermeroRepo: IEnfermeroRepositorio;
 let patientRepo: DataBaseInMemory;
 let msgLastError: string;
 let countAntesDeIntento = 0;
+
 
 function nivelFromNombre(nombre: string): NivelEmergencia {
   if (!nombre) return NaN as any;
@@ -51,7 +58,9 @@ async function listaOrdenadaActual(): Promise<Ingreso[]> {
 Before((scenario) => {
   patientRepo = new DataBaseInMemory(); 
   ingresoRepo = new IngresoRepoInMemory();
-  service = new IngresoServiceImpl(patientRepo as any, ingresoRepo as any);
+  enfermeroRepo = new EnfermeroDatabaseInMemory();
+  enfermeroService = new ServicioEnfermero(enfermeroRepo as any);
+  service = new IngresoService(patientRepo as any, ingresoRepo as any, enfermeroService as any);
   msgLastError = '';
   countAntesDeIntento = 0;
   console.log(`SCENARIO: ${scenario.pickle.name}`);
@@ -59,7 +68,7 @@ Before((scenario) => {
 
 Given('que la siguiente enfermera está registrada:', (dataTable) => {
   const row = dataTable.hashes()[0];
-  enfermera = new Enfermera(row['Nombre'], row['Apellido']);
+  enfermera = new Enfermera(row['Nombre'], row['Apellido'], Number(row['id']));
 });
 
 
@@ -90,7 +99,7 @@ When('ingresa a urgencias el siguiente paciente:', async (dataTable) => {
       
       await service.registrarIngreso(
         cuil,
-        enfermera,
+        enfermera.getId(),
         informe,
         nivel,
         temperatura,
