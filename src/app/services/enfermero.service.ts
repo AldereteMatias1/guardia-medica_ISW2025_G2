@@ -1,9 +1,9 @@
-import { Inject } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { IEnfermeroServicio } from "../interfaces/enfemera/enfermera.service.interface";
 import { Enfermera } from "../../../src/models/enfermera/enfermera.entity";
 import * as enfermeraRepository from "../interfaces/enfemera/enfermera.repository";
 
-
+@Injectable()
 export class ServicioEnfermero implements IEnfermeroServicio{
     
     constructor(

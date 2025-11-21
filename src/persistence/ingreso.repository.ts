@@ -1,11 +1,13 @@
 // src/persistence/ingreso.mysql.repository.ts
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { IIngresoRepositorio } from '../../src/app/interfaces/ingreso/ingreso.repository.interface';
 import { Ingreso } from '../../src/models/ingreso/ingreso';
 import { NivelEmergencia } from '../../src/models/nivel-emergencia/nivelEmergencia.enum';
 import { Paciente } from '../../src/models/paciente/paciente';
 import { Enfermera } from '../../src/models/enfermera/enfermera.entity';
 import { DatabaseService } from '../../src/config/database/database.service';
+import * as estadoIngresoRepositoryInterface from '../../src/app/interfaces/estado-ingreso/estado.ingreso.repository.interface';
+import * as nivelEmergenciaRepositoryInterface from '../../src/app/interfaces/nivel-emergencia/nivel.emergencia.repository.interface';
 
 type IngresoRow = {
   id: number;
@@ -25,34 +27,53 @@ type IngresoRow = {
 
 @Injectable()
 export class IngresoRepositorio implements IIngresoRepositorio {
-  constructor(private readonly db: DatabaseService) {}
+  constructor(
+    private readonly db: DatabaseService,
+    @Inject(estadoIngresoRepositoryInterface.ESTADO_INGRESO_REPOSITORIO)
+    private readonly estadoRepo: estadoIngresoRepositoryInterface.IEstadoIngresoRepositorio,
+    @Inject(nivelEmergenciaRepositoryInterface.NIVEL_EMERGENCIA_REPOSITORIO)
+    private readonly nivelRepo: nivelEmergenciaRepositoryInterface.INivelEmergenciaRepositorio,
+
+  ) {}
 
   private mapNivelToDb(nivel: NivelEmergencia): string {
     switch (nivel) {
       case NivelEmergencia.CRITICA:
-        return 'Critica';
+        return 'CRITICA';
       case NivelEmergencia.EMERGENCIA:
-        return 'Emergencia';
+        return 'EMERGENCIA';
       case NivelEmergencia.URGENCIA:
-        return 'Urgencia';
+        return 'URGENCIA';
       case NivelEmergencia.URGENCIA_MENOR:
-        return 'Urgencia menor';
+        return 'URGENCIA_MENOR';
       case NivelEmergencia.SIN_URGENCIA:
-        return 'Sin urgencia';
+        return 'SIN_URGENCIA';
       default:
-        return 'Sin urgencia';
+        return 'SIN_URGENCIA';
     }
   }
 
   async guardar(ingreso: Ingreso): Promise<void> {
-
     const paciente = ingreso.getPaciente();
     const enfermera = ingreso.getEnfermera();
     const nivel = ingreso.getNivelEmergencia();
-    const estado = ingreso.getEstadoIngreso(); 
+    const estadoNombre = ingreso.getEstadoIngreso(); // por ej. 'PENDIENTE' o 'EN_PROCESO'
 
     const nivelNombre = this.mapNivelToDb(nivel);
 
+    // 1) Buscar id_estado_ingreso por nombre
+    const idEstado = await this.estadoRepo.obtenerIdPorNombre(estadoNombre);
+    if (idEstado == null) {
+      throw new Error(`No se encontró estado_ingreso con nombre: ${estadoNombre}`);
+    }
+
+    // 2) Buscar id_nivel por nombre de nivel de emergencia
+    const idNivel = await this.nivelRepo.obtenerIdPorNombre(nivelNombre);
+    if (idNivel == null) {
+      throw new Error(`No se encontró nivel para nivel_emergencia: ${nivelNombre}`);
+    }
+
+    // 3) Insertar usando directamente los IDs (sin subqueries de estado/nivel)
     await this.db.execute(
       `
       INSERT INTO ingreso (
@@ -73,40 +94,36 @@ export class IngresoRepositorio implements IIngresoRepositorio {
          JOIN persona pe ON pe.id = e.id
          WHERE pe.nombre = ? AND pe.apellido = ?
          LIMIT 1),
-        (SELECT p.id
+        (SELECT pa.id
          FROM paciente pa
          JOIN persona p ON p.id = pa.id
          WHERE p.cuil = ?
          LIMIT 1),
-        (SELECT ei.id FROM estado_ingreso ei WHERE ei.estado = ? LIMIT 1),
-        ?,
-        ?,
-        ?,
-        ?,
-        ?,
-        ?,
-        (
-          SELECT n.id
-          FROM nivel n
-          JOIN nivel_emergencia ne ON ne.id = n.id_nivel_emergencia
-          WHERE ne.nombre = ?
-          ORDER BY n.nivel ASC
-          LIMIT 1
-        )
+        ?,  -- id_estado_ingreso
+        ?,  -- descripcion
+        ?,  -- fecha_ingreso
+        ?,  -- temperatura
+        ?,  -- frecuencia_respiratorio
+        ?,  -- frecuencia_cardiaca
+        ?,  -- tension_arterial
+        ?   -- id_nivel
       )
       `,
       [
-        enfermera.getNombre(),
-        enfermera.getApellido(),
-        paciente.getCuil(),
-        estado, 
-        ingreso.getInforme(),
-        ingreso.getFechaIngreso(),
-        ingreso.getTemperatura(),
-        ingreso.getFrecuenciaRespiratoria(),
-        ingreso.getFrecuenciaCardiaca(),
-        ingreso.getTensionArterialComoString(), 
-        nivelNombre,
+        // enfermero
+        enfermera.getNombre(),                    // pe.nombre = ?
+        enfermera.getApellido(),                  // pe.apellido = ?
+        // paciente
+        paciente.getCuil(),                       // p.cuil = ?
+        // directos
+        idEstado,                                 // id_estado_ingreso
+        ingreso.getInforme(),                     // descripcion
+        ingreso.getFechaIngreso(),                // fecha_ingreso (Date o string compatible)
+        ingreso.getTemperatura(),                 // temperatura
+        ingreso.getFrecuenciaRespiratoria(),      // frecuencia_respiratorio
+        ingreso.getFrecuenciaCardiaca(),          // frecuencia_cardiaca
+        ingreso.getTensionArterialComoString(),   // tension_arterial ("120/80")
+        idNivel,                                  // id_nivel
       ],
     );
   }
@@ -169,11 +186,11 @@ export class IngresoRepositorio implements IIngresoRepositorio {
 
   private mapNivelFromDb(nombre: string): NivelEmergencia {
     const n = nombre.trim().toLowerCase();
-    if (n === 'critica' || n === 'crítica') return NivelEmergencia.CRITICA;
-    if (n === 'emergencia') return NivelEmergencia.EMERGENCIA;
-    if (n === 'urgencia') return NivelEmergencia.URGENCIA;
-    if (n === 'urgencia menor') return NivelEmergencia.URGENCIA_MENOR;
-    if (n === 'sin urgencia') return NivelEmergencia.SIN_URGENCIA;
+    if (n === 'CRITICA' || n === 'crítica') return NivelEmergencia.CRITICA;
+    if (n === 'EMERGENCIA') return NivelEmergencia.EMERGENCIA;
+    if (n === 'URGENCIA') return NivelEmergencia.URGENCIA;
+    if (n === 'URGENCIA_MENOR') return NivelEmergencia.URGENCIA_MENOR;
+    if (n === 'SIN_URGENCIA') return NivelEmergencia.SIN_URGENCIA;
     return NivelEmergencia.SIN_URGENCIA;
   }
 }

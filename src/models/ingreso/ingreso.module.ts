@@ -14,6 +14,12 @@ import { EnfermeroRepositorio } from '../../../src/persistence/enfermero.reposit
 import { IngresoController } from '../../../src/presentation/ingreso.controller';
 import { ESTADO_INGRESO_REPOSITORIO } from '../../../src/app/interfaces/estado-ingreso/estado.ingreso.repository.interface';
 import { EstadoIngresoRepositorio } from '../../../src/persistence/estado.ingreso.repository';
+import { SERVICIO_ESTADO_INGRESO } from '../../../src/app/interfaces/estado-ingreso/estado.ingreso.service.interface';
+import { ServicioEstadoIngreso } from '../../../src/app/services/estado.ingreso.service';
+import { NIVEL_EMERGENCIA_REPOSITORIO } from '../../../src/app/interfaces/nivel-emergencia/nivel.emergencia.repository.interface';
+import { NivelEmergenciaRepositorio } from '../../../src/persistence/nivel.emergencia.repository';
+import { NIVEL_EMERGENCIA_SERVICIO } from '../../../src/app/interfaces/nivel-emergencia/nivel.emergencia.service.interface';
+import { NivelEmergenciaServicio } from '../../../src/app/services/nivel.emergencia.service';
 
 @Module({
     imports: [PacienteModule, DatabaseModule],
@@ -42,6 +48,18 @@ import { EstadoIngresoRepositorio } from '../../../src/persistence/estado.ingres
         {
           provide: ESTADO_INGRESO_REPOSITORIO, 
           useClass: EstadoIngresoRepositorio,
+        },
+        {
+          provide: SERVICIO_ESTADO_INGRESO,
+          useClass: ServicioEstadoIngreso
+        },
+        {
+          provide: NIVEL_EMERGENCIA_REPOSITORIO, 
+          useClass: NivelEmergenciaRepositorio,
+        },
+        {
+          provide: NIVEL_EMERGENCIA_SERVICIO,
+          useClass: NivelEmergenciaServicio
         }
         ],
       exports: [SERVICIO_INGRESO],
