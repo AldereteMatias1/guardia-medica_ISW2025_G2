@@ -105,5 +105,14 @@ export class EnfermeroRepositorio implements IEnfermeroRepositorio {
     );
   }
 
+  async asociarUsuarioEnfermera(enfermeraId: number, usuarioId: number): Promise<void> {
+    await this.db.execute(
+      `UPDATE enfermero
+       SET id_usuario = ?
+       WHERE id = ?`,
+      [usuarioId, enfermeraId],
+    );
+  }
+
     
 }

@@ -52,7 +52,12 @@ export class AuthService {
       };
 
 
-    const user = await this.userRepo.registrarUsuario(usuarioParaGuardar);
+    await this.userRepo.registrarUsuario(usuarioParaGuardar);
+    const user = await this.userRepo.obtenerPorEmail(email);
+
+    if (!user) {
+      throw new InternalServerErrorException('Error al obtener el usuario recién registrado');
+    }
 
     if (rol === RolUsuario.ENFERMERO) {
       if (enfermeraId == null) {
@@ -60,15 +65,12 @@ export class AuthService {
       }
 
       const enfermera = await this.enfermeroRepo.obtenerPorId(enfermeraId);
-
-      console.log('Asociando usuario a la enfermera:', enfermera);
-      
       if (!enfermera) {
         throw new BadRequestException('No existe una enfermera con ese id');
       }
 
       enfermera.asociarUsuario(user);          
-      await this.enfermeroRepo.actualizarEnfermera(enfermera);
+      await this.enfermeroRepo.asociarUsuarioEnfermera(enfermeraId, user.id!);
     }
 
     if (rol === RolUsuario.MEDICO) {
@@ -81,10 +83,8 @@ export class AuthService {
         throw new BadRequestException('No existe un médico con ese id');
       }
 
-      console.log('Asociando usuario al médico:', medico);
-
       medico.asociarUsuario(user);             
-      await this.medicoRepo.actualizarMedico(medico);
+      await this.medicoRepo.asociarUsuarioMedico(medicoId, user.id!);
     }
 
     return {

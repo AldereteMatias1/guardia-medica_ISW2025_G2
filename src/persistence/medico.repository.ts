@@ -144,6 +144,15 @@ export class MedicoRepositorio implements IMedicoRepositorio {
     );
   }
 
+  async asociarUsuarioMedico(medicoId: number, usuarioId: number): Promise<void> {
+    await this.db.execute(
+      `UPDATE medico
+       SET id_usuario = ?
+       WHERE id = ?`,
+      [usuarioId, medicoId],
+    );
+  }
+
 }
 
    
