@@ -58,6 +58,7 @@ export class AuthService {
     if (!user) {
       throw new InternalServerErrorException('Error al obtener el usuario recién registrado');
     }
+    const usuarioRegistrado = user as Usuario;
 
     if (rol === RolUsuario.ENFERMERO) {
       if (enfermeraId == null) {
@@ -83,8 +84,8 @@ export class AuthService {
         throw new BadRequestException('No existe un médico con ese id');
       }
 
-      medico.asociarUsuario(user);             
-      await this.medicoRepo.asociarUsuarioMedico(medicoId, user.id!);
+      medico.asociarUsuario(usuarioRegistrado);             
+      await this.medicoRepo.asociarUsuarioMedico(medicoId, usuarioRegistrado.id!);
     }
 
     return {
