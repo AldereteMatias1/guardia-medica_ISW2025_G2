@@ -6,4 +6,5 @@ export interface IEnfermeroRepositorio {
   obtenerPorEmail(email: string): Promise<Enfermera | null>;
   obtenerPorId(id: number): Promise<Enfermera | null>;
   actualizarEnfermera(enfermera: Enfermera): Promise<void>;
+  asociarUsuarioEnfermera(enfermeraId: number, usuarioId: number): Promise<void>;
 }

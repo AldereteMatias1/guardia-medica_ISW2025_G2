@@ -5,6 +5,8 @@ import {
   IsString,
   MaxLength,
   MinLength,
+  IsOptional,
+  IsNumber,
 } from 'class-validator';
 
 import { RolUsuario } from '../usuario';
@@ -21,6 +23,11 @@ export class CreateUserDto {
     @IsEnum(RolUsuario, { message: 'Role must be either medico or enfermero' })
     rol: RolUsuario;
 
+    @IsOptional()
+    @IsNumber()
     medicoId?: number;
+
+    @IsOptional()
+    @IsNumber()
     enfermeraId?: number;
 }

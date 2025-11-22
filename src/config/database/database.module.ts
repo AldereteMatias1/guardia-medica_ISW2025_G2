@@ -2,21 +2,23 @@ import { Global, Module } from '@nestjs/common';
 import { createPool, Pool } from 'mysql2/promise';
 import { DatabaseService } from '../database/database.service';
 import { DB_POOL } from './database.constants';
+import { ConfigService } from '@nestjs/config';
 
 @Global()
 @Module({
   providers: [
     {
       provide: DB_POOL,
-      useFactory: async (): Promise<Pool> => {
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService): Promise<Pool> => {
         return createPool({
-          host: 'localhost',
-          port: 3306,
-          user: 'admin',
-          password: 'admin',
-          database: 'clinica_db', 
+          host: configService.get<string>('DB_HOST'),
+          port: configService.get<number>('DB_PORT'),
+          user: configService.get<string>('DB_USER'),
+          password: configService.get<string>('DB_PASSWORD'),
+          database: configService.get<string>('DB_NAME'),
           waitForConnections: true,
-          connectionLimit: 10,
+          connectionLimit: configService.get<number>('DB_CONNECTION_LIMIT'),
         });
       },
     },
