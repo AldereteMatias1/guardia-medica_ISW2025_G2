@@ -24,6 +24,7 @@ async function bootstrap() {
   app.useGlobalInterceptors(
     new ClassSerializerInterceptor(app.get(Reflector)),
   );
+  app.useLogger(['error', 'warn', 'log', 'debug', 'verbose']);
 
 
   // Swagger

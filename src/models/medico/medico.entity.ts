@@ -1,6 +1,7 @@
 import { Usuario } from "../usuario/usuario";
 
 export class Medico {
+    private id: number;
     private nombre:string;
     private apellido:string;
     private matricula:string | undefined;
@@ -9,6 +10,7 @@ export class Medico {
     public constructor(nombre: string, apellido: string);
 
     public constructor(nombre: string, apellido: string, matricula: string);
+    public constructor(nombre: string, apellido: string, matricula: string, id: number);
     public constructor(nombre: string, apellido: string, matricula?: string) {
         this.nombre = nombre;
         this.apellido = apellido;        
