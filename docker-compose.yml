@@ -5,27 +5,29 @@ services:
     image: mysql:8.0
     container_name: mysql_db
     restart: always
+    command: --default-authentication-plugin=mysql_native_password
     environment:
-      MYSQL_ROOT_PASSWORD: admin 
-      MYSQL_USER: admin          
-      MYSQL_PASSWORD: admin      
-      MYSQL_DATABASE: clinica_db 
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: clinica_db
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppass123
     ports:
       - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
+
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: phpmyadmin_tool
     restart: always
     environment:
-      # Debe apuntar al nombre del servicio de la DB
-      PMA_HOST: db 
-      MYSQL_ROOT_PASSWORD: admin 
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: root123
     ports:
-      # Mapea el puerto 80 del contenedor a 8080 en tu máquina local
       - "8080:80"
     depends_on:
       - db
+
 volumes:
   db_data:

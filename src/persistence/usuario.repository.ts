@@ -1,8 +1,9 @@
 import { DatabaseService } from "../../src/config/database/database.service";
 import { IUsuarioRepositorio } from "../app/interfaces/usuario/usuarios.repository.interface";
 import { RolUsuario, Usuario } from "../../src/models/usuario/usuario";
-import { BadRequestException, InternalServerErrorException } from "@nestjs/common";
+import { BadRequestException, Injectable, InternalServerErrorException } from "@nestjs/common";
 
+@Injectable()
 export class UsuarioRepositorio implements IUsuarioRepositorio {
 
   constructor(

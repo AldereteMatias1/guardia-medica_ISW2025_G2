@@ -51,7 +51,8 @@ export class AuthService {
         rol,
       };
 
-    await this.userRepo.registrarUsuario(usuarioParaGuardar);
+
+    const user = await this.userRepo.registrarUsuario(usuarioParaGuardar);
 
     if (rol === RolUsuario.ENFERMERO) {
       if (enfermeraId == null) {
@@ -59,11 +60,14 @@ export class AuthService {
       }
 
       const enfermera = await this.enfermeroRepo.obtenerPorId(enfermeraId);
+
+      console.log('Asociando usuario a la enfermera:', enfermera);
+      
       if (!enfermera) {
         throw new BadRequestException('No existe una enfermera con ese id');
       }
 
-      enfermera.asociarUsuario(usuarioParaGuardar);          
+      enfermera.asociarUsuario(user);          
       await this.enfermeroRepo.actualizarEnfermera(enfermera);
     }
 
@@ -77,7 +81,9 @@ export class AuthService {
         throw new BadRequestException('No existe un médico con ese id');
       }
 
-      medico.asociarUsuario(usuarioParaGuardar);             
+      console.log('Asociando usuario al médico:', medico);
+
+      medico.asociarUsuario(user);             
       await this.medicoRepo.actualizarMedico(medico);
     }
 
