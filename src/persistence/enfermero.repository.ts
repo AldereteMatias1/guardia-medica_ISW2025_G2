@@ -76,7 +76,8 @@ export class EnfermeroRepositorio implements IEnfermeroRepositorio {
     const enfermera = new (require("../models/enfermera/enfermera.entity").Enfermera)(
       row.nombre,
       row.apellido,
-      row.matricula
+      row.matricula,
+      row.id_enfermero,
     ) as Enfermera;
 
     const usuario: Usuario = {

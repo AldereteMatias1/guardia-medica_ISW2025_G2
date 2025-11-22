@@ -37,10 +37,11 @@ export class MedicoRepositorio implements IMedicoRepositorio {
 
     const row = rows[0];
 
-    const medico = new (require('src/models/medico/medico.entity').Medico)(
+    const medico = new (require('../models/medico/medico.entity').Medico)(
       row.nombre,
       row.apellido,
       row.matricula,
+      row.id_medico,
     ) as Medico;
 
     const usuario: Usuario = {
