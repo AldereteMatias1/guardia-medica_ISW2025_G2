@@ -162,7 +162,6 @@ export class IngresoRepositorio implements IIngresoRepositorio {
       );
 
       const enf = new Enfermera(row.nombre_enfermera, row.apellido_enfermera);
-
       const nivel = this.mapNivelFromDb(row.nivel_emergencia);
 
       const [sistolicaStr, diastolicaStr] = row.tension_arterial.split('/');
@@ -185,12 +184,18 @@ export class IngresoRepositorio implements IIngresoRepositorio {
   }
 
   private mapNivelFromDb(nombre: string): NivelEmergencia {
-    const n = nombre.trim().toLowerCase();
-    if (n === 'CRITICA' || n === 'crítica') return NivelEmergencia.CRITICA;
-    if (n === 'EMERGENCIA') return NivelEmergencia.EMERGENCIA;
-    if (n === 'URGENCIA') return NivelEmergencia.URGENCIA;
-    if (n === 'URGENCIA_MENOR') return NivelEmergencia.URGENCIA_MENOR;
-    if (n === 'SIN_URGENCIA') return NivelEmergencia.SIN_URGENCIA;
-    return NivelEmergencia.SIN_URGENCIA;
-  }
+    if (!nombre) return NivelEmergencia.SIN_URGENCIA;
+
+    const normalized = nombre.trim().toUpperCase();
+
+    const mapa: Record<string, NivelEmergencia> = {
+        'CRITICA': NivelEmergencia.CRITICA,
+        'EMERGENCIA': NivelEmergencia.EMERGENCIA,
+        'URGENCIA': NivelEmergencia.URGENCIA,
+        'URGENCIA_MENOR': NivelEmergencia.URGENCIA_MENOR,
+        'SIN_URGENCIA': NivelEmergencia.SIN_URGENCIA
+    };
+
+    return mapa[normalized] ?? NivelEmergencia.SIN_URGENCIA;
+}
 }
