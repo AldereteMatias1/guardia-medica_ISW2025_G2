@@ -1,8 +1,9 @@
 import { DatabaseService } from "../../src/config/database/database.service";
 import { IUsuarioRepositorio } from "../app/interfaces/usuario/usuarios.repository.interface";
 import { RolUsuario, Usuario } from "../../src/models/usuario/usuario";
-import { BadRequestException, InternalServerErrorException } from "@nestjs/common";
+import { BadRequestException, Injectable, InternalServerErrorException } from "@nestjs/common";
 
+@Injectable()
 export class UsuarioRepositorio implements IUsuarioRepositorio {
 
   constructor(
@@ -28,11 +29,12 @@ export class UsuarioRepositorio implements IUsuarioRepositorio {
 
   async obtenerPorEmail(email: string): Promise<Usuario | null> {
     const rows = await this.db.query<{
+      id: number;
       email: string;
       password: string;
       rol_nombre: string;
     }>(
-      `SELECT u.email, u.password, r.nombre AS rol_nombre
+      `SELECT u.id, u.email, u.password, r.nombre AS rol_nombre
        FROM usuario u
        JOIN rol r ON r.id = u.id_rol
        WHERE u.email = ?`,
@@ -42,6 +44,7 @@ export class UsuarioRepositorio implements IUsuarioRepositorio {
     if (!rows.length) return null;
 
     return {
+      id: rows[0].id,
       email: rows[0].email,
       password: rows[0].password,
       rol: rows[0].rol_nombre as RolUsuario,

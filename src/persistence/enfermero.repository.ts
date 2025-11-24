@@ -76,7 +76,8 @@ export class EnfermeroRepositorio implements IEnfermeroRepositorio {
     const enfermera = new (require("../models/enfermera/enfermera.entity").Enfermera)(
       row.nombre,
       row.apellido,
-      row.matricula
+      row.matricula,
+      row.id_enfermero,
     ) as Enfermera;
 
     const usuario: Usuario = {
@@ -102,6 +103,15 @@ export class EnfermeroRepositorio implements IEnfermeroRepositorio {
        SET matricula = ?
        WHERE id = ?`,
       [matricula, id],
+    );
+  }
+
+  async asociarUsuarioEnfermera(enfermeraId: number, usuarioId: number): Promise<void> {
+    await this.db.execute(
+      `UPDATE enfermero
+       SET id_usuario = ?
+       WHERE id = ?`,
+      [usuarioId, enfermeraId],
     );
   }
 
