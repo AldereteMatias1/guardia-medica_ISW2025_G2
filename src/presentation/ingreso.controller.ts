@@ -1,4 +1,4 @@
-import { Body, Controller, Inject, Post } from "@nestjs/common";
+import { Body, Controller, Get, Inject, Post } from "@nestjs/common";
 import * as ingresoServiceInterface from "../../src/app/interfaces/ingreso/ingreso.service.interface";
 import { CreateIngresoDto } from "../../src/models/ingreso/create-ingreso.dto";
 
@@ -21,6 +21,11 @@ export class IngresoController {
                                                          ingreso.frecuenciaRespiratoria,
                                                          ingreso.presionSistolica,
                                                          ingreso.presionDiastolica);
+    }
+
+    @Get()
+    traerIngresosPendientes(){
+        return this.servicioIngreso.obtenerPendientes();
     }
 
 }
