@@ -1,11 +1,24 @@
 import { Injectable } from "@nestjs/common";
-import { IObraSocial } from "../../src/app/interfaces/obraSocial/obra.social.repository";
+import { IObraSocialRepositorio } from "../../src/app/interfaces/obraSocial/obra.social.repository";
 import { DatabaseService } from "../../src/config/database/database.service";
 
 @Injectable()
-export class ObraSocialRepositorio implements IObraSocial {
+export class ObraSocialRepositorio implements IObraSocialRepositorio {
     
     constructor(private readonly db: DatabaseService) {}
+
+    async traerTodasLasObrasSociales(): Promise<string[] | null>  {
+        const sql = `
+            select nombre
+            from obra_social
+            order by nombre asc
+        `
+        const rows = await this.db.query(sql);
+
+        if (!Array.isArray(rows)) return [];
+
+        return rows.map(r => r.nombre);
+    }
 
     async existePorNombre(nombre: string): Promise<boolean> {
     const sql = `

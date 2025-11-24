@@ -1,5 +1,5 @@
 // src/persistence/ingreso.mysql.repository.ts
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { IIngresoRepositorio } from '../../src/app/interfaces/ingreso/ingreso.repository.interface';
 import { Ingreso } from '../../src/models/ingreso/ingreso';
 import { NivelEmergencia } from '../../src/models/nivel-emergencia/nivelEmergencia.enum';
@@ -64,13 +64,13 @@ export class IngresoRepositorio implements IIngresoRepositorio {
     // 1) Buscar id_estado_ingreso por nombre
     const idEstado = await this.estadoRepo.obtenerIdPorNombre(estadoNombre);
     if (idEstado == null) {
-      throw new Error(`No se encontró estado_ingreso con nombre: ${estadoNombre}`);
+      throw new NotFoundException(`No se encontró estado_ingreso con nombre: ${estadoNombre}`);
     }
 
     // 2) Buscar id_nivel por nombre de nivel de emergencia
     const idNivel = await this.nivelRepo.obtenerIdPorNombre(nivelNombre);
     if (idNivel == null) {
-      throw new Error(`No se encontró nivel para nivel_emergencia: ${nivelNombre}`);
+      throw new NotFoundException(`No se encontró nivel para nivel_emergencia: ${nivelNombre}`);
     }
 
     // 3) Insertar usando directamente los IDs (sin subqueries de estado/nivel)
