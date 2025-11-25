@@ -9,12 +9,11 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
-import { CreatePacienteDto } from '../models/paciente/dto/create.patient.dto';
+import { CreatePacienteDto } from '../../src/business/paciente/dto/create.patient.dto';
 
-import { SERVICIO_PACIENTE } from 'src/app/interfaces/paciente/paciente.service';
-import type { IPacienteServicio } from 'src/app/interfaces/paciente/paciente.service';
-import { PACIENTE_REPOSITORIO } from '../app/interfaces/paciente/patient.repository.interface';
-import { PatientRepositoryImpl } from 'src/persistence/patient.repository';
+import { SERVICIO_PACIENTE } from '../../src/business/paciente/service/paciente.service.interface';
+import type { IPacienteServicio } from '../../src/business/paciente/service/paciente.service.interface';
+
 
 @ApiTags('pacientes')
 @Controller('pacientes')

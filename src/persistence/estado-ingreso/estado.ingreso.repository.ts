@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { IEstadoIngresoRepositorio } from "src/persistence/estado-ingreso/estado.ingreso.repository.interface";
-import { DatabaseService } from "src/config/database/database.service";
+import { IEstadoIngresoRepositorio } from "../../../src/persistence/estado-ingreso/estado.ingreso.repository.interface";
+import { DatabaseService } from "../../../src/config/database/database.service";
 
 type EstadoRow = { id: number; estado: string };
 

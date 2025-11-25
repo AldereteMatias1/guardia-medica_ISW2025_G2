@@ -1,0 +1,8 @@
+import { Enfermera } from "../enfermera.entity";
+
+
+export const SERVICIO_ENFERMERO = 'SERVICIO_ENFERMERO';
+
+export interface IEnfermeroServicio {
+  obtenerPorId(id: number): Promise<Enfermera | null>;
+}

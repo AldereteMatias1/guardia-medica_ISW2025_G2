@@ -1,19 +1,19 @@
 
 import { Before, Given, When, Then, After } from '@cucumber/cucumber';
 import assert from 'assert';
-import { IIngresoServicio } from '../../src/app/interfaces/ingreso/ingreso.service.interface';
-import { Ingreso } from '../../src/models/ingreso/ingreso';
-import { Paciente } from '../../src/models/paciente/paciente';
-import { NivelEmergencia } from '../../src/models/nivel-emergencia/nivelEmergencia.enum';
-import { Enfermera } from '../../src/models/enfermera/enfermera.entity';
+import { Ingreso } from '../../src/business/ingreso/ingreso';
 import { DataBaseInMemory } from '../../test/mock/database.memory';
-import { IngresoService } from '../../src/app/services/ingreso.service';
+import { IngresoService } from '../../src/business/ingreso/service/ingreso.service';
 import { IIngresoRepositorio } from '../../src/persistence/ingreso/ingreso.repository.interface';
 import { IngresoRepoInMemory } from '../../test/mock/ingreso.repository.mock';
-import { IEnfermeroServicio } from '../../src/app/interfaces/enfemera/enfermera.service.interface';
-import { ServicioEnfermero } from '../../src/app/services/enfermero.service';
+import { IEnfermeroServicio } from '../../src/business/enfermera/service/enfermera.service.interface';
 import { IEnfermeroRepositorio } from '../../src/persistence/enfermero/enfermera.repository.interface';
 import { EnfermeroDatabaseInMemory } from '../../test/mock/enfermero.repository.mock';
+import { Enfermera } from '../../src/business/enfermera/enfermera.entity';
+import { IIngresoServicio } from '../../src/business/ingreso/service/ingreso.service.interface';
+import { NivelEmergencia } from '../../src/business/nivel-emergencia/nivelEmergencia.enum';
+import { Paciente } from '../../src/business/paciente/paciente';
+import { ServicioEnfermero } from '../../src/business/enfermera/service/enfermero.service';
 
 let enfermera: Enfermera;
 let service: IIngresoServicio ;

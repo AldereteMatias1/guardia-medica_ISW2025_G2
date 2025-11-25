@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { INivelEmergenciaRepositorio } from "src/persistence/nivel-emergencia/nivel.emergencia.repository.interface";
-import { DatabaseService } from "src/config/database/database.service";
+import { INivelEmergenciaRepositorio } from "../../../src/persistence/nivel-emergencia/nivel.emergencia.repository.interface";
+import { DatabaseService } from "../../../src/config/database/database.service";
 
 @Injectable()
 export class NivelEmergenciaRepositorio implements INivelEmergenciaRepositorio {

@@ -1,5 +1,5 @@
 import { IIngresoRepositorio } from "../../src/persistence/ingreso/ingreso.repository.interface";
-import { Ingreso } from "../../src/models/ingreso/ingreso";
+import { Ingreso } from "../../src/business/ingreso/ingreso";
 
 export class IngresoRepoInMemory implements IIngresoRepositorio {
 

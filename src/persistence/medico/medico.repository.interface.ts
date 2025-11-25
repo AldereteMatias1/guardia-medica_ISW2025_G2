@@ -1,4 +1,4 @@
-import { Medico } from '../../models/medico/medico.entity';
+import { Medico } from "../../../src/business/medico/medico.entity";
 
 export const MEDICO_REPOSITORIO = 'MEDICO_REPOSITORIO';
 

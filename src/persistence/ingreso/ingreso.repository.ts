@@ -1,13 +1,13 @@
 // src/persistence/ingreso.mysql.repository.ts
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { IIngresoRepositorio } from './ingreso.repository.interface';
-import { Ingreso } from '../../models/ingreso/ingreso';
-import { NivelEmergencia } from '../../models/nivel-emergencia/nivelEmergencia.enum';
-import { Paciente } from '../../models/paciente/paciente';
-import { Enfermera } from '../../models/enfermera/enfermera.entity';
+import { Ingreso } from '../../business/ingreso/ingreso';
 import { DatabaseService } from '../../config/database/database.service';
 import * as estadoIngresoRepositoryInterface from '../estado-ingreso/estado.ingreso.repository.interface';
 import * as nivelEmergenciaRepositoryInterface from '../nivel-emergencia/nivel.emergencia.repository.interface';
+import { NivelEmergencia } from '../../../src/business/nivel-emergencia/nivelEmergencia.enum';
+import { Paciente } from '../../../src/business/paciente/paciente';
+import { Enfermera } from '../../../src/business/enfermera/enfermera.entity';
 
 type IngresoRow = {
   id: number;

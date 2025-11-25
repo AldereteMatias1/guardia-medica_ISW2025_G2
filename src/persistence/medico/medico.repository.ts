@@ -1,8 +1,8 @@
 import { InternalServerErrorException, Injectable } from '@nestjs/common';
-import { IMedicoRepositorio } from '../../src/app/interfaces/medico/medico.repository';
-import { DatabaseService } from '../../src/config/database/database.service';
-import { Medico } from '../../src/models/medico/medico.entity';
-import { RolUsuario, Usuario } from '../../src/models/usuario/usuario';
+import { IMedicoRepositorio } from './medico.repository.interface';
+import { DatabaseService } from '../../../src/config/database/database.service';
+import { Medico } from '../../../src/business/medico/medico.entity';
+import { RolUsuario, Usuario } from '../../../src/business/usuario/usuario';
 
 @Injectable()
 export class MedicoRepositorio implements IMedicoRepositorio {
@@ -37,7 +37,7 @@ export class MedicoRepositorio implements IMedicoRepositorio {
 
     const row = rows[0];
 
-    const medico = new (require('../models/medico/medico.entity').Medico)(
+    const medico = new (require('../../business/medico/medico.entity').Medico)(
       row.nombre,
       row.apellido,
       row.matricula,
@@ -89,7 +89,7 @@ export class MedicoRepositorio implements IMedicoRepositorio {
 
     const row = rows[0];
 
-    const medico = new (require('../models/medico/medico.entity').Medico)(
+    const medico = new (require('../../business/medico/medico.entity').Medico)(
       row.nombre,
       row.apellido,
       row.matricula,

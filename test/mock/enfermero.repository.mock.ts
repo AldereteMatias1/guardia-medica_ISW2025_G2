@@ -1,5 +1,6 @@
+import { Enfermera } from "../../src/business/enfermera/enfermera.entity";
 import { IEnfermeroRepositorio } from "../../src/persistence/enfermero/enfermera.repository.interface";
-import { Enfermera } from "../../src/models/enfermera/enfermera.entity";
+
 
 export class EnfermeroDatabaseInMemory implements IEnfermeroRepositorio{
 

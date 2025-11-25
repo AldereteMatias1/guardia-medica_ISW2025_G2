@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
-import { IEnfermeroRepositorio } from "../../src/app/interfaces/enfemera/enfermera.repository";
-import { DatabaseService } from "../../src/config/database/database.service";
-import { Enfermera } from "../../src/models/enfermera/enfermera.entity";
-import { RolUsuario, Usuario } from "../../src/models/usuario/usuario";
+import { IEnfermeroRepositorio } from "./enfermera.repository.interface";
+import { DatabaseService } from "../../../src/config/database/database.service";
+import { Enfermera } from "../../../src/business/enfermera/enfermera.entity";
+import { RolUsuario, Usuario } from "../../../src/business/usuario/usuario";
 
 @Injectable()
 export class EnfermeroRepositorio implements IEnfermeroRepositorio {
@@ -35,7 +35,7 @@ export class EnfermeroRepositorio implements IEnfermeroRepositorio {
 
         const row = rows[0];
 
-        const enfermera = new (require("../models/enfermera/enfermera.entity").Enfermera)(
+        const enfermera = new (require("../../business/enfermera/enfermera.entity").Enfermera)(
         row.nombre,
         row.apellido,
         row.matricula
@@ -73,7 +73,7 @@ export class EnfermeroRepositorio implements IEnfermeroRepositorio {
 
     const row = rows[0];
 
-    const enfermera = new (require("../models/enfermera/enfermera.entity").Enfermera)(
+    const enfermera = new (require("../../business/enfermera/enfermera.entity").Enfermera)(
       row.nombre,
       row.apellido,
       row.matricula,

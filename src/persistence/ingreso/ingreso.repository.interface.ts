@@ -1,4 +1,4 @@
-import { Ingreso } from "../../models/ingreso/ingreso";
+import { Ingreso } from "../../business/ingreso/ingreso";
 
 export const INGRESO_REPOSITORIO = Symbol('INGRESO_REPOSITORIO');
 

@@ -1,11 +1,11 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { SERVICIO_PACIENTE } from "../../src/app/interfaces/paciente/paciente.service";
-import { PacienteServicio } from "../../src/app/services/paciente.service";
+import { SERVICIO_PACIENTE } from "../../src/business/paciente/service/paciente.service.interface";
 import { REPOSITORIO_OBRA_SOCIAL } from "../../src/persistence/obra-social/obra.social.repository.interface";
-import { PACIENTE_REPOSITORIO } from "../../src/app/interfaces/paciente/patient.repository.interface";
+import { PACIENTE_REPOSITORIO } from "../../src/persistence/paciente/patient.repository.interface";
 import { BadRequestException, NotFoundException } from "@nestjs/common";
-import { CreatePacienteDto, DomicilioDto, ObraSocialDto } from "../../src/models/paciente/dto/create.patient.dto";
-import { Paciente } from "../../src/models/paciente/paciente";
+import { CreatePacienteDto, DomicilioDto, ObraSocialDto } from "../../src/business/paciente/dto/create.patient.dto";
+import { Paciente } from "../../src/business/paciente/paciente";
+import { PacienteServicio } from "../../src/business/paciente/service/paciente.service";
 
 function crearPacienteDtoBase(overrides?: {
   nombre?: string;
