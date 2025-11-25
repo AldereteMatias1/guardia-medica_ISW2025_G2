@@ -14,18 +14,19 @@ services:
       - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
+      - ./mysql/init:/docker-entrypoint-initdb.d   # ⬅️ esto nuevo
+
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: phpmyadmin_tool
     restart: always
     environment:
-      # Debe apuntar al nombre del servicio de la DB
       PMA_HOST: db 
       MYSQL_ROOT_PASSWORD: admin 
     ports:
-      # Mapea el puerto 80 del contenedor a 8080 en tu máquina local
       - "8080:80"
     depends_on:
       - db
+
 volumes:
   db_data:
