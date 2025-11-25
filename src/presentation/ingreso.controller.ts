@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Inject, Post } from "@nestjs/common";
-import * as ingresoServiceInterface from "../../src/app/interfaces/ingreso/ingreso.service.interface";
-import { CreateIngresoDto } from "../../src/models/ingreso/create-ingreso.dto";
+import { CreateIngresoDto } from "../business/ingreso/create-ingreso.dto";
+import * as ingresoServiceInterface from "../../src/business/ingreso/service/ingreso.service.interface";
 
 @Controller('ingreso')
 export class IngresoController {
