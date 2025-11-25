@@ -1,4 +1,4 @@
-import { IIngresoRepositorio } from "../../src/app/interfaces/ingreso/ingreso.repository.interface";
+import { IIngresoRepositorio } from "../../src/persistence/ingreso/ingreso.repository.interface";
 import { Ingreso } from "../../src/models/ingreso/ingreso";
 
 export class IngresoRepoInMemory implements IIngresoRepositorio {

@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
-import { ESTADO_INGRESO_REPOSITORIO } from "../../../src/app/interfaces/estado-ingreso/estado.ingreso.repository.interface";
+import { ESTADO_INGRESO_REPOSITORIO } from "../../persistence/estado-ingreso/estado.ingreso.repository.interface";
 import { DatabaseModule } from "../../../src/config/database/database.module";
-import { EstadoIngresoRepositorio } from "../../../src/persistence/estado.ingreso.repository";
+import { EstadoIngresoRepositorio } from "../../persistence/estado-ingreso/estado.ingreso.repository";
 import { SERVICIO_ESTADO_INGRESO } from "../../../src/app/interfaces/estado-ingreso/estado.ingreso.service.interface";
 import { ServicioEstadoIngreso } from "../../../src/app/services/estado.ingreso.service";
 

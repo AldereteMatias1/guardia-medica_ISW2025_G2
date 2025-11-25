@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { IObraSocialServicio, OBRA_SOCIAL_SERVICIO } from "../interfaces/obraSocial/obra.socia.service.interface";
-import * as obraSocialRepository from "../interfaces/obraSocial/obra.social.repository";
+import * as obraSocialRepository from "../../persistence/obra-social/obra.social.repository.interface";
 
 @Injectable()
 export class ObraSocialServicio implements IObraSocialServicio {

@@ -8,11 +8,11 @@ import { NivelEmergencia } from '../../src/models/nivel-emergencia/nivelEmergenc
 import { Enfermera } from '../../src/models/enfermera/enfermera.entity';
 import { DataBaseInMemory } from '../../test/mock/database.memory';
 import { IngresoService } from '../../src/app/services/ingreso.service';
-import { IIngresoRepositorio } from '../../src/app/interfaces/ingreso/ingreso.repository.interface';
+import { IIngresoRepositorio } from '../../src/persistence/ingreso/ingreso.repository.interface';
 import { IngresoRepoInMemory } from '../../test/mock/ingreso.repository.mock';
 import { IEnfermeroServicio } from '../../src/app/interfaces/enfemera/enfermera.service.interface';
 import { ServicioEnfermero } from '../../src/app/services/enfermero.service';
-import { IEnfermeroRepositorio } from '../../src/app/interfaces/enfemera/enfermera.repository';
+import { IEnfermeroRepositorio } from '../../src/persistence/enfermero/enfermera.repository.interface';
 import { EnfermeroDatabaseInMemory } from '../../test/mock/enfermero.repository.mock';
 
 let enfermera: Enfermera;

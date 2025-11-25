@@ -3,7 +3,7 @@ import { PACIENTE_REPOSITORIO } from '../../app/interfaces/paciente/patient.repo
 import { PatientRepositoryImpl } from '../../persistence/patient.repository';
 import { SERVICIO_PACIENTE } from 'src/app/interfaces/paciente/paciente.service';
 import { PacienteServicio } from 'src/app/services/paciente.service';
-import { REPOSITORIO_OBRA_SOCIAL } from 'src/app/interfaces/obraSocial/obra.social.repository';
+import { REPOSITORIO_OBRA_SOCIAL } from 'src/persistence/obra-social/obra.social.repository.interface';
 import { ObraSocialRepositorio } from 'src/persistence/obra.social.repository';
 import { PacienteController } from 'src/presentation/patient.controller';
 import { DatabaseModule } from 'src/config/database/database.module';

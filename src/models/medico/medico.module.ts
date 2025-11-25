@@ -1,5 +1,5 @@
 import { Module } from "@nestjs/common";
-import { MEDICO_REPOSITORIO } from "../../../src/app/interfaces/medico/medico.repository";
+import { MEDICO_REPOSITORIO } from "../../persistence/medico/medico.repository.interface";
 import { DatabaseModule } from "../../../src/config/database/database.module";
 import { MedicoRepositorio } from "../../../src/persistence/medico.repository";
 

@@ -4,9 +4,9 @@ import { USUARIO_REPOSITORIO } from 'src/app/interfaces/usuario/usuarios.reposit
 import { AuthController } from '../presentation/auth.controller';
 import JwtModuleConfig from 'src/config/jwt-config';
 import { UsuarioRepositorio } from 'src/persistence/usuario.repository';
-import { ENFERMERO_REPOSITORIO } from 'src/app/interfaces/enfemera/enfermera.repository';
+import { ENFERMERO_REPOSITORIO } from 'src/persistence/enfermero/enfermera.repository.interface';
 import { EnfermeroRepositorio } from 'src/persistence/enfermero.repository';
-import { MEDICO_REPOSITORIO } from 'src/app/interfaces/medico/medico.repository';
+import { MEDICO_REPOSITORIO } from 'src/persistence/medico/medico.repository.interface';
 import { MedicoRepositorio } from 'src/persistence/medico.repository';
 
 @Module({

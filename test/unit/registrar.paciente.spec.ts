@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { SERVICIO_PACIENTE } from "../../src/app/interfaces/paciente/paciente.service";
 import { PacienteServicio } from "../../src/app/services/paciente.service";
-import { REPOSITORIO_OBRA_SOCIAL } from "../../src/app/interfaces/obraSocial/obra.social.repository";
+import { REPOSITORIO_OBRA_SOCIAL } from "../../src/persistence/obra-social/obra.social.repository.interface";
 import { PACIENTE_REPOSITORIO } from "../../src/app/interfaces/paciente/patient.repository.interface";
 import { BadRequestException, NotFoundException } from "@nestjs/common";
 import { CreatePacienteDto, DomicilioDto, ObraSocialDto } from "../../src/models/paciente/dto/create.patient.dto";

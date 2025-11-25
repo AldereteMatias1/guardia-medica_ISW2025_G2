@@ -5,7 +5,7 @@ import { NivelEmergencia } from '../../models/nivel-emergencia/nivelEmergencia.e
 import * as pacienteRepository from '../interfaces/paciente/patient.repository.interface';
 import { PACIENTE_REPOSITORIO } from '../interfaces/paciente/patient.repository.interface';
 import { IIngresoServicio } from '../interfaces/ingreso/ingreso.service.interface';
-import * as ingresoRepositoryInterface from '../interfaces/ingreso/ingreso.repository.interface';
+import * as ingresoRepositoryInterface from '../../persistence/ingreso/ingreso.repository.interface';
 import * as enfermeraServiceInterface from '../interfaces/enfemera/enfermera.service.interface';
 
 

@@ -13,8 +13,8 @@ import * as argon2 from 'argon2';
 import { comparePassword } from '../../auth/utils/hashing';
 import { CreateUserDto } from '../../../src/models/usuario/dto/create.user.dto';
 import { RolUsuario, Usuario } from '../../models/usuario/usuario';
-import * as enfermeraRepository from '../interfaces/enfemera/enfermera.repository';
-import * as medicoRepository from '../interfaces/medico/medico.repository';
+import * as enfermeraRepository from '../../persistence/enfermero/enfermera.repository.interface';
+import * as medicoRepository from '../../persistence/medico/medico.repository.interface';
 
 @Injectable()
 export class AuthService {

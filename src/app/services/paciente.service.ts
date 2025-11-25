@@ -6,7 +6,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { REPOSITORIO_OBRA_SOCIAL } from '../interfaces/obraSocial/obra.social.repository';
+import { REPOSITORIO_OBRA_SOCIAL } from '../../persistence/obra-social/obra.social.repository.interface';
 import { ObraSocialRepositorio } from '../../persistence/obra.social.repository';
 import * as patientRepository from '../interfaces/paciente/patient.repository.interface';
 import { CreatePacienteDto } from '../../models/paciente/dto/create.patient.dto';

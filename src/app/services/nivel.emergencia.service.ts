@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { INivelEmergenciaServicio } from "../interfaces/nivel-emergencia/nivel.emergencia.service.interface";
-import { NIVEL_EMERGENCIA_REPOSITORIO } from "../interfaces/nivel-emergencia/nivel.emergencia.repository.interface";
+import { NIVEL_EMERGENCIA_REPOSITORIO } from "../../persistence/nivel-emergencia/nivel.emergencia.repository.interface";
 
 @Injectable()
 export class NivelEmergenciaServicio implements INivelEmergenciaServicio {

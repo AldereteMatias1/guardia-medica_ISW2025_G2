@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { REPOSITORIO_OBRA_SOCIAL } from '../../../src/app/interfaces/obraSocial/obra.social.repository';
+import { REPOSITORIO_OBRA_SOCIAL } from '../../persistence/obra-social/obra.social.repository.interface';
 import { DatabaseModule } from '../../../src/config/database/database.module';
 import { ObraSocialRepositorio } from '../../../src/persistence/obra.social.repository';
 import { OBRA_SOCIAL_SERVICIO } from '../../../src/app/interfaces/obraSocial/obra.socia.service.interface';
