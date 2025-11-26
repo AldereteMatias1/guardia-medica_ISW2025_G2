@@ -13,6 +13,8 @@ import { CreatePacienteDto } from '../../src/business/paciente/dto/create.patien
 
 import { SERVICIO_PACIENTE } from '../../src/business/paciente/service/paciente.service.interface';
 import type { IPacienteServicio } from '../../src/business/paciente/service/paciente.service.interface';
+import { Roles } from '../../src/auth/decorators/roles.decorator';
+import { RolUsuario } from '../../src/business/usuario/usuario';
 
 
 @ApiTags('pacientes')
@@ -24,6 +26,7 @@ export class PacienteController {
   ) {}
 
   @Post()
+  @Roles(RolUsuario.ENFERMERO)
   @ApiOperation({ summary: 'Registrar un nuevo paciente' })
   @ApiBody({
     type: CreatePacienteDto,
