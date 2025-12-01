@@ -2,6 +2,10 @@ import { IIngresoRepositorio } from "../../src/persistence/ingreso/ingreso.repos
 import { Ingreso } from "../../src/business/ingreso/ingreso";
 
 export class IngresoRepoInMemory implements IIngresoRepositorio {
+  
+  reclamarSiguienteIngreso(): Promise<Ingreso | null> {
+    throw new Error("Method not implemented.");
+  }
 
   private ingresos: Ingreso[] = [];
 
