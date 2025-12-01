@@ -55,8 +55,7 @@ export class MedicoRepositorio implements IMedicoRepositorio {
   }
 
   async obtenerPorId(id: number): Promise<Medico | null> {
-    console.log(`Obteniendo médico por ID: ${id}`);
-
+ 
     const rows = await this.db.query<{
       id_medico: number;
       nombre: string;
@@ -83,7 +82,6 @@ export class MedicoRepositorio implements IMedicoRepositorio {
       [id],
     );
 
-    console.log('Rows obtenidos:', rows);
 
     if (!rows.length) return null;
 
@@ -95,7 +93,6 @@ export class MedicoRepositorio implements IMedicoRepositorio {
       row.matricula,
     ) as Medico;
 
-    console.log('Instancia de Medico creada:', medico);
 
     if ((medico as any).setId) {
       (medico as any).setId(row.id_medico);

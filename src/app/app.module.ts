@@ -6,6 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { envValidationSchema } from '../config/env-validation';
 import { EnfermeraModule } from './enfermera.module';
 import { PacienteModule } from './paciente.module';
+import { AtencionModule } from './atencion.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { PacienteModule } from './paciente.module';
     IngresoModule,
     AuthModule,
     ObraSocialModule,
+    AtencionModule
   ]
 })
 export class AppModule {}
