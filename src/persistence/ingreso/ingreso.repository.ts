@@ -1,4 +1,3 @@
-// src/persistence/ingreso.mysql.repository.ts
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { IIngresoRepositorio } from './ingreso.repository.interface';
 import { Ingreso } from '../../business/ingreso/ingreso';
@@ -8,6 +7,7 @@ import * as nivelEmergenciaRepositoryInterface from '../nivel-emergencia/nivel.e
 import { NivelEmergencia } from '../../../src/business/nivel-emergencia/nivelEmergencia.enum';
 import { Paciente } from '../../../src/business/paciente/paciente';
 import { Enfermera } from '../../../src/business/enfermera/enfermera.entity';
+import { EstadoIngreso } from 'src/business/estado-ingreso/estadoIngreso.enum';
 
 type IngresoRow = {
   id: number;
@@ -36,31 +36,32 @@ export class IngresoRepositorio implements IIngresoRepositorio {
 
   ) {}
 
+  
   private mapNivelToDb(nivel: NivelEmergencia): string {
     switch (nivel) {
       case NivelEmergencia.CRITICA:
         return 'CRITICA';
-      case NivelEmergencia.EMERGENCIA:
-        return 'EMERGENCIA';
-      case NivelEmergencia.URGENCIA:
-        return 'URGENCIA';
-      case NivelEmergencia.URGENCIA_MENOR:
+        case NivelEmergencia.EMERGENCIA:
+          return 'EMERGENCIA';
+          case NivelEmergencia.URGENCIA:
+            return 'URGENCIA';
+            case NivelEmergencia.URGENCIA_MENOR:
         return 'URGENCIA_MENOR';
-      case NivelEmergencia.SIN_URGENCIA:
-        return 'SIN_URGENCIA';
-      default:
-        return 'SIN_URGENCIA';
+        case NivelEmergencia.SIN_URGENCIA:
+          return 'SIN_URGENCIA';
+          default:
+            return 'SIN_URGENCIA';
     }
   }
-
+  
   async guardar(ingreso: Ingreso): Promise<void> {
     const paciente = ingreso.getPaciente();
     const enfermera = ingreso.getEnfermera();
     const nivel = ingreso.getNivelEmergencia();
-    const estadoNombre = ingreso.getEstadoIngreso(); // por ej. 'PENDIENTE' o 'EN_PROCESO'
+    const estadoNombre = ingreso.getEstadoIngreso(); 
 
     const nivelNombre = this.mapNivelToDb(nivel);
-
+    
     // 1) Buscar id_estado_ingreso por nombre
     const idEstado = await this.estadoRepo.obtenerIdPorNombre(estadoNombre);
     if (idEstado == null) {
@@ -72,7 +73,7 @@ export class IngresoRepositorio implements IIngresoRepositorio {
     if (idNivel == null) {
       throw new NotFoundException(`No se encontró nivel para nivel_emergencia: ${nivelNombre}`);
     }
-
+    
     // 3) Insertar usando directamente los IDs (sin subqueries de estado/nivel)
     await this.db.execute(
       `
@@ -87,19 +88,19 @@ export class IngresoRepositorio implements IIngresoRepositorio {
         frecuencia_cardiaca,
         tension_arterial,
         id_nivel
-      )
+        )
       VALUES (
         (SELECT e.id
-         FROM enfermero e
-         JOIN persona pe ON pe.id = e.id
-         WHERE pe.nombre = ? AND pe.apellido = ?
-         LIMIT 1),
+        FROM enfermero e
+        JOIN persona pe ON pe.id = e.id
+        WHERE pe.nombre = ? AND pe.apellido = ?
+        LIMIT 1),
         (SELECT pa.id
-         FROM paciente pa
-         JOIN persona p ON p.id = pa.id
+        FROM paciente pa
+        JOIN persona p ON p.id = pa.id
          WHERE p.cuil = ?
          LIMIT 1),
-        ?,  -- id_estado_ingreso
+         ?,  -- id_estado_ingreso
         ?,  -- descripcion
         ?,  -- fecha_ingreso
         ?,  -- temperatura
@@ -107,12 +108,12 @@ export class IngresoRepositorio implements IIngresoRepositorio {
         ?,  -- frecuencia_cardiaca
         ?,  -- tension_arterial
         ?   -- id_nivel
-      )
-      `,
-      [
-        // enfermero
-        enfermera.getNombre(),                    // pe.nombre = ?
-        enfermera.getApellido(),                  // pe.apellido = ?
+        )
+        `,
+        [
+          // enfermero
+          enfermera.getNombre(),                    // pe.nombre = ?
+          enfermera.getApellido(),                  // pe.apellido = ?
         // paciente
         paciente.getCuil(),                       // p.cuil = ?
         // directos
@@ -127,7 +128,7 @@ export class IngresoRepositorio implements IIngresoRepositorio {
       ],
     );
   }
-
+  
   async obtenerPendientes(): Promise<Ingreso[]> {
     const rows = await this.db.query<IngresoRow>(
       `
@@ -139,19 +140,19 @@ export class IngresoRepositorio implements IIngresoRepositorio {
         eper.nombre         AS nombre_enfermera,
         eper.apellido       AS apellido_enfermera,
         ne.nombre           AS nivel_emergencia
-      FROM ingreso i
-      JOIN paciente pa        ON pa.id = i.id_paciente
-      JOIN persona per        ON per.id = pa.id
-      JOIN enfermero enf      ON enf.id = i.id_enfermero
-      JOIN persona eper       ON eper.id = enf.id
-      JOIN nivel n            ON n.id = i.id_nivel
-      JOIN nivel_emergencia ne ON ne.id = n.id_nivel_emergencia
-      JOIN estado_ingreso ei  ON ei.id = i.id_estado_ingreso
-      WHERE ei.estado = 'PENDIENTE'
-      ORDER BY 
+        FROM ingreso i
+        JOIN paciente pa        ON pa.id = i.id_paciente
+        JOIN persona per        ON per.id = pa.id
+        JOIN enfermero enf      ON enf.id = i.id_enfermero
+        JOIN persona eper       ON eper.id = enf.id
+        JOIN nivel n            ON n.id = i.id_nivel
+        JOIN nivel_emergencia ne ON ne.id = n.id_nivel_emergencia
+        JOIN estado_ingreso ei  ON ei.id = i.id_estado_ingreso
+        WHERE ei.estado = 'PENDIENTE'
+        ORDER BY 
         ne.id ASC,           -- prioridad de nivel
         i.fecha_ingreso ASC  -- orden de llegada
-      `,
+        `,
     );
 
     return rows.map((row) => {
@@ -160,14 +161,14 @@ export class IngresoRepositorio implements IIngresoRepositorio {
         row.apellido_paciente,
         row.cuil_paciente,
       );
-
+      
       const enf = new Enfermera(row.nombre_enfermera, row.apellido_enfermera);
       const nivel = this.mapNivelFromDb(row.nivel_emergencia);
-
+      
       const [sistolicaStr, diastolicaStr] = row.tension_arterial.split('/');
       const sistolica = Number(sistolicaStr);
       const diastolica = Number(diastolicaStr);
-
+      
       return new Ingreso({
         paciente,
         enfermera: enf,
@@ -182,12 +183,88 @@ export class IngresoRepositorio implements IIngresoRepositorio {
       });
     });
   }
+  
+  async reclamarSiguienteIngreso(): Promise<Ingreso | null> {
+    const rows = await this.db.query<IngresoRow>(
+      `
+      SELECT 
+        i.*,
+        per.cuil            AS cuil_paciente,
+        per.nombre          AS nombre_paciente,
+        per.apellido        AS apellido_paciente,
+        eper.nombre         AS nombre_enfermera,
+        eper.apellido       AS apellido_enfermera,
+        ne.nombre           AS nivel_emergencia
+        FROM ingreso i
+        JOIN paciente pa        ON pa.id = i.id_paciente
+        JOIN persona per        ON per.id = pa.id
+        JOIN enfermero enf      ON enf.id = i.id_enfermero
+        JOIN persona eper       ON eper.id = enf.id
+        JOIN nivel n            ON n.id = i.id_nivel
+        JOIN nivel_emergencia ne ON ne.id = n.id_nivel_emergencia
+        JOIN estado_ingreso ei  ON ei.id = i.id_estado_ingreso
+        WHERE ei.estado = 'PENDIENTE'
+        ORDER BY 
+        ne.id ASC,           -- prioridad de nivel
+        i.fecha_ingreso ASC  -- orden de llegada
+        LIMIT 1
+        `,
+    );
+
+    if (rows.length === 0) {
+      return null;
+    }
+
+    const row = rows[0];
+
+    const idEnProceso = await this.estadoRepo.obtenerIdPorNombre(EstadoIngreso.EN_PROCESO);
+
+    if (!idEnProceso) {
+      throw new NotFoundException('No se encontró estado EN_PROCESO');
+    }
+
+    await this.db.execute(
+    `UPDATE ingreso SET id_estado_ingreso = ? WHERE id = ?`,
+    [idEnProceso, row.id],
+    );
+
+    return this.mapRowToIngreso(row);
+  }
+
+  private mapRowToIngreso(row: IngresoRow): Ingreso {
+  const paciente = new Paciente(
+    row.nombre_paciente,
+    row.apellido_paciente,
+    row.cuil_paciente,
+  );
+  
+  const enf = new Enfermera(row.nombre_enfermera, row.apellido_enfermera);
+  const nivel = this.mapNivelFromDb(row.nivel_emergencia);
+  
+  const [sistolicaStr, diastolicaStr] = row.tension_arterial.split('/');
+  const sistolica = Number(sistolicaStr);
+  const diastolica = Number(diastolicaStr);
+  
+  return new Ingreso({
+    paciente,
+    enfermera: enf,
+    informe: row.descripcion,
+    nivelEmergencia: nivel,
+    temperatura: row.temperatura,
+    frecuenciaCardiaca: row.frecuencia_cardiaca,
+    frecuenciaRespiratoria: row.frecuencia_respiratorio,
+    presionSistolica: sistolica,
+    presionDiastolica: diastolica,
+    fechaIngreso: new Date(row.fecha_ingreso),
+  });
+  }
+
 
   private mapNivelFromDb(nombre: string): NivelEmergencia {
     if (!nombre) return NivelEmergencia.SIN_URGENCIA;
-
+    
     const normalized = nombre.trim().toUpperCase();
-
+    
     const mapa: Record<string, NivelEmergencia> = {
         'CRITICA': NivelEmergencia.CRITICA,
         'EMERGENCIA': NivelEmergencia.EMERGENCIA,

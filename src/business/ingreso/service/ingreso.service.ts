@@ -23,6 +23,13 @@ export class IngresoService implements IIngresoServicio {
 
   ) {}
 
+
+  async reclamarIngreso(): Promise<Ingreso> {
+    const ingreso = await this.ingresoRepo.reclamarSiguienteIngreso();
+    if(!ingreso) throw new NotFoundException('No hay Paciente en la lista de espera');
+    return ingreso;
+  }
+
   async registrarIngreso(
     cuilPaciente: string,
     idEnfermera: number,
