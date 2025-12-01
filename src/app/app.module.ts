@@ -18,7 +18,7 @@ import { PacienteModule } from './paciente.module';
     PacienteModule,
     IngresoModule,
     AuthModule,
-    ObraSocialModule
+    ObraSocialModule,
   ]
 })
 export class AppModule {}

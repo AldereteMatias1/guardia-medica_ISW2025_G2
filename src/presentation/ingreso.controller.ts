@@ -1,6 +1,8 @@
 import { Body, Controller, Get, Inject, Post } from "@nestjs/common";
 import { CreateIngresoDto } from "../business/ingreso/create-ingreso.dto";
 import * as ingresoServiceInterface from "../../src/business/ingreso/service/ingreso.service.interface";
+import { Roles } from "../../src/auth/decorators/roles.decorator";
+import { RolUsuario } from "../../src/business/usuario/usuario";
 
 @Controller('ingreso')
 export class IngresoController {
@@ -11,6 +13,7 @@ export class IngresoController {
     ) {}
 
     @Post()
+    @Roles(RolUsuario.ENFERMERO)
     registrarIngreso(@Body() ingreso: CreateIngresoDto) {
             return this.servicioIngreso.registrarIngreso(ingreso.cuilPaciente, 
                                                          ingreso.idEnfermera, 
