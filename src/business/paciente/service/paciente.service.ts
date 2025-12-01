@@ -163,4 +163,8 @@ export class PacienteServicio implements IPacienteServicio {
 
     return dv === nums[10];
   }
+
+  async getPacientes(): Promise<Paciente[]> {
+    return this.patientRepo.getAllPacientes();
+  }
 }

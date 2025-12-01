@@ -126,4 +126,19 @@ export class PatientRepositoryImpl implements IPacienteRepositorio {
       );
     }
   }
+
+  async getAllPacientes(): Promise<Paciente[]> {
+    const rows = await this.db.query<{ cuil: string }>(
+      `SELECT cuil FROM persona p
+       JOIN paciente pa ON pa.id = p.id`
+    );
+    const pacientes: Paciente[] = [];
+    for (const row of rows) {
+      const paciente = await this.buscarPacientePorCuil(row.cuil);
+      if (paciente) {
+        pacientes.push(paciente);
+      }
+    }
+    return pacientes;
+  }
 }
