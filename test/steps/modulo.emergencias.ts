@@ -14,9 +14,13 @@ import { IIngresoServicio } from '../../src/business/ingreso/service/ingreso.ser
 import { NivelEmergencia } from '../../src/business/nivel-emergencia/nivelEmergencia.enum';
 import { Paciente } from '../../src/business/paciente/paciente';
 import { ServicioEnfermero } from '../../src/business/enfermera/service/enfermero.service';
+import { AtencionServicio } from '../../src/business/atencion/service/atencion.service';
+import { AtencionDatabaseInMemory } from '../../test/mock/atencion.repository.mock';
 
 let enfermera: Enfermera;
 let service: IIngresoServicio ;
+let atencionService: AtencionServicio;
+let atencionRepo: AtencionDatabaseInMemory;
 let ingresoRepo: IIngresoRepositorio;
 let enfermeroService: IEnfermeroServicio;
 let enfermeroRepo: IEnfermeroRepositorio;
@@ -59,8 +63,10 @@ Before((scenario) => {
   patientRepo = new DataBaseInMemory(); 
   ingresoRepo = new IngresoRepoInMemory();
   enfermeroRepo = new EnfermeroDatabaseInMemory();
+  atencionRepo = new AtencionDatabaseInMemory();
   enfermeroService = new ServicioEnfermero(enfermeroRepo as any);
-  service = new IngresoService(patientRepo as any, ingresoRepo as any, enfermeroService as any);
+  atencionService = new AtencionServicio(atencionRepo as any);
+  service = new IngresoService(patientRepo as any, ingresoRepo as any, enfermeroService as any, atencionRepo as any);
   msgLastError = '';
   countAntesDeIntento = 0;
   console.log(`SCENARIO: ${scenario.pickle.name}`);

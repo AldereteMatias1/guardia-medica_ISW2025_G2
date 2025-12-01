@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Ingreso } from '../ingreso';
 import * as pacienteRepository from '../../../persistence/paciente/patient.repository.interface';
 import { PACIENTE_REPOSITORIO } from '../../../persistence/paciente/patient.repository.interface';
@@ -6,6 +6,7 @@ import * as ingresoRepositoryInterface from '../../../persistence/ingreso/ingres
 import * as enfermeraServiceInterface from '../../enfermera/service/enfermera.service.interface';
 import { IIngresoServicio } from './ingreso.service.interface';
 import { NivelEmergencia } from '../../../../src/business/nivel-emergencia/nivelEmergencia.enum';
+import * as atencionServiceInterface from '../../../../src/business/atencion/service/atencion.service.interface';
 
 
 @Injectable()
@@ -19,14 +20,22 @@ export class IngresoService implements IIngresoServicio {
     private readonly ingresoRepo: ingresoRepositoryInterface.IIngresoRepositorio,
 
     @Inject(enfermeraServiceInterface.SERVICIO_ENFERMERO)
-    private readonly enfermeroServicio: enfermeraServiceInterface.IEnfermeroServicio
+    private readonly enfermeroServicio: enfermeraServiceInterface.IEnfermeroServicio,
+
+    @Inject(atencionServiceInterface.ATENCION_SERVICIO)
+    private readonly atencionServicio: atencionServiceInterface.IAtencionServicio
 
   ) {}
 
 
-  async reclamarIngreso(): Promise<Ingreso> {
+  async reclamarIngreso(idMedico: number): Promise<Ingreso> {
+    const medicoOcupado = await this.atencionServicio.hasIngresoEnProceso(idMedico); 
+    if(medicoOcupado){
+      throw new BadRequestException("El medico tiene un ingreso en proceso");
+    }
     const ingreso = await this.ingresoRepo.reclamarSiguienteIngreso();
     if(!ingreso) throw new NotFoundException('No hay Paciente en la lista de espera');
+    await this.atencionServicio.asociarAtencion(idMedico, ingreso.getId());
     return ingreso;
   }
 

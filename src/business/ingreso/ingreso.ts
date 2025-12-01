@@ -20,6 +20,7 @@ interface IngresoArgs {
 }
 
 export class Ingreso {
+  private readonly id: number;
   private readonly paciente: Paciente;
   private readonly enfermera: Enfermera;
   private fechaIngreso: Date;
@@ -109,5 +110,9 @@ export class Ingreso {
 
   public getFechaIngreso(){
     return this.fechaIngreso;
+  }
+
+  public getId(){
+    return this.id;
   }
 }

@@ -7,7 +7,7 @@ import * as nivelEmergenciaRepositoryInterface from '../nivel-emergencia/nivel.e
 import { NivelEmergencia } from '../../../src/business/nivel-emergencia/nivelEmergencia.enum';
 import { Paciente } from '../../../src/business/paciente/paciente';
 import { Enfermera } from '../../../src/business/enfermera/enfermera.entity';
-import { EstadoIngreso } from 'src/business/estado-ingreso/estadoIngreso.enum';
+import { EstadoIngreso } from '../../../src/business/estado-ingreso/estadoIngreso.enum';
 
 type IngresoRow = {
   id: number;
@@ -32,9 +32,42 @@ export class IngresoRepositorio implements IIngresoRepositorio {
     @Inject(estadoIngresoRepositoryInterface.ESTADO_INGRESO_REPOSITORIO)
     private readonly estadoRepo: estadoIngresoRepositoryInterface.IEstadoIngresoRepositorio,
     @Inject(nivelEmergenciaRepositoryInterface.NIVEL_EMERGENCIA_REPOSITORIO)
-    private readonly nivelRepo: nivelEmergenciaRepositoryInterface.INivelEmergenciaRepositorio,
-
+    private readonly nivelRepo: nivelEmergenciaRepositoryInterface.INivelEmergenciaRepositorio
   ) {}
+
+
+  async findById(idIngreso: number): Promise<Ingreso | null> {
+    const rows = await this.db.query<IngresoRow>(
+      `
+      SELECT 
+        i.*,
+        per.cuil            AS cuil_paciente,
+        per.nombre          AS nombre_paciente,
+        per.apellido        AS apellido_paciente,
+        eper.nombre         AS nombre_enfermera,
+        eper.apellido       AS apellido_enfermera,
+        ne.nombre           AS nivel_emergencia
+        FROM ingreso i
+        JOIN paciente pa        ON pa.id = i.id_paciente
+        JOIN persona per        ON per.id = pa.id
+        JOIN enfermero enf      ON enf.id = i.id_enfermero
+        JOIN persona eper       ON eper.id = enf.id
+        JOIN nivel n            ON n.id = i.id_nivel
+        JOIN nivel_emergencia ne ON ne.id = n.id_nivel_emergencia
+        JOIN estado_ingreso ei  ON ei.id = i.id_estado_ingreso
+        WHERE i.id = ?
+        `,
+        [idIngreso]
+    );
+
+    if (rows.length === 0) {
+      return null;
+    }
+
+    const row = rows[0];
+
+    return this.mapRowToIngreso(row);
+    }
 
   
   private mapNivelToDb(nivel: NivelEmergencia): string {
@@ -185,6 +218,7 @@ export class IngresoRepositorio implements IIngresoRepositorio {
   }
   
   async reclamarSiguienteIngreso(): Promise<Ingreso | null> {
+
     const rows = await this.db.query<IngresoRow>(
       `
       SELECT 
