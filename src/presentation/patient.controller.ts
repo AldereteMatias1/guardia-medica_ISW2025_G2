@@ -79,4 +79,12 @@ export class PacienteController {
     return p;
   }
 
+  @Get()
+  @Roles(RolUsuario.ENFERMERO)
+  @ApiOperation({ summary: 'Listar Pacientes' })
+  @ApiOkResponse({ description: 'Lista de pacientes obtenida correctamente' })
+  get() {
+    return this.pacientesService.getPacientes();
+  }
+
 }

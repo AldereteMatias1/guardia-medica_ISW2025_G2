@@ -6,4 +6,5 @@ export const SERVICIO_PACIENTE = Symbol('SERVICIO_PACIENTE');
 export interface IPacienteServicio {
     registrarPaciente(createPacienteDto: CreatePacienteDto) : Promise<Paciente>;
     buscarPacientePorCuil(cuil: string): Promise<Paciente | null>;
+    getPacientes(): Promise<Paciente[]>;
 }
