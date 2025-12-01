@@ -5,6 +5,7 @@ import { Ingreso } from "../../../business/ingreso/ingreso";
 export const SERVICIO_INGRESO = Symbol('SERVICIO_INGRESO');
 
 export interface IIngresoServicio {
+    reclamarIngreso(): Promise<Ingreso>;
    registrarIngreso(
        cuilPaciente: string,
        idEnfermera: number,

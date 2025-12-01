@@ -31,4 +31,9 @@ export class IngresoController {
         return this.servicioIngreso.obtenerPendientes();
     }
 
+    @Get("/reclamar-ingreso")
+    reclamarIngreso(){
+        return this.servicioIngreso.reclamarIngreso();
+    }
+
 }
