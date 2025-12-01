@@ -150,9 +150,6 @@ export class MedicoRepositorio implements IMedicoRepositorio {
     medicoId: number,
     usuarioId: number,
   ): Promise<void> {
-    console.log(
-      `(DESDE REPO) Asociando usuario con ID ${usuarioId} al médico con ID ${medicoId}`,
-    );
     await this.db.execute(
       `UPDATE medico
        SET id_usuario = ?

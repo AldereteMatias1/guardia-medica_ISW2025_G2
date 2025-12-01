@@ -32,8 +32,7 @@ export class IngresoRepositorio implements IIngresoRepositorio {
     @Inject(estadoIngresoRepositoryInterface.ESTADO_INGRESO_REPOSITORIO)
     private readonly estadoRepo: estadoIngresoRepositoryInterface.IEstadoIngresoRepositorio,
     @Inject(nivelEmergenciaRepositoryInterface.NIVEL_EMERGENCIA_REPOSITORIO)
-    private readonly nivelRepo: nivelEmergenciaRepositoryInterface.INivelEmergenciaRepositorio,
-
+    private readonly nivelRepo: nivelEmergenciaRepositoryInterface.INivelEmergenciaRepositorio
   ) {}
 
 
@@ -219,6 +218,7 @@ export class IngresoRepositorio implements IIngresoRepositorio {
   }
   
   async reclamarSiguienteIngreso(): Promise<Ingreso | null> {
+
     const rows = await this.db.query<IngresoRow>(
       `
       SELECT 

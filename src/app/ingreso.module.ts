@@ -20,6 +20,12 @@ import { ServicioEnfermero } from '../../src/business/enfermera/service/enfermer
 import { EnfermeroRepositorio } from '../../src/persistence/enfermero/enfermero.repository';
 import { ServicioEstadoIngreso } from '../../src/business/estado-ingreso/service/estado.ingreso.service';
 import { NivelEmergenciaServicio } from '../../src/business/nivel-emergencia/service/nivel.emergencia.service';
+import { ATENCION_SERVICIO } from '../../src/business/atencion/service/atencion.service.interface';
+import { AtencionServicio } from '../../src/business/atencion/service/atencion.service';
+import { ATENCION_REPOSITORIO } from '../../src/persistence/atencion/atencion.repository.interface';
+import { AtencionRepositorio } from '../../src/persistence/atencion/atencion.repository';
+import { MEDICO_REPOSITORIO } from '../../src/persistence/medico/medico.repository.interface';
+import { MedicoRepositorio } from '../../src/persistence/medico/medico.repository';
 
 @Module({
     imports: [PacienteModule, DatabaseModule],
@@ -60,7 +66,19 @@ import { NivelEmergenciaServicio } from '../../src/business/nivel-emergencia/ser
         {
           provide: NIVEL_EMERGENCIA_SERVICIO,
           useClass: NivelEmergenciaServicio
-        }
+        },
+        {
+          provide: ATENCION_SERVICIO,
+          useClass: AtencionServicio
+        },
+        {
+          provide: ATENCION_REPOSITORIO,
+          useClass: AtencionRepositorio
+        },
+        {
+          provide: MEDICO_REPOSITORIO, 
+          useClass: MedicoRepositorio, 
+        },
         ],
       exports: [SERVICIO_INGRESO],
 })

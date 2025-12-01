@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Post } from "@nestjs/common";
+import { Body, Controller, Get, Inject, Param, Post } from "@nestjs/common";
 import { CreateIngresoDto } from "../business/ingreso/create-ingreso.dto";
 import * as ingresoServiceInterface from "../../src/business/ingreso/service/ingreso.service.interface";
 import { Roles } from "../../src/auth/decorators/roles.decorator";
@@ -31,9 +31,9 @@ export class IngresoController {
         return this.servicioIngreso.obtenerPendientes();
     }
 
-    @Get("/reclamar-ingreso")
-    reclamarIngreso(){
-        return this.servicioIngreso.reclamarIngreso();
+    @Get("/reclamar-ingreso/:idMedico")
+    reclamarIngreso(@Param('idMedico') idMedico: number){
+        return this.servicioIngreso.reclamarIngreso(idMedico);
     }
 
 }

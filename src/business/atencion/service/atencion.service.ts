@@ -11,6 +11,14 @@ export class AtencionServicio implements IAtencionServicio {
         private readonly atencionRepositorio: atencionRepositoryInterface.IAtencionRepositorio
     ) {}
 
+    async asociarAtencion(idMedico: number, idIngreso: number): Promise<void> {
+        this.asociarAtencion(idMedico, idIngreso);
+    }
+
+    async hasIngresoEnProceso(idMedico: number): Promise<boolean> {
+        return this.atencionRepositorio.hasIngresoEnProceso(idMedico);
+    }
+
     async traerAtencion(idMedico: number): Promise<Atencion | null> {
         const atencion = await this.atencionRepositorio.traerAtencion(idMedico);
         if(!atencion){

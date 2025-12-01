@@ -22,6 +22,25 @@ export class AtencionRepositorio implements IAtencionRepositorio{
         private readonly medicoRepo: medicoRepositoryInterface.IMedicoRepositorio
     ) {}
 
+
+    async hasIngresoEnProceso(idMedico: number): Promise<boolean> {
+        const idEstadoEnProceso = await this.estadoRepo.obtenerIdPorNombre(EstadoIngreso.EN_PROCESO);
+
+        const rows = await this.db.query(
+            `
+            SELECT 1
+            FROM atencion a
+            JOIN ingreso i ON a.id_ingreso = i.id
+            WHERE 
+                a.id_medico = ?
+                AND i.id_estado_ingreso = ?
+            LIMIT 1
+            `,
+            [idMedico, idEstadoEnProceso]
+        );
+        return rows.length > 0;
+    }
+
     async traerAtencion(idMedico: number): Promise<Atencion | null> {
         const rows = await this.db.query<{
             id: number,
@@ -52,7 +71,7 @@ export class AtencionRepositorio implements IAtencionRepositorio{
         if (!rows.length) return null;
         
         const row = rows[0];
-        
+
         const ingreso: Ingreso | null = await this.ingresoRepo.findById(row.idIngreso);
 
         if (!ingreso) {
@@ -75,8 +94,17 @@ export class AtencionRepositorio implements IAtencionRepositorio{
         return atencion; 
     }
 
-    async guardarAtencion(idMedico: number, idIngreso: number): Promise<void> {
-        throw new Error("Method not implemented.");
+    async asociarAtencion(idMedico: number, idIngreso: number): Promise<void> {
+        await this.db.execute(
+            `
+            INSERT INTO atencion (
+                id_medico, 
+                id_ingreso
+            )
+            VALUES (?, ?)
+            `,
+            [idMedico, idIngreso], 
+        );
     }
 
     
