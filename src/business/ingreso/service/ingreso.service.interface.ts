@@ -19,4 +19,6 @@ export interface IIngresoServicio {
      ): Promise<Ingreso>;
 
      obtenerPendientes(): Promise<Ingreso[]>;
+
+  finalizarIngreso(idIngreso: number): Promise<void>;
 };

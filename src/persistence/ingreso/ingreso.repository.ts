@@ -35,6 +35,20 @@ export class IngresoRepositorio implements IIngresoRepositorio {
     private readonly nivelRepo: nivelEmergenciaRepositoryInterface.INivelEmergenciaRepositorio
   ) {}
 
+  async finalizarIngreso(idIngreso: number): Promise<void> {
+    const idEstadoFinalizado = await this.estadoRepo.obtenerIdPorNombre(EstadoIngreso.FINALIZADO);
+    await this.db.execute(
+        `
+        UPDATE ingreso
+        SET 
+            id_estado_ingreso = ?
+        WHERE 
+            id = ?
+        `,
+        [idEstadoFinalizado, idIngreso]
+    );
+  }
+
 
   async findById(idIngreso: number): Promise<Ingreso | null> {
     const rows = await this.db.query<IngresoRow>(
