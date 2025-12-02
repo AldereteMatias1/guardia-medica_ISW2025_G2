@@ -3,6 +3,7 @@ import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { IAtencionRepositorio } from '../../src/persistence/atencion/atencion.repository.interface'; 
 import { IIngresoServicio } from '../../src/business/ingreso/service/ingreso.service.interface'; 
 import { AtencionServicio } from '../../src/business/atencion/service/atencion.service';
+import { IIngresoRepositorio } from '../../src/persistence/ingreso/ingreso.repository.interface';
 
 const mockIngreso = { 
     getId: jest.fn(() => 101) 
@@ -27,7 +28,7 @@ describe('AtencionServicio.completarAtencion', () => {
     let service: AtencionServicio;
     
     let atencionRepositorioMock: jest.Mocked<IAtencionRepositorio>;
-    let ingresoServicioMock: jest.Mocked<IIngresoServicio>;
+    let ingresoRepositorioMock: jest.Mocked<IIngresoRepositorio>;
 
     beforeEach(() => {
         atencionRepositorioMock = {
@@ -35,13 +36,13 @@ describe('AtencionServicio.completarAtencion', () => {
             completarAtencion: jest.fn().mockResolvedValue(undefined),
         } as unknown as jest.Mocked<IAtencionRepositorio>;
 
-        ingresoServicioMock = {
+        ingresoRepositorioMock = {
             finalizarIngreso: jest.fn().mockResolvedValue(undefined),
-        } as unknown as jest.Mocked<IIngresoServicio>;
+        } as unknown as jest.Mocked<IIngresoRepositorio>;
 
         service = new AtencionServicio(
             atencionRepositorioMock,
-            ingresoServicioMock
+            ingresoRepositorioMock
         );
 
         jest.clearAllMocks();
@@ -63,7 +64,7 @@ describe('AtencionServicio.completarAtencion', () => {
         );
         
         expect(mockAtencion.getIngreso().getId).toHaveBeenCalled();
-        expect(ingresoServicioMock.finalizarIngreso).toHaveBeenCalledWith(101); 
+        expect(ingresoRepositorioMock.finalizarIngreso).toHaveBeenCalledWith(101); 
     });
 
     it('debe lanzar NotFoundException si no se encuentra la atención para el médico', async () => {
@@ -75,7 +76,7 @@ describe('AtencionServicio.completarAtencion', () => {
             .rejects
             .toThrow(NotFoundException);
         expect(atencionRepositorioMock.completarAtencion).not.toHaveBeenCalled();
-        expect(ingresoServicioMock.finalizarIngreso).not.toHaveBeenCalled();
+        expect(ingresoRepositorioMock.finalizarIngreso).not.toHaveBeenCalled();
     });
 
     // test/unit/completar.atencion.spec.ts (CORREGIDO)
@@ -93,7 +94,7 @@ it('debe lanzar BadRequestException si el informe está vacío', async () => {
 
     expect(atencionRepositorioMock.traerAtencion).toHaveBeenCalledTimes(1);
     expect(atencionRepositorioMock.completarAtencion).not.toHaveBeenCalled();
-    expect(ingresoServicioMock.finalizarIngreso).not.toHaveBeenCalled();
+    expect(ingresoRepositorioMock.finalizarIngreso).not.toHaveBeenCalled();
 });
 
 });

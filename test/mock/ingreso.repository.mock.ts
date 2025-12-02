@@ -2,6 +2,9 @@ import { IIngresoRepositorio } from "../../src/persistence/ingreso/ingreso.repos
 import { Ingreso } from "../../src/business/ingreso/ingreso";
 
 export class IngresoRepoInMemory implements IIngresoRepositorio {
+  finalizarIngreso(idIngreso: number): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
 
 
   findById(idIngreso: number): Promise<Ingreso | null> {

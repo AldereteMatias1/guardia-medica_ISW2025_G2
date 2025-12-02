@@ -1,9 +1,9 @@
 import { BadRequestException, Inject, Injectable, NotFoundException } from "@nestjs/common";
-import { ATENCION_SERVICIO, IAtencionServicio } from "./atencion.service.interface";
 import { Atencion } from "../atencion.entity";
 import * as atencionRepositoryInterface from "../../../../src/persistence/atencion/atencion.repository.interface";
 import { CompletarAtencionDto } from "../dto/completar.atencion.dto";
-import * as ingresoServiceInterface from "../../../../src/business/ingreso/service/ingreso.service.interface";
+import * as ingresoRepositoryInterface from "../../../../src/persistence/ingreso/ingreso.repository.interface";
+import { IAtencionServicio } from "./atencion.service.interface";
 
 @Injectable()
 export class AtencionServicio implements IAtencionServicio {
@@ -11,8 +11,8 @@ export class AtencionServicio implements IAtencionServicio {
     constructor(
         @Inject(atencionRepositoryInterface.ATENCION_REPOSITORIO)
         private readonly atencionRepositorio: atencionRepositoryInterface.IAtencionRepositorio,
-        @Inject(ingresoServiceInterface.SERVICIO_INGRESO)
-        private readonly ingresoServicio: ingresoServiceInterface.IIngresoServicio
+        @Inject(ingresoRepositoryInterface.INGRESO_REPOSITORIO)
+        private readonly ingresoRepo : ingresoRepositoryInterface.IIngresoRepositorio
     ) {}
 
     async completarAtencion(completarAtencion: CompletarAtencionDto): Promise<void> {
@@ -24,7 +24,7 @@ export class AtencionServicio implements IAtencionServicio {
             throw new BadRequestException("El campo informe es obligatorio");
         }
         await this.atencionRepositorio.completarAtencion(atencion.getId(), completarAtencion.informe);
-        await this.ingresoServicio.finalizarIngreso(atencion.getIngreso().getId());
+        await this.ingresoRepo.finalizarIngreso(atencion.getIngreso().getId());
     }
 
     async asociarAtencion(idMedico: number, idIngreso: number): Promise<void> {
