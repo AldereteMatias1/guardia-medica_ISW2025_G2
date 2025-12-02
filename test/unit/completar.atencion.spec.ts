@@ -80,7 +80,7 @@ describe('AtencionServicio.completarAtencion', () => {
         expect(ingresoRepositorioMock.finalizarIngreso).not.toHaveBeenCalled();
     });
 
-    // test/unit/completar.atencion.spec.ts (CORREGIDO)
+
 
 it('debe lanzar BadRequestException si el informe está vacío', async () => {
     // Arrange
