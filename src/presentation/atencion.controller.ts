@@ -21,7 +21,7 @@ export class AtencionController {
     @Patch()
     @Roles(RolUsuario.MEDICO)
     async completarAtencion(@Body() completarAtencion: CompletarAtencionDto){
-        return this.completarAtencion(completarAtencion);
+        return this.atencionServicio.completarAtencion(completarAtencion);
     }
 
 }

@@ -292,19 +292,37 @@ export class IngresoRepositorio implements IIngresoRepositorio {
   const [sistolicaStr, diastolicaStr] = row.tension_arterial.split('/');
   const sistolica = Number(sistolicaStr);
   const diastolica = Number(diastolicaStr);
+
+  if(row.id){
+    return new Ingreso(
+      row.id,
+      {
+      paciente,
+      enfermera: enf,
+      informe: row.descripcion,
+      nivelEmergencia: nivel,
+      temperatura: row.temperatura,
+      frecuenciaCardiaca: row.frecuencia_cardiaca,
+      frecuenciaRespiratoria: row.frecuencia_respiratorio,
+      presionSistolica: sistolica,
+      presionDiastolica: diastolica,
+      fechaIngreso: new Date(row.fecha_ingreso),
+    });
+  }else{
+    return new Ingreso({
+      paciente,
+      enfermera: enf,
+      informe: row.descripcion,
+      nivelEmergencia: nivel,
+      temperatura: row.temperatura,
+      frecuenciaCardiaca: row.frecuencia_cardiaca,
+      frecuenciaRespiratoria: row.frecuencia_respiratorio,
+      presionSistolica: sistolica,
+      presionDiastolica: diastolica,
+      fechaIngreso: new Date(row.fecha_ingreso),
+    });
+  }
   
-  return new Ingreso({
-    paciente,
-    enfermera: enf,
-    informe: row.descripcion,
-    nivelEmergencia: nivel,
-    temperatura: row.temperatura,
-    frecuenciaCardiaca: row.frecuencia_cardiaca,
-    frecuenciaRespiratoria: row.frecuencia_respiratorio,
-    presionSistolica: sistolica,
-    presionDiastolica: diastolica,
-    fechaIngreso: new Date(row.fecha_ingreso),
-  });
   }
 
 

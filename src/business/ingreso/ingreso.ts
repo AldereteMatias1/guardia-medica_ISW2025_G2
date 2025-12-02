@@ -32,7 +32,22 @@ export class Ingreso {
   private readonly tensionArterial: TensionArterial;
   private estadoIngreso: EstadoIngreso;
 
-  public constructor(args: IngresoArgs) {
+  public constructor(args: IngresoArgs);
+  public constructor(id: number, args: IngresoArgs);
+  
+  
+  public constructor(idOrArgs: number | IngresoArgs, maybeArgs?: IngresoArgs) {
+
+    let args: IngresoArgs;
+
+    if (typeof idOrArgs !== 'number') {
+      this.id = 0; 
+      args = idOrArgs;
+
+    } else {
+      this.id = idOrArgs;
+      args = maybeArgs!;
+    }
 
     if (!args.informe || !args.informe.trim()) {
       throw new Error("falta el campo 'informe'");
@@ -40,9 +55,10 @@ export class Ingreso {
     if (args.nivelEmergencia == null || Number.isNaN(args.nivelEmergencia)) {
       throw new Error("falta el campo 'nivel de emergencia'");
     }
+
     this.paciente = args.paciente;
     this.enfermera = args.enfermera;
-    this.fechaIngreso =  new Date();
+    this.fechaIngreso = new Date();
     this.informe = args.informe.trim();
     this.nivelEmergencia = args.nivelEmergencia;
     this.temperatura = args.temperatura;
@@ -51,9 +67,8 @@ export class Ingreso {
     this.frecuenciaRespiratoria = new FrecuenciaRespiratoria(args.frecuenciaRespiratoria);
     this.tensionArterial = new TensionArterial(args.presionSistolica, args.presionDiastolica);
 
-    this.estadoIngreso =EstadoIngreso.PENDIENTE;
+    this.estadoIngreso = EstadoIngreso.PENDIENTE;
   }
-
 
   public compararCon(otro: Ingreso): number { 
     if (this.nivelEmergencia !== otro.nivelEmergencia) {

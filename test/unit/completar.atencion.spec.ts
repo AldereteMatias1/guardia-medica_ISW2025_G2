@@ -56,15 +56,16 @@ describe('AtencionServicio.completarAtencion', () => {
         await service.completarAtencion(mockCompletarAtencionDto);
 
         // Assert
-        expect(atencionRepositorioMock.traerAtencion).toHaveBeenCalledWith(mockCompletarAtencionDto.idMedico);
-        
-        expect(atencionRepositorioMock.completarAtencion).toHaveBeenCalledWith(
-            mockAtencion.getId(), 
-            mockCompletarAtencionDto.informe
-        );
-        
-        expect(mockAtencion.getIngreso().getId).toHaveBeenCalled();
-        expect(ingresoRepositorioMock.finalizarIngreso).toHaveBeenCalledWith(101); 
+        expect(atencionRepositorioMock.traerAtencion)
+            .toHaveBeenCalledWith(mockCompletarAtencionDto.idMedico);
+
+        const ingresoId = mockAtencion.getIngreso().getId();
+
+        expect(atencionRepositorioMock.completarAtencion)
+            .toHaveBeenCalledWith(ingresoId, mockCompletarAtencionDto.informe);
+
+        expect(ingresoRepositorioMock.finalizarIngreso)
+            .toHaveBeenCalledWith(ingresoId);
     });
 
     it('debe lanzar NotFoundException si no se encuentra la atención para el médico', async () => {

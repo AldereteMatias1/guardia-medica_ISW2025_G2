@@ -23,12 +23,12 @@ export class AtencionServicio implements IAtencionServicio {
         if(!completarAtencion.informe){
             throw new BadRequestException("El campo informe es obligatorio");
         }
-        await this.atencionRepositorio.completarAtencion(atencion.getId(), completarAtencion.informe);
+        await this.atencionRepositorio.completarAtencion(atencion.getIngreso().getId(), completarAtencion.informe);
         await this.ingresoRepo.finalizarIngreso(atencion.getIngreso().getId());
     }
 
     async asociarAtencion(idMedico: number, idIngreso: number): Promise<void> {
-        this.asociarAtencion(idMedico, idIngreso);
+        this.atencionRepositorio.asociarAtencion(idMedico, idIngreso);
     }
 
     async hasIngresoEnProceso(idMedico: number): Promise<boolean> {
