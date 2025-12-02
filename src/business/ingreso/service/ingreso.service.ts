@@ -27,6 +27,10 @@ export class IngresoService implements IIngresoServicio {
 
   ) {}
 
+  async finalizarIngreso(idIngreso: number): Promise<void> {
+    await this.ingresoRepo.finalizarIngreso(idIngreso);
+  }
+
 
   async reclamarIngreso(idMedico: number): Promise<Ingreso> {
     const medicoOcupado = await this.atencionServicio.hasIngresoEnProceso(idMedico); 

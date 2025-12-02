@@ -32,6 +32,7 @@ export class IngresoController {
     }
 
     @Get("/reclamar-ingreso/:idMedico")
+    @Roles(RolUsuario.MEDICO)
     reclamarIngreso(@Param('idMedico') idMedico: number){
         return this.servicioIngreso.reclamarIngreso(idMedico);
     }

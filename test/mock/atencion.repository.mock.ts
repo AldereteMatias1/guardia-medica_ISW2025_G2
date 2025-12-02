@@ -3,6 +3,9 @@ import { Atencion } from "../../src/business/atencion/atencion.entity";
 
 
 export class AtencionDatabaseInMemory implements IAtencionRepositorio{
+    completarAtencion(idIngreso: number, informe: string): Promise<void> {
+        throw new Error("Method not implemented.");
+    }
     traerAtencion(idMedico: number): Promise<Atencion | null> {
         throw new Error("Method not implemented.");
     }

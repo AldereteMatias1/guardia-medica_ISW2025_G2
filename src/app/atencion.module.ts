@@ -13,12 +13,18 @@ import { NIVEL_EMERGENCIA_REPOSITORIO } from "../../src/persistence/nivel-emerge
 import { NivelEmergenciaRepositorio } from "../../src/persistence/nivel-emergencia/nivel.emergencia.repository";
 import { MEDICO_REPOSITORIO } from "../../src/persistence/medico/medico.repository.interface";
 import { MedicoRepositorio } from "../../src/persistence/medico/medico.repository";
+import { PACIENTE_REPOSITORIO } from "../../src/persistence/paciente/patient.repository.interface";
+import { PatientRepositoryImpl } from "../../src/persistence/paciente/patient.repository";
 
 
 @Module({
   imports: [DatabaseModule],
   controllers: [AtencionController],
   providers: [
+    {
+        provide: PACIENTE_REPOSITORIO,
+        useClass: PatientRepositoryImpl,
+    },
     {
         provide: ATENCION_SERVICIO,
         useClass: AtencionServicio,
@@ -36,13 +42,14 @@ import { MedicoRepositorio } from "../../src/persistence/medico/medico.repositor
         useClass: NivelEmergenciaRepositorio,
     },
     {
-        provide: INGRESO_REPOSITORIO,
-        useClass: IngresoRepositorio
-    },
-    {
       provide: MEDICO_REPOSITORIO,
       useClass: MedicoRepositorio
+    },
+    {
+      provide: INGRESO_REPOSITORIO,
+      useClass: IngresoRepositorio
     }
+    
   ],
   exports: [ATENCION_SERVICIO]
 })

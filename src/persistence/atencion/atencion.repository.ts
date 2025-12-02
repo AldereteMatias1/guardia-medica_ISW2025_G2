@@ -22,6 +22,19 @@ export class AtencionRepositorio implements IAtencionRepositorio{
         private readonly medicoRepo: medicoRepositoryInterface.IMedicoRepositorio
     ) {}
 
+    async completarAtencion(idIngreso:number, informe: string): Promise<void> {
+            await this.db.execute(
+            `
+            UPDATE atencion
+            SET 
+                informe = ?
+            WHERE 
+                id_ingreso = ?
+            `,
+            [informe, idIngreso]
+        );
+    }
+
 
     async hasIngresoEnProceso(idMedico: number): Promise<boolean> {
         const idEstadoEnProceso = await this.estadoRepo.obtenerIdPorNombre(EstadoIngreso.EN_PROCESO);

@@ -65,8 +65,8 @@ Before((scenario) => {
   enfermeroRepo = new EnfermeroDatabaseInMemory();
   atencionRepo = new AtencionDatabaseInMemory();
   enfermeroService = new ServicioEnfermero(enfermeroRepo as any);
-  atencionService = new AtencionServicio(atencionRepo as any);
   service = new IngresoService(patientRepo as any, ingresoRepo as any, enfermeroService as any, atencionRepo as any);
+  atencionService = new AtencionServicio(atencionRepo as any, service as any);
   msgLastError = '';
   countAntesDeIntento = 0;
   console.log(`SCENARIO: ${scenario.pickle.name}`);
