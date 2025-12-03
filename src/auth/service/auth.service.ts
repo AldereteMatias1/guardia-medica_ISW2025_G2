@@ -59,16 +59,6 @@ export class AuthService {
         rol,
       };
 
-      await this.userRepo.registrarUsuario(usuarioParaGuardar);
-      const user = await this.userRepo.obtenerPorEmail(email);
-
-      if (!user) {
-        throw new InternalServerErrorException(
-          'Error al obtener el usuario recién registrado',
-        );
-      }
-      const usuarioRegistrado = user as Usuario;
-
       if (rol === RolUsuario.ENFERMERO) {
         if (enfermeraId == null) {
           throw new BadRequestException(
@@ -80,6 +70,15 @@ export class AuthService {
         if (!enfermera) {
           throw new BadRequestException('No existe una enfermera con ese id');
         }
+        await this.userRepo.registrarUsuario(usuarioParaGuardar);
+        const user = await this.userRepo.obtenerPorEmail(email);
+
+        if (!user) {
+          throw new InternalServerErrorException(
+            'Error al obtener el usuario recién registrado',
+          );
+        }
+        const usuarioRegistrado = user as Usuario;
 
         enfermera.asociarUsuario(user);
         await this.enfermeroRepo.asociarUsuarioEnfermera(enfermeraId, user.id!);
@@ -96,6 +95,16 @@ export class AuthService {
         if (!medico) {
           throw new BadRequestException('No existe un médico con ese id');
         }
+
+        await this.userRepo.registrarUsuario(usuarioParaGuardar);
+        const user = await this.userRepo.obtenerPorEmail(email);
+
+        if (!user) {
+          throw new InternalServerErrorException(
+            'Error al obtener el usuario recién registrado',
+          );
+        }
+        const usuarioRegistrado = user as Usuario;
 
         medico.asociarUsuario(usuarioRegistrado);
         await this.medicoRepo.asociarUsuarioMedico(
@@ -134,7 +143,6 @@ export class AuthService {
       let idProfesional = 0;
       const rolNormalizado = user.rol?.toString().toLowerCase();
 
-      
       if (rolNormalizado === RolUsuario.MEDICO.toLowerCase()) {
         const medico = await this.medicoRepo.obtenerPorEmail(user.email);
 
@@ -145,7 +153,6 @@ export class AuthService {
         }
 
         idProfesional = medico.getId();
-
       } else if (rolNormalizado === RolUsuario.ENFERMERO.toLowerCase()) {
         const enfermero = await this.enfermeroRepo.obtenerPorEmail(user.email);
 
