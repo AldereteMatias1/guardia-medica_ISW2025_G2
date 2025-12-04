@@ -1,5 +1,5 @@
 import { Controller, Get, Inject } from "@nestjs/common";
-import * as obraSociaServiceInterface from "../../src/app/interfaces/obraSocial/obra.socia.service.interface";
+import * as obraSociaServiceInterface from "../business/obra-social/service/obra.socia.service.interface";
 
 @Controller('obra_social')
 export class ObraSocialController {

@@ -1,4 +1,5 @@
-import { Paciente } from "../../src/models/paciente/paciente";
+import { Paciente } from "../../src/business/paciente/paciente";
+
 
 export interface PacienteRepositorio {
     buscarPacientePorCuil(cuil: string): Paciente | null;

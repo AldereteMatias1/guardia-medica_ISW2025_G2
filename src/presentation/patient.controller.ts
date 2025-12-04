@@ -9,12 +9,13 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
-import { CreatePacienteDto } from '../models/paciente/dto/create.patient.dto';
+import { CreatePacienteDto } from '../../src/business/paciente/dto/create.patient.dto';
 
-import { SERVICIO_PACIENTE } from 'src/app/interfaces/paciente/paciente.service';
-import type { IPacienteServicio } from 'src/app/interfaces/paciente/paciente.service';
-import { PACIENTE_REPOSITORIO } from '../app/interfaces/paciente/patient.repository.interface';
-import { PatientRepositoryImpl } from 'src/persistence/patient.repository';
+import { SERVICIO_PACIENTE } from '../../src/business/paciente/service/paciente.service.interface';
+import type { IPacienteServicio } from '../../src/business/paciente/service/paciente.service.interface';
+import { Roles } from '../../src/auth/decorators/roles.decorator';
+import { RolUsuario } from '../../src/business/usuario/usuario';
+
 
 @ApiTags('pacientes')
 @Controller('pacientes')
@@ -25,6 +26,7 @@ export class PacienteController {
   ) {}
 
   @Post()
+  @Roles(RolUsuario.ENFERMERO)
   @ApiOperation({ summary: 'Registrar un nuevo paciente' })
   @ApiBody({
     type: CreatePacienteDto,
@@ -75,6 +77,14 @@ export class PacienteController {
     const p = this.pacientesService.buscarPacientePorCuil(cuil);
     if (!p) throw new NotFoundException('Paciente no registrado');
     return p;
+  }
+
+  @Get()
+  @Roles(RolUsuario.ENFERMERO)
+  @ApiOperation({ summary: 'Listar Pacientes' })
+  @ApiOkResponse({ description: 'Lista de pacientes obtenida correctamente' })
+  get() {
+    return this.pacientesService.getPacientes();
   }
 
 }

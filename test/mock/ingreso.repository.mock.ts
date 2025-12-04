@@ -1,7 +1,19 @@
-import { IIngresoRepositorio } from "../../src/app/interfaces/ingreso/ingreso.repository.interface";
-import { Ingreso } from "../../src/models/ingreso/ingreso";
+import { IIngresoRepositorio } from "../../src/persistence/ingreso/ingreso.repository.interface";
+import { Ingreso } from "../../src/business/ingreso/ingreso";
 
 export class IngresoRepoInMemory implements IIngresoRepositorio {
+  finalizarIngreso(idIngreso: number): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+
+
+  findById(idIngreso: number): Promise<Ingreso | null> {
+    throw new Error("Method not implemented.");
+  }
+
+  reclamarSiguienteIngreso(): Promise<Ingreso | null> {
+    throw new Error("Method not implemented.");
+  }
 
   private ingresos: Ingreso[] = [];
 

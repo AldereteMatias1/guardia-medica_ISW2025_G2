@@ -8,10 +8,10 @@ jest.mock('../../src/auth/utils/hashing', () => ({
 }));
 
 import * as argon2 from 'argon2';
-import { IUsuarioRepositorio } from '../../src/app/interfaces/usuario/usuarios.repository.interface';
-import { AuthService } from '../../src/app/services/auth.service';
-import { RolUsuario } from '../../src/models/usuario/usuario';
 import { BadRequestException } from '@nestjs/common';
+import { AuthService } from '../../src/auth/service/auth.service';
+import { IUsuarioRepositorio } from '../../src/persistence/usuario/usuarios.repository.interface';
+import { RolUsuario } from '../../src/business/usuario/usuario';
 
 let service: AuthService;
 
