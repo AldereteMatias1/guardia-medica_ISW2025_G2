@@ -71,6 +71,13 @@ export class AuthService {
         if (!enfermera) {
           throw new BadRequestException('No existe una enfermera con ese id');
         }
+
+        if (enfermera.getUsuario()) {
+          throw new BadRequestException(
+            'La enfermera ya tiene un usuario asociado',
+          );
+        }
+
         await this.userRepo.registrarUsuario(usuarioParaGuardar);
         const user = await this.userRepo.obtenerPorEmail(email);
 
@@ -79,7 +86,6 @@ export class AuthService {
             'Error al obtener el usuario recién registrado',
           );
         }
-        const usuarioRegistrado = user as Usuario;
 
         enfermera.asociarUsuario(user);
         await this.enfermeroRepo.asociarUsuarioEnfermera(enfermeraId, user.id!);
@@ -95,6 +101,14 @@ export class AuthService {
         const medico = await this.medicoRepo.obtenerPorId(medicoId);
         if (!medico) {
           throw new BadRequestException('No existe un médico con ese id');
+        }
+
+        console.log('Médico encontrado:', medico);
+
+        if (medico.getUsuario()) {
+          throw new BadRequestException(
+            'El médico ya tiene un usuario asociado',
+          );
         }
 
         await this.userRepo.registrarUsuario(usuarioParaGuardar);
