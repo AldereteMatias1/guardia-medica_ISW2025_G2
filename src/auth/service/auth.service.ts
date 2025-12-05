@@ -32,7 +32,8 @@ export class AuthService {
   ) {}
 
   async register(user: CreateUserDto) {
-    const { email, password, rol, medicoId, enfermeraId } = user;
+    const email = user.email.trim().toLowerCase();
+    const { password, rol, medicoId, enfermeraId } = user;
 
     if (!password || password.length < 8) {
       throw new BadRequestException(
@@ -124,7 +125,8 @@ export class AuthService {
   }
 
   async login(credentials: LoginAuthDto) {
-    const { email, password } = credentials;
+    const email = credentials.email.trim().toLowerCase();
+    const { password } = credentials;
 
     try {
       const user = await this.userRepo.obtenerPorEmail(email);
