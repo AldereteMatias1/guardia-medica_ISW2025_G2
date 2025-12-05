@@ -78,6 +78,7 @@ describe('AuthService - register', () => {
 
     const enfermeraFake = {
       asociarUsuario: jest.fn(),
+      getUsuario: jest.fn().mockReturnValue(null),
     };
 
     enfermeroRepoMock.obtenerPorId.mockResolvedValue(enfermeraFake as any);
@@ -157,6 +158,7 @@ describe('AuthService - register', () => {
     // ...existing code...
     const medicoFake = {
       asociarUsuario: jest.fn(),
+      getUsuario: jest.fn().mockReturnValue(null),
     };
 
     // mock médico OK
@@ -263,4 +265,44 @@ describe('AuthService - register', () => {
 
     expect(userRepoMock.registrarUsuario).not.toHaveBeenCalled();
   });
+
+  it('Debe lanzar error si la enfermera ya tiene usuario asignado', async () => {
+    const dto = {
+      email: 'nuevo@correo.com',
+      password: 'Secreta123',
+      rol: RolUsuario.ENFERMERO,
+      enfermeraId: 10,
+    };
+
+      userRepoMock.obtenerPorEmail.mockResolvedValueOnce(null);
+
+    const enfermeraFake = {
+      getUsuario: jest.fn().mockReturnValue({ id: 111 }), // ya tiene usuario
+    };
+
+    enfermeroRepoMock.obtenerPorId.mockResolvedValue(enfermeraFake as any);
+
+    await expect(service.register(dto as any)).rejects.toThrow(
+      'La enfermera ya tiene un usuario asociado',
+    );
+  });
+  it('Debe lanzar error si el médico ya tiene usuario asignado', async () => {
+    const dto = {
+      email: 'nuevo@correo.com',
+      password: 'Secreta123',
+      rol: RolUsuario.MEDICO,
+      medicoId: 10,
+    };
+
+      userRepoMock.obtenerPorEmail.mockResolvedValueOnce(null);
+    const medicoFake = {
+      getUsuario: jest.fn().mockReturnValue({ id: 123 }), // ya tiene usuario
+    };
+
+    medicoRepoMock.obtenerPorId.mockResolvedValue(medicoFake as any);
+    await expect(service.register(dto as any)).rejects.toThrow(
+      'El médico ya tiene un usuario asociado',
+    );
+  });
+
 });

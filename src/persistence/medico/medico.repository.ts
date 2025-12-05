@@ -91,6 +91,8 @@ export class MedicoRepositorio implements IMedicoRepositorio {
       row.nombre,
       row.apellido,
       row.matricula,
+      row.id_medico,
+      row.id_usuario
     ) as Medico;
 
 
