@@ -1,17 +1,13 @@
 import { JwtService } from '@nestjs/jwt';
-
-jest.mock('argon2', () => ({
-  hash: jest.fn(),
-}));
 jest.mock('../../src/auth/utils/hashing', () => ({
   comparePassword: jest.fn(),
+  hashPassword: jest.fn()
 }));
-
-import * as argon2 from 'argon2';
 import { BadRequestException } from '@nestjs/common';
 import { AuthService } from '../../src/auth/service/auth.service';
 import { IUsuarioRepositorio } from '../../src/persistence/usuario/usuarios.repository.interface';
 import { RolUsuario } from '../../src/business/usuario/usuario';
+import { hashPassword } from '../../src/auth/utils/hashing';
 
 let service: AuthService;
 
@@ -58,7 +54,7 @@ describe('AuthService - register', () => {
       enfermeraId: 10,
     };
 
-    (argon2.hash as jest.Mock).mockResolvedValue('HASHED_ARGON2');
+    (hashPassword as jest.Mock).mockResolvedValue('HASHED_ARGON2');
 
     userRepoMock.obtenerPorEmail
       .mockResolvedValueOnce(null) // primera vez: verificar si existe
@@ -97,7 +93,7 @@ describe('AuthService - register', () => {
 
     // assert
     expect(userRepoMock.obtenerPorEmail).toHaveBeenNthCalledWith(1, dto.email);
-    expect(argon2.hash).toHaveBeenCalledWith(dto.password, expect.any(Object));
+    expect(hashPassword).toHaveBeenCalledWith(dto.password);
     expect(userRepoMock.registrarUsuario).toHaveBeenCalledWith(
       expectedSavedUser,
     );
@@ -134,7 +130,7 @@ describe('AuthService - register', () => {
     };
 
     // mock hash
-    (argon2.hash as jest.Mock).mockResolvedValue('HASHED_ARGON2');
+    (hashPassword as jest.Mock).mockResolvedValue('HASHED_ARGON2');
 
     // mock usuario NO existe al inicio
     userRepoMock.obtenerPorEmail
@@ -178,7 +174,7 @@ describe('AuthService - register', () => {
 
     // assert
     expect(userRepoMock.obtenerPorEmail).toHaveBeenNthCalledWith(1, dto.email);
-    expect(argon2.hash).toHaveBeenCalledWith(dto.password, expect.any(Object));
+    expect(hashPassword).toHaveBeenCalledWith(dto.password);
     expect(userRepoMock.registrarUsuario).toHaveBeenCalledWith(
       expectedSavedUser,
     );
@@ -233,7 +229,7 @@ describe('AuthService - register', () => {
 
     expect(userRepoMock.obtenerPorEmail).toHaveBeenCalledWith(dto.email);
 
-    expect(argon2.hash).not.toHaveBeenCalled();
+    expect(hashPassword).not.toHaveBeenCalled();
     expect(medicoRepoMock.obtenerPorId).not.toHaveBeenCalled();
     expect(medicoRepoMock.actualizarMedico).not.toHaveBeenCalled();
     expect(userRepoMock.registrarUsuario).not.toHaveBeenCalled();
@@ -258,7 +254,7 @@ describe('AuthService - register', () => {
     );
 
     expect(userRepoMock.obtenerPorEmail).not.toHaveBeenCalled();
-    expect(argon2.hash).not.toHaveBeenCalled();
+    expect(hashPassword).not.toHaveBeenCalled();
 
     expect(medicoRepoMock.obtenerPorId).not.toHaveBeenCalled();
     expect(medicoRepoMock.actualizarMedico).not.toHaveBeenCalled();

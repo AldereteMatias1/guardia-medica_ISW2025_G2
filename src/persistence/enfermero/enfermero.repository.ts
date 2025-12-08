@@ -33,7 +33,6 @@ export class EnfermeroRepositorio implements IEnfermeroRepositorio {
         if (!rows.length) return null;
 
         const row = rows[0];
-        console.log(row);
 
         const enfermera = new (require("../../business/enfermera/enfermera.entity").Enfermera)(
           row.nombre,

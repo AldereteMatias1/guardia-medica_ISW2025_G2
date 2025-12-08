@@ -7,8 +7,7 @@ import {
 } from '@nestjs/common';
 import { LoginAuthDto } from '../../auth/dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
-import * as argon2 from 'argon2';
-import { comparePassword } from '../../auth/utils/hashing';
+import { hashPassword, comparePassword } from '../../auth/utils/hashing';
 import * as enfermeraRepository from '../../persistence/enfermero/enfermera.repository.interface';
 import * as medicoRepository from '../../persistence/medico/medico.repository.interface';
 import * as usuariosRepositoryInterface from '../../../src/persistence/usuario/usuarios.repository.interface';
@@ -47,13 +46,8 @@ export class AuthService {
     }
 
     try {
-      const hashedPassword = await argon2.hash(password, {
-        type: argon2.argon2id,
-        memoryCost: 2 ** 16,
-        timeCost: 3,
-        parallelism: 1,
-      });
-
+      const hashedPassword = await hashPassword(password);
+     
       const usuarioParaGuardar: Usuario = {
         email,
         password: hashedPassword,
@@ -103,7 +97,6 @@ export class AuthService {
           throw new BadRequestException('No existe un médico con ese id');
         }
 
-        console.log('Médico encontrado:', medico);
 
         if (medico.getUsuario()) {
           throw new BadRequestException(
@@ -177,7 +170,6 @@ export class AuthService {
             'No existe un enfermero asociado a este usuario',
           );
         }
-        console.log('Enfermero encontrado:', enfermero.getId());
 
         idProfesional = enfermero.getId();
       }
@@ -201,7 +193,6 @@ export class AuthService {
         throw error;
       }
 
-      console.error('Error en login:', error);
       throw new InternalServerErrorException('Ocurrió un error en el servidor');
     }
   }
