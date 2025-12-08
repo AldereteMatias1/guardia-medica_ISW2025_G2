@@ -97,7 +97,6 @@ export class AuthService {
           throw new BadRequestException('No existe un médico con ese id');
         }
 
-        console.log('Médico encontrado:', medico);
 
         if (medico.getUsuario()) {
           throw new BadRequestException(
@@ -171,7 +170,6 @@ export class AuthService {
             'No existe un enfermero asociado a este usuario',
           );
         }
-        console.log('Enfermero encontrado:', enfermero.getId());
 
         idProfesional = enfermero.getId();
       }
@@ -195,7 +193,6 @@ export class AuthService {
         throw error;
       }
 
-      console.error('Error en login:', error);
       throw new InternalServerErrorException('Ocurrió un error en el servidor');
     }
   }
