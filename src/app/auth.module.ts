@@ -19,25 +19,26 @@ import { ConfigModule } from '@nestjs/config';
   imports: [
     ConfigModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
-    JwtModuleConfig()],
+    JwtModuleConfig(),
+  ],
   providers: [
     AuthService,
-    JwtStrategy,  
+    JwtStrategy,
     {
       provide: USUARIO_REPOSITORIO,
       useClass: UsuarioRepositorio,
     },
     {
       provide: ENFERMERO_REPOSITORIO,
-      useClass: EnfermeroRepositorio
+      useClass: EnfermeroRepositorio,
     },
     {
       provide: MEDICO_REPOSITORIO,
-      useClass: MedicoRepositorio
+      useClass: MedicoRepositorio,
     },
     {
-    provide: APP_GUARD,
-    useClass: JwtAuthGuard,
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
     },
     {
       provide: APP_GUARD,

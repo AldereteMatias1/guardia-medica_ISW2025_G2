@@ -19,8 +19,7 @@ export class EnfermeroRepositorio implements IEnfermeroRepositorio {
         matricula: string;
         id_usuario: number | null;
         }>(
-        `SELECT e.id,
-                p.nombre,
+        `SELECT p.nombre,
                 p.apellido,
                 p.cuil,
                 e.matricula,
@@ -36,9 +35,11 @@ export class EnfermeroRepositorio implements IEnfermeroRepositorio {
         const row = rows[0];
 
         const enfermera = new (require("../../business/enfermera/enfermera.entity").Enfermera)(
-        row.nombre,
-        row.apellido,
-        row.matricula
+          row.nombre,
+          row.apellido,
+          row.matricula,
+          row.cuil,
+          row.id_usuario 
         ) as Enfermera;
 
         return enfermera;

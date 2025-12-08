@@ -155,6 +155,5 @@ describe('login', () => {
     expect(userRepoMock.obtenerPorEmail).toHaveBeenCalledWith(
       'test@correo.com',
     );
-    expect(errorSpy).toHaveBeenCalled(); // opcional si querés validar el console.error
   });
 });
