@@ -57,7 +57,7 @@ describe('AuthService - register', () => {
     (hashPassword as jest.Mock).mockResolvedValue('HASHED_ARGON2');
 
     userRepoMock.obtenerPorEmail
-      .mockResolvedValueOnce(null) // primera vez: verificar si existe
+      .mockResolvedValueOnce(null) // primera vez: verificar que no exista
       .mockResolvedValueOnce({
         // segunda vez: usuario recién creado
         id: 999,
@@ -79,8 +79,6 @@ describe('AuthService - register', () => {
 
     enfermeroRepoMock.obtenerPorId.mockResolvedValue(enfermeraFake as any);
     enfermeroRepoMock.asociarUsuarioEnfermera.mockResolvedValue(undefined);
-
-    userRepoMock.registrarUsuario.mockResolvedValue(undefined as any);
 
     const expectedSavedUser = {
       email: dto.email,
@@ -129,38 +127,32 @@ describe('AuthService - register', () => {
       medicoId: 55,
     };
 
-    // mock hash
     (hashPassword as jest.Mock).mockResolvedValue('HASHED_ARGON2');
 
-    // mock usuario NO existe al inicio
     userRepoMock.obtenerPorEmail
-      .mockResolvedValueOnce(null) // primera vez: verificar si existe
+      .mockResolvedValueOnce(null) // primera llamada: verificar que no exista
       .mockResolvedValueOnce({
-        // segunda vez: usuario recién creado
+        // segunda llamada: usuario recién creado
         id: 999,
         email: dto.email,
         password: 'HASHED_ARGON2',
         rol: dto.rol,
       });
 
-    // mock registro OK
-    // return the created Usuario instead of undefined
     userRepoMock.registrarUsuario.mockResolvedValue({
       id: 999,
       email: dto.email,
       password: 'HASHED_ARGON2',
       rol: dto.rol,
     });
-    // ...existing code...
+
     const medicoFake = {
       asociarUsuario: jest.fn(),
       getUsuario: jest.fn().mockReturnValue(null),
     };
 
-    // mock médico OK
     medicoRepoMock.obtenerPorId.mockResolvedValue(medicoFake as any);
 
-    // mock asociación en tabla pivote
     medicoRepoMock.asociarUsuarioMedico.mockResolvedValue(undefined);
 
     const expectedSavedUser = {
