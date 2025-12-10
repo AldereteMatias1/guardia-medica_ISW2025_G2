@@ -8,16 +8,6 @@ import { RolUsuario } from '../../src/business/usuario/usuario';
 import { AuthService } from '../../src/auth/service/auth.service';
 import { IUsuarioRepositorio } from '../../src/persistence/usuario/usuarios.repository.interface';
 
-let errorSpy: jest.SpyInstance;
-
-beforeAll(() => {
-  errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-});
-
-afterAll(() => {
-  errorSpy.mockRestore();
-});
-
 jest.mock('argon2', () => ({
   hash: jest.fn(),
 }));
@@ -70,27 +60,25 @@ beforeEach(() => {
 
 describe('login', () => {
   it('Loguearse exitosamente en el sistema', async () => {
+
+    // arrange
     const stored = makeUser({
       email: 'test@correo.com',
       password: 'HASHED',
       rol: RolUsuario.MEDICO,
     });
 
-    // Usuario encontrado en la DB
     userRepoMock.obtenerPorEmail.mockResolvedValue(stored as any);
 
-    // Contraseña válida
     (comparePassword as jest.Mock).mockResolvedValue(true);
 
-    // Mock del médico devuelto por repo
     const medicoFake = {
       getId: jest.fn().mockReturnValue(55),
     };
     medicoRepoMock.obtenerPorEmail.mockResolvedValue(medicoFake as any);
-
-    // JWT generado
     jwtServiceMock.signAsync.mockResolvedValue('ACCESS_TOKEN_123');
 
+    // act
     const res = await service.login({
       email: stored.email,
       password: 'Plano123',
@@ -117,7 +105,7 @@ describe('login', () => {
   });
 
   it('debe lanzar Unauthorized si el usuario no existe', async () => {
-    userRepoMock.obtenerPorEmail.mockResolvedValue(null); // 👈 ahora null en Promise
+    userRepoMock.obtenerPorEmail.mockResolvedValue(null); 
 
     await expect(
       service.login({ email: 'noexiste@correo.com', password: 'x' } as any),
