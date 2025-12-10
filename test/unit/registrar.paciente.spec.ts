@@ -120,7 +120,7 @@ const pacienteRepoMock: {
     await expect(pacienteServicio.registrarPaciente(dto)).rejects.toBeInstanceOf(NotFoundException);
 
     expect(obraSocialRepoMock.existePorNombre).toHaveBeenCalledWith("OSECAC");
-    // No hace falta verificar afiliadoAlPaciente porque debería cortar antes
+    // Corta
   });
 
   it("No se registra el paciente si la afiliacion a la obra social no existe", async () => {
